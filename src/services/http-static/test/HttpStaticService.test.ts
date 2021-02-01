@@ -1,0 +1,61 @@
+/**
+ * @jest-environment node
+ */
+import axios from "axios"
+import { RootService } from "../../../core/RootService"
+import path from "path"
+import { ConfActions } from "../../../core/node/NodeConf"
+
+let root, res
+
+beforeAll(async() => {
+	root = new RootService()
+	await root.dispatch({
+		type: ConfActions.START,
+		payload: {
+			children: [
+				{
+					class: "http",
+					port: 5001,
+					children: [
+						{
+							class: "http-static",
+							dir: path.join(__dirname, "../test"),	// directory locale che contiene i file
+							path: "/public",
+						},
+						{
+							class: "http-static",
+							dir: path.join(__dirname, "../test"),	// directory locale che contiene i file
+							path: "/spa",
+							spaFile: "text.js",
+						}
+					]
+				}
+			]
+		}
+	})
+	axios.defaults.adapter = require('axios/lib/adapters/http')
+})
+
+afterAll(async() => {
+	await root.dispatch({ type: ConfActions.STOP })
+})
+
+test("accesso a PUBLIC", async () => {
+	res = await axios.get("http://localhost:5001/public/text.js")
+	expect(res.data).toContain<string>('let _test = "pippo"')
+})
+
+test("accesso a SPA con url inesistente", async () => {
+	res = await axios.get("http://localhost:5001/spa/not/exist/url/spa.spa")
+	expect(res.data).toContain<string>('let _test = "pippo"')
+})
+
+test("url inesistente in PUBLIC da errore", async () => {
+	try {
+		res = await axios.get("http://localhost:5001/public/not/exist/url/spa.spa")
+	} catch ( e ) {
+		res = e
+	}
+	expect(res.response.status).toBe(404)
+})

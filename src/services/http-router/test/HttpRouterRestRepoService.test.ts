@@ -1,0 +1,127 @@
+import axios from "axios"
+import fs from "fs"
+import { RootService } from "../../../core/RootService"
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { PathFinder } from "../../../core/path/PathFinder"
+import { HttpRouterRestRepoService } from "../rest/HttpRouterRestRepoService";
+import { ConfActions } from "../../../core/node/NodeConf";
+
+
+
+@Entity()
+export class User {
+	@PrimaryGeneratedColumn()
+	id: number;
+
+	@Column()
+	firstName: string;
+
+	@Column()
+	lastName: string;
+
+	@Column()
+	age: number;
+}
+
+const dbPath = `${__dirname}/database.sqlite`
+let root, user1, user2, users
+
+beforeAll(async () => {
+
+	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+
+	root = new RootService()
+	await root.dispatch({
+		type: ConfActions.START,
+		payload: {
+			children: [
+				{
+					class: "http",
+					port: 5001,
+					children: [
+						{
+							name: "user",
+							path: "/user",
+							class: "http-router/repo",
+							repository: "/typeorm/user",
+						}
+					]
+				},
+				{
+					class: "typeorm",
+					typeorm: {
+						"type": "sqlite",
+						"database": dbPath,
+						"synchronize": true,
+						"entities": [User],
+					},
+					children: [
+						{ name: "user", class: "typeorm/repo", model: "User" },
+					]
+				}
+			]
+		}
+	})
+
+	axios.defaults.adapter = require('axios/lib/adapters/http')
+
+})
+
+afterAll(async () => {
+	await root.dispatch({ type: ConfActions.STOP })
+	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+})
+
+test("su creazione", async () => {
+	const rr = new PathFinder(root).getNode<HttpRouterRestRepoService>("/http/user")
+	expect(rr).toBeInstanceOf(HttpRouterRestRepoService)
+})
+
+test("post: nuovo USER 1", async () => {
+	const { data } = await axios.post("http://localhost:5001/user", 
+		{ firstName: "Raffaella", lastName: "Iorio", age: 44 }
+	)
+	user1 = data
+	expect(user1).toEqual(
+		{ id:1, firstName: "Raffaella", lastName: "Iorio", age: 44 }
+	)
+})
+
+test("post: nuovo USER 2", async () => {
+	const { data } = await axios.post("http://localhost:5001/user", 
+		{ firstName: "Ivano", lastName: "Iorio", age: 45 }
+	)
+	user2 = data
+	expect( user2 ).toEqual(
+		{ id:2, firstName: "Ivano", lastName: "Iorio", age: 45 }
+	)
+})
+
+test("index: prelevo tutti gli USER", async () => {
+	const {data}= await axios.get("http://localhost:5001/user")
+	users = data
+	expect(users).toEqual([user1,user2])
+})
+
+test("get: prelevo USER 2", async () => {
+	const {data:user2_copy} = await axios.get("http://localhost:5001/user/2")
+	expect(user2_copy).toEqual(user2)
+})
+
+test("post: modifico USER 2", async () => {
+	let {data:user2_modify} = await axios.post(
+		"http://localhost:5001/user", 
+		{ id:2, firstName: "Giovanni" }
+	)
+	user2_modify = { ...user2, ...user2_modify }
+	expect(user2_modify.firstName).not.toEqual(user2.firstName)
+	const {data:user2_current} = await axios.get("http://localhost:5001/user/2")	
+	expect(user2_current).toEqual(user2_modify)
+	expect(user2_current).not.toEqual(user2)
+})
+
+test("delete: cancello USER 2", async () => {	
+	await axios.delete("http://localhost:5001/user/2")
+	const {data:user2_del} = await axios.get("http://localhost:5001/user/2")
+	expect(user2_del).toBeNull()
+})

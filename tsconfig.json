@@ -1,0 +1,29 @@
+{
+    "extends": "@tsconfig/node12/tsconfig.json",
+    "compilerOptions": {
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        //"watch": true,
+        "allowJs": true,
+        "outDir": "dist",
+        "baseUrl": "./src",
+        //"rootDir": "./src",
+        "declaration": true,
+        "declarationMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        // "typeRoots": [
+        //     //"./typings",
+        //     "./node_modules/@types/**/*"
+        // ],
+        "strict": false,
+    },
+    "include": [
+        "src/**/*"
+    ],
+    // "exclude": [
+    //     "node_modules",
+    //     "dist",
+    //     "**/*.spec.ts"
+    // ]
+}

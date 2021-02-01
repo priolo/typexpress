@@ -1,0 +1,60 @@
+import { RootService } from "../RootService"
+import { PathFinder } from "../path/PathFinder"
+import { ConfActions } from "../node/NodeConf"
+
+let root;
+
+beforeAll(async () => {
+	root = new RootService("root")
+	await root.dispatch({
+		type: ConfActions.START,
+		payload: {
+			name: "root2",
+			value: 23,
+			children: [
+				{
+					name: "child1",
+					children: [
+						{ name: "child1.1" },
+						{ name: "child1.2" },
+						{ 
+							name: "child1.3",
+							children: [
+								{ name: "child1.3.1" },
+								{ name: "child1.3.2" }
+							]
+						}
+					]
+				},
+				{
+					name: "child2",
+					children: [
+						{ name: "child2.1" }
+					]
+				}
+			]
+		}
+	})
+})
+
+test("regular path", async () => {
+	let path = new PathFinder(root).path("/child2/child2.1")
+	expect(path?.node.name).toBe( "child2.1" )
+	let path2 = path?.path("..")
+	expect(path2?.node.name).toBe( "child2" )
+	let node = path2?.getNode<any>("/child1")
+	expect(node?.name).toBe( "child1" )
+})
+
+test("find by id", async () => {
+	let node1 = new PathFinder(root).path("/child2/child2.1").node
+	let node2 = new PathFinder(root).path(`/child2/*${node1.id}`).node
+	expect(node1).toBe(node2 )
+})
+
+test("find deep", async () => {
+	let node = new PathFinder(root).getNode<any>("/>child2.1")
+	expect(node).toBeDefined()
+	node = new PathFinder(root).getNode<any>(`/>*${node.id}`)
+	expect(node).toBeDefined()
+})
