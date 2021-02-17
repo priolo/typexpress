@@ -28,7 +28,7 @@
 		"test": "jest dist",
 		"example": "tsc && node dist/example.js",
 		"admin": "node dist/services/http-admin/start.js",
-		"publich": "tsc && npm publich"
+		"pub": "tsc && npm publich"
 	},
 	"dependencies": {
 		"axios": "^0.21.0",
