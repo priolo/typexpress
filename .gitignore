@@ -1,6 +1,7 @@
 *.map
 
 node_modules/
+admin-db/
 .vscode/
 dist/
-
+_tmp/
