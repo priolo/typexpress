@@ -106,7 +106,7 @@ export class NodeConf extends NodeState {
 			})
 		}
 		await this.onDestroy()
-		this.parent.removeChild(this)
+		this.parent?.removeChild(this)
 	}
 
 	/**

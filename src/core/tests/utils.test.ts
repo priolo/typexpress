@@ -31,7 +31,6 @@ beforeAll(async () => {
 	})
 })
 
-
 test("nodeToJson", async () => {
 
 	const json = nodeToJson(root)

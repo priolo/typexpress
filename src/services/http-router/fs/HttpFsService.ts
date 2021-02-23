@@ -5,8 +5,10 @@ import { JWTActions } from "../../jwt/JWTRepoService"
 import { RepoRestActions } from "../../../core/RepoRestActions"
 
 /**
- * middleware 
- * permette di creare l'USER tramite TOKEN
+ * DA COMPLETARE
+ * Espone delle API
+ * adatte alle operazioni su File System
+ * 
  */
 export class HttpFsService extends HttpRouterServiceBase {
 

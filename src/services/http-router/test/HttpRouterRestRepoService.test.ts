@@ -69,7 +69,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await root.dispatch({ type: ConfActions.STOP })
-	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	//if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
 })
 
 test("su creazione", async () => {

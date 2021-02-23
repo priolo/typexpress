@@ -28,7 +28,7 @@ beforeAll(async () => {
 			children: [
 				{
 					class: "http",
-					port: 5001,
+					port: 5011,
 					children: [
 						{
 							path: "/upload",
@@ -70,7 +70,7 @@ test("upload multiple files", async () => {
 	const form = new FormData();
 	form.append("file1", fs.createReadStream(fileSurce1));
 	form.append("file2", fs.createReadStream(fileSurce2));
-	const { data } = await axios.post('http://localhost:5001/upload', form, { headers: form.getHeaders() })
+	const { data } = await axios.post('http://localhost:5011/upload', form, { headers: form.getHeaders() })
 
 	expect(fs.existsSync(fileDest1)).toBeTruthy()
 	expect(fs.existsSync(fileDest2)).toBeTruthy()
@@ -87,7 +87,7 @@ test("upload file with path", async () => {
 	// deve stare prima del file altrimenti fallisce!
 	form.append("dest", fileDestRelative) //{ "file1": fileDestRelative } )
 	form.append("file1", fs.createReadStream(fileSource));
-	const { data } = await axios.post('http://localhost:5001/upload', form, { headers: form.getHeaders() })
+	const { data } = await axios.post('http://localhost:5011/upload', form, { headers: form.getHeaders() })
 
 	expect(fs.existsSync(fileDestAbsolute)).toBeTruthy()
 })

@@ -36,8 +36,10 @@
 		"email-check": "^1.1.0",
 		"express": "^4.17.1",
 		"express-graphql": "~0.11.0",
+		"express-handlebars": "^5.2.1",
 		"express-session": "^1.17.1",
 		"firebase-admin": "^9.3.0",
+		"form-data": "^3.0.0",
 		"formidable": "^1.2.2",
 		"graphql": "^15.4.0",
 		"jsonwebtoken": "^8.5.1",
@@ -46,8 +48,7 @@
 		"reflect-metadata": "^0.1.13",
 		"serve-index": "^1.9.1",
 		"sqlite3": "^5.0.0",
-		"typeorm": "^0.2.31",
-		"form-data": "^3.0.0"
+		"typeorm": "^0.2.31"
 	},
 	"devDependencies": {
 		"@types/express": "^4.17.8",

@@ -15,21 +15,37 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 
 	private server: Server | null = null
 
-	get defaultConfig():any { return { ...super.defaultConfig,
-		name: "http",
-		port: 5000,					// porta di ascolto del server
-		//// se valorizzato creo un server https
-		// https: {
-		// 	privkey: "privkey.pem", // file path
-		// 	pubcert: "pubcert.pem",	// file path
-		// }
-	}}
+	get defaultConfig(): any {
+		return {
+			...super.defaultConfig,
+			name: "http",
+			port: 5000,					// porta di ascolto del server
+			//// se valorizzato creo un server https
+			// https: {
+			// 	privkey: "privkey.pem", // file path
+			// 	pubcert: "pubcert.pem",	// file path
+			// }
+			//template: "handlebars"
+		}
+	}
 
 	protected async onInit(): Promise<void> {
+		const { template } = this.state
+
 		this.app = express()
 		this.app.use(express.json())	// middleware per contenuti json
 		this.app.use(express.urlencoded({ extended: true }))
 		this.app.use(cookieParser())
+
+		if (template == "handlebars") {
+			var exphbs = require('express-handlebars');
+			this.app.engine('.hbs', exphbs({
+				//layoutsDir: __dirname + '/views/layouts',
+				extname: '.hbs',
+				//defaultLayout: "layout"
+			}));
+			this.app.set('view engine', '.hbs');
+		}
 
 		this.server = this.buildServer()
 		await this.listenServer()
@@ -49,13 +65,13 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		})
 	}
 
-	use(router: Router, path:string="/"): void {
+	use(router: Router, path: string = "/"): void {
 		this.app.use(path, router)
 	}
 
 	private buildServer(): Server {
 		const { https: httpsConf } = this.state
-		let server:Server = null
+		let server: Server = null
 
 		if (httpsConf) {
 			server = https
@@ -74,7 +90,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		return server
 	}
 
-	private async listenServer(): Promise<void>{
+	private async listenServer(): Promise<void> {
 		const { port } = this.state
 		return new Promise<void>((res, rej) => {
 			this.server.listen(

@@ -21,10 +21,15 @@ export function nodeFind(nodes: INode | INode[], callback: (n: INode) => boolean
 	return null
 }
 
+/**
+ * Trasforma un node in un json 
+ * usato per il debug
+ * @param node 
+ */
 export function nodeToJson(node: INode): object {
 	if ( !node ) return {}
 	return {
-		id: node.id,
+		//id: node.id,
 		name: node.name,
 		children: node.children.map(c => nodeToJson(c))
 	}

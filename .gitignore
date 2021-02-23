@@ -5,3 +5,4 @@ admin-db/
 .vscode/
 dist/
 _tmp/
+package-lock.json

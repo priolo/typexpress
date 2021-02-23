@@ -16,6 +16,8 @@ import { JWTActions } from "../../jwt/JWTRepoService";
 
 const dbPath = `${__dirname}/database.sqlite`
 let root = null
+let user1, user2, token
+
 
 beforeAll(async () => {
 
@@ -87,11 +89,9 @@ beforeAll(async () => {
 	})
 })
 
-let user1, user2, token
-
 afterAll(async () => {
-	await root.dispatch({ type: ConfActions.STOP })
-	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	await root?.dispatch({ type: ConfActions.STOP })
+	//if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
 })
 
 test("creazione", async () => {
