@@ -4,7 +4,11 @@ import { NodeState } from "core/node/NodeState";
 import { log, LOG_OPTION } from "../../utils/log";
 import { PathFinder } from "./PathFinder";
 
-
+/**
+ * Permette di consegnare un ACTION ad un NODE
+ * tramite il suo PATH
+ * e quindi chiama il dispatch
+ */
 export class Bus {
 	constructor ( sender:INode, path:string ) {
 		this.sender = sender

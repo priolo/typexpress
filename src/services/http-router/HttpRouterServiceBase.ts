@@ -14,6 +14,7 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 		return {
 			...super.defaultConfig,
 			path: "/",
+			cors: {},
 		}
 	}
 

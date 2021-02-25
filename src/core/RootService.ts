@@ -1,6 +1,7 @@
 import { ServiceBase } from "./ServiceBase"
 import FarmService from "../services/farm"
 import { ConfActions } from "./node/NodeConf"
+import { EmitterService } from "services/notifier/EmitterService"
 
 
 /**
@@ -11,21 +12,26 @@ import { ConfActions } from "./node/NodeConf"
  */
 export class RootService extends ServiceBase {
 
-	// [gacility]: crea e avvia un json
-	static async Start ( config:any ): Promise<void> {
+	// [facility]: crea e avvia un json
+	static async Start ( config:any ): Promise<RootService> {
+		if ( !Array.isArray(config)) config = [config]
 		const root = new RootService()
 		await root.dispatch({
 			type: ConfActions.START,
 			payload: { 
-				children: [config] 
+				children: config
 			}
 		})
+		return root
 	}
 
 	constructor(name: string = "root") {
 		super(name)
+
+		// services base
 		this.addChild(new FarmService())
-		
+		this.addChild(new EmitterService())
+
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {
 			console.debug('SIGTERM signal received: closing HTTP server')

@@ -5,7 +5,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder";
 import { TypeormActions, TypeormRepoService } from "../TypeormRepoService";
 import { ConfActions } from "../../../core/node/NodeConf";
-import { RepoRestActions } from "../../../core/RepoRestActions";
+import { RepoRestActions } from "../../../core/repo/RepoRestActions";
 
 @Entity()
 export class User {
@@ -23,9 +23,9 @@ export class User {
 }
 
 const dbPath = path.join(__dirname, "/database.sqlite")
-let root:RootService = null
+let root: RootService = null
 
-beforeAll(async() => {
+beforeAll(async () => {
 	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
 
 	root = new RootService()
@@ -41,7 +41,7 @@ beforeAll(async() => {
 						"synchronize": true,
 						"entities": [User]
 					},
-					"schemas":[
+					schemas: [
 						{
 							name: "Account",
 							columns: {
@@ -51,16 +51,16 @@ beforeAll(async() => {
 						}
 					],
 					children: [
-						{ 	
-							name: "user", class: "typeorm/repo", 
+						{
+							name: "user", class: "typeorm/repo",
 							model: "User",
 						},
-						{ 	
-							name: "account", class: "typeorm/repo", 
+						{
+							name: "account", class: "typeorm/repo",
 							model: "Account",
 						},
-						{ 	
-							name: "item", class: "typeorm/repo", 
+						{
+							name: "item", class: "typeorm/repo",
 							model: {
 								name: "Item",
 								columns: {
@@ -75,8 +75,8 @@ beforeAll(async() => {
 		}
 	})
 })
-afterAll(async() => {
-	if ( root ) await root.dispatch({ type: ConfActions.STOP })
+afterAll(async () => {
+	if (root) await root.dispatch({ type: ConfActions.STOP })
 	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
 })
 

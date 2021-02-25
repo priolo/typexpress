@@ -2,7 +2,7 @@ import { Repository, Connection } from "typeorm";
 import { ServiceBase } from "../../core/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder";
 import { TypeormService } from "./TypeormService";
-import { RepoRestActions } from "../../core/RepoRestActions";
+import { RepoRestActions } from "../../core/repo/RepoRestActions";
 
 
 export enum TypeormActions {

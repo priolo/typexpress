@@ -7,7 +7,7 @@ import fs from "fs"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { ConfActions } from "../../../core/node/NodeConf";
-import { RepoRestActions } from "../../../core/RepoRestActions";
+import { RepoRestActions } from "../../../core/repo/RepoRestActions";
 import { HttpJWTUserService } from "../jwt/HttpJWTUserService";
 import { Bus } from "../../../core/path/Bus";
 import { JWTActions } from "../../jwt/JWTRepoService";

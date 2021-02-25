@@ -1,10 +1,5 @@
+import { RepoRestActions } from "./RepoRestActions";
 
-export enum RepoRestActions {
-	ALL = "all",
-	GET_BY_ID = "getById",
-	SAVE = "save",
-	DELETE = "delete",
-}
 
 export interface IRepoRestDispatch<T> {
 	[RepoRestActions.ALL]: (state:any) => Promise<T[]>,
@@ -15,7 +10,3 @@ export interface IRepoRestDispatch<T> {
 
 	[RepoRestActions.DELETE]: (state:any, id:string|number) => Promise<any>,
 }
-
-//export const RepoAllAction = ()=> ({ type: RepoRestActions.ALL, payload: null})
-
-//export const RepoGetByIdAction = (id:)=> ({ type: RepoRestActions.ALL, payload: null})

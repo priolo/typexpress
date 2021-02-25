@@ -7,7 +7,8 @@ import https from "https"
 import { log, LOG_OPTION } from "../../utils/log"
 import { IHttpRouter } from "./IHttpRouter"
 import cookieParser from 'cookie-parser'
-
+import session from 'express-session'
+import cors from "cors"
 
 export class HttpService extends ServiceBase implements IHttpRouter {
 
@@ -36,6 +37,15 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		this.app.use(express.json())	// middleware per contenuti json
 		this.app.use(express.urlencoded({ extended: true }))
 		this.app.use(cookieParser())
+		// this.app.use(
+		// 	session({
+		// 		secret: "a secret string",
+		// 		resave: true,
+		// 		saveUninitialized: false,
+		// 		cookie: { maxAge: 60000 }
+		// 	})
+		// );
+		//this.app.use(cors())
 
 		if (template == "handlebars") {
 			var exphbs = require('express-handlebars');

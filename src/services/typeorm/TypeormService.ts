@@ -47,18 +47,24 @@ export class TypeormService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		super.onInitAfter()
 		let { typeorm, schemas } = this.state
+
+		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN
 		schemas = [
 			...schemas??[], 
 			...this.children
 				.filter(c=>c instanceof TypeormRepoService && c?.state?.model!=null && typeof c.state.model=="object" )
 				.map(c=>(<TypeormRepoService>c).state.model)
 		]
+
+		// screo gli oggetti EntitySchema che dovro' passare a typeorm
 		if ( schemas.length>0 ) {
 			typeorm.entities = [
 				...typeorm.entities??[], 
 				...schemas.map(s=>new EntitySchema(s))
 			]
 		}
+
+		// creo la connessione
 		this.setState({typeorm})
 		this._connection = await createConnection(typeorm)
 	}
