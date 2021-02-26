@@ -20,10 +20,12 @@ export class Bus {
 
 	async dispatch ( action:Action ): Promise<any> {
 		const node = new PathFinder(this.sender).getNode<NodeState>(this.path)
+		// [II] da implementare:
+		// [await:millisec] se presente un opzione il messaggio viene bufferizzato quindi c'e' un controllo se esiste il nodo per tot tempo
 		if ( !node ) {
 			log(`bus:path:${this.path}:not_found`, LOG_OPTION.ERROR)
 			return null
 		}
 		return await node.dispatch(action)
 	}
-} 
+}

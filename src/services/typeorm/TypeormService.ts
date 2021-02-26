@@ -45,7 +45,7 @@ export class TypeormService extends ServiceBase {
 
 
 	protected async onInitAfter(): Promise<void> {
-		super.onInitAfter()
+		await super.onInitAfter()
 		let { typeorm, schemas } = this.state
 
 		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN

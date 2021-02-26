@@ -1,4 +1,5 @@
 
 export enum EmitterActions {
-	FIND = "find",
+	REGISTER = "register",
+	
 }

@@ -25,12 +25,17 @@ export class RootService extends ServiceBase {
 		return root
 	}
 
+	// [facility] ferma un servizio
+	static async Stop ( service:ServiceBase ) {
+		if (service) await service.dispatch({ type: ConfActions.STOP })
+	}
+
 	constructor(name: string = "root") {
 		super(name)
 
 		// services base
 		this.addChild(new FarmService())
-		this.addChild(new EmitterService())
+		//this.addChild(new EmitterService())
 
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {

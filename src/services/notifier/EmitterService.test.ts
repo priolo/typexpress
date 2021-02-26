@@ -2,8 +2,9 @@ import { ServiceBase } from "../../core/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
 import { HttpService } from "../http/HttpService"
-import { ConfActions } from "../../core/node/NodeConf"
 import { EmitterService } from "./EmitterService"
+import { ConfActions } from "core/node/NodeConf"
+import { EmitterActions } from "./EmitterActions"
 
 
 let root = null
@@ -28,14 +29,23 @@ beforeAll(async () => {
 		]
 	})
 })
+
 afterAll(async () => {
 	if (root) await root.dispatch({ type: ConfActions.STOP })
 })
-test("su creazione", async () => {
 
+test("su creazione", async () => {
 	const emitter = new PathFinder(root).getNode<EmitterService>("/emitter")
 	expect(emitter).toBeInstanceOf(EmitterService)
+})
 
-	
-	
+test("register", async () => {
+	const emitter = new PathFinder(root).getNode<EmitterService>("/emitter")
+	emitter.dispatch({
+		type: EmitterActions.REGISTER,
+		payload: {
+			path: "/root/child2",
+			event: "state:change",
+		}
+	})
 })

@@ -1,5 +1,6 @@
 import { Node } from "./Node";
 import { Action } from "./Action";
+import { EventEmitter } from "events"
 
 
 /**
@@ -21,7 +22,7 @@ export abstract class NodeState extends Node {
 	 * notare che si tratta sempre di un MERGE
 	 * @param state 
 	 */
-	protected setState( state:any ):void {
+	public setState( state:any ):void {
 		if ( this._state == state ) return
 		const old = this._state
 		this._state = { ...this._state, ...state }
@@ -29,9 +30,9 @@ export abstract class NodeState extends Node {
 	}
 
 	/**
-	 * ABSTRACT chiamato quando lo stato cambia
+	 * [abstract] chiamato quando lo stato cambia
 	 */
-	protected onChangeState(old: any): void { }
+	protected onChangeState(old: any): void {}
 
 	/**
 	 * permette di eseguire una Action
@@ -44,7 +45,8 @@ export abstract class NodeState extends Node {
 	}
 
 	/**
-	 * una mappa di possibili Actions che si possono eseguire in questo nodo
+	 * una mappa di possibili Actions 
+	 * che si possono eseguire in questo nodo
 	 */
 	protected get dispatchMap(): any {
 		return {}

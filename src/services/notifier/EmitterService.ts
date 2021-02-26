@@ -3,6 +3,7 @@ import { EventEmitter } from "events"
 import { INode } from "../../core/node/INode"
 import { Node } from "../../core/node/Node"
 import { NodeConf } from "../../core/node/NodeConf"
+import { EmitterActions } from "./EmitterActions"
 
 
 
@@ -16,7 +17,7 @@ export class EmitterService extends ServiceBase {
     get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[TypeormActions.FIND]: async (state, query) => {
+			[EmitterActions.REGISTER]: async (state, query) => {
 				const repo = this.getRepo()
 				return await repo.find(query)
 			},
