@@ -1,6 +1,5 @@
 import { Node } from "./Node";
 import { Action } from "./Action";
-import { EventEmitter } from "events"
 
 
 /**
@@ -40,8 +39,8 @@ export abstract class NodeState extends Node {
 	 */
 	async dispatch(action: Action): Promise<any> {
 		// [II] buffering
-		// [II] spostare this.state al posto di action.payload
-		return this.dispatchMap[action.type](this.state, action.payload)
+		// [II] spostare gli arg in playload, state, sender
+		return this.dispatchMap[action.type](this.state, action.payload, action.sender)
 	}
 
 	/**

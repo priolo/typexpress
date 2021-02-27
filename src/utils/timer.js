@@ -1,6 +1,7 @@
 
 let timeoutIDs = {};
 
+
 export function debounce(name, callback, delay) {
 	if (delay == 0) {
 		callback.apply(this, null);
@@ -13,7 +14,6 @@ export function debounce(name, callback, delay) {
 		}, delay);
 	}
 }
-
 
 /**
  * crea una pausa async

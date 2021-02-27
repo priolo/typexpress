@@ -1,6 +1,8 @@
 import { RootService } from "../RootService"
 import { ConfActions } from "../node/NodeConf"
-import { nodeToJson, nodeMap } from "../utils"
+import { nodeToJson, nodeMap, nodePath } from "../utils"
+import { PathFinder } from "../path/PathFinder";
+import { INode } from "../node/INode";
 
 
 let root;
@@ -92,3 +94,9 @@ test("nodeMap", async () => {
 	} )
 })
 
+test("nodePath", async () => {
+	const pathFind = "/child1/child1.2"
+	const node = new PathFinder(root).getNode<INode>(pathFind)
+	const path = nodePath(node)
+	expect(path).toBe(pathFind)
+})

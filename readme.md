@@ -280,3 +280,40 @@ Per il momento c'e' solo il supporto a Typeorm (il nome "Typexpress" viene da li
 ### Mi hai annoiato con sti elenchi puntati! Dimmi riguardo le sessioni.
 ;-( mbeh quelli li gestisci con con JWT
 
+
+
+## Ciclo vita events
+Chiamata PRIMA della creazione dei PROPRI CHILDREN
+protected async onInit(): Promise<void> { }
+
+Chiamata DOPO la creazione dei PROPRI CHILDREN
+protected async onInitAfter(): Promise<void> { }
+
+Chiamato dopo il comando STOP e prima della rimozione del nodo dall'albero
+protected async onDestroy(): Promise<void> { }
+
+
+
+
+## Features
+
+### Tree structure
+I nodi sono strutturati ad albero per cui è sempre possibile recuperare un NODE tramite il suo "path"
+
+### State
+ogni node ha uno stato interno
+(?history)
+
+### Dispatch
+i nodi hanno un set di ACTIONs che possono essere chiamate tramite la loro path
+questi messaggi vengono recapitati dal Bus
+
+### Events
+un nodo puo' rimanere in ascolto su un altro nodo sugli eventi che genera quest'ultimo
+
+
+## roadmap
+
+### Portals
+permettono di creare servizi che possono far comunicare nodi in diverse posizioni sulla rete
+per creare facilmente microservizi

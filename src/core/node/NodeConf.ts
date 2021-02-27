@@ -2,6 +2,7 @@ import { NodeState } from "./NodeState";
 import FarmService from "../../services/farm";
 import { PathFinder } from "../path/PathFinder";
 import { INode } from "./INode";
+import { nodeForeach } from "../utils";
 
 
 export enum ConfActions {
@@ -17,7 +18,7 @@ export enum ConfActions {
  */
 export class NodeConf extends NodeState {
 
-	constructor(name: string, conf?: any) {
+	constructor(name?: string, conf?: any) {
 		super(name)
 		if (conf) this.dispatch({ type: ConfActions.START, payload: conf })
 	}
@@ -59,6 +60,14 @@ export class NodeConf extends NodeState {
 
 		// inizializzo questo nodo dopo la creazione dei child
 		await this.onInitAfter()
+
+		// se questo nodo è il nodo "root" allora richiama ricorsivamente tutti i nodi
+		// per chiamare l'evento onInitFinish
+		if ( this.parent == null ) {
+			nodeForeach(this, (n)=>{
+				if ( n instanceof NodeConf ) (<NodeConf>n).onInitFinish()
+			})
+		}
 	}
 	/**
 	 * Dato un array di "conf" costruisce i nodi corrispondenti
@@ -85,18 +94,6 @@ export class NodeConf extends NodeState {
 	}
 
 	/**
-	 * Chiamata PRIMA della creazione dei CHILDREN
-	 * @param conf 
-	 */
-	protected async onInit(): Promise<void> { }
-
-	/**
-	 * Chiamata DOPO la creazione dei CHILDREN
-	 * @param conf 
-	 */
-	protected async onInitAfter(): Promise<void> { }
-
-	/**
 	 * Quando questo NODE deve essere distrutto
 	 */
 	private async nodeDestroy(): Promise<void> {
@@ -108,6 +105,21 @@ export class NodeConf extends NodeState {
 		await this.onDestroy()
 		this.parent?.removeChild(this)
 	}
+
+	/**
+	 * Chiamata PRIMA della creazione dei CHILDREN
+	 */
+	protected async onInit(): Promise<void> { }
+
+	/**
+	 * Chiamata DOPO la creazione dei CHILDREN
+	 */
+	protected async onInitAfter(): Promise<void> { }
+
+	/**
+	 * Chiamata DOPO la creazione di tutti i children
+	 */
+	protected async onInitFinish(): Promise<void> { }
 
 	/**
 	 * chiamato DOPO aver distrutto i CHILDREN

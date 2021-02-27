@@ -1,3 +1,4 @@
+import { nodeParents } from "../utils"
 import { INode } from "../node/INode"
 import { PathFinderList } from "./PathFinderList"
 
@@ -5,6 +6,7 @@ import { PathFinderList } from "./PathFinderList"
 
 export class PathFinder {
 	constructor(node: INode) {
+		if ( node==null ) throw new Error("PathFinder:constructor:argument:invalid")
 		this.node = node
 	}
 
@@ -42,8 +44,6 @@ export class PathFinder {
 		return nextPathFinder ? nextPathFinder.path(nextPath) : null
 	}
 
-	
-
 	/**
 	 * Come "path" ma restituisce direttamente il "node" tipizzato
 	 * @param p 
@@ -58,15 +58,13 @@ export class PathFinder {
 	private getChildren(): PathFinderList {
 		return new PathFinderList(this.node.children);
 	}
- 
+
 	/**
 	 * restituisce la root del nodo corrente (dentro PathFinder)
 	 */ 
 	private getRoot(): PathFinder {
-		let current = this.node;
-		while (current.parent != null) {
-			current = current.parent;
-		}
-		return new PathFinder(current)
+		const root = nodeParents(this.node)
+		return new PathFinder(root)
 	}
+	
 }

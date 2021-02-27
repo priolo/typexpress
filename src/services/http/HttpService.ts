@@ -47,6 +47,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		// );
 		//this.app.use(cors())
 
+		//[II] da sistemare la gestione del render
 		if (template == "handlebars") {
 			var exphbs = require('express-handlebars');
 			this.app.engine('.hbs', exphbs({

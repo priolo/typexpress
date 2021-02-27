@@ -1,7 +1,7 @@
 import { ServiceBase } from "./ServiceBase"
 import FarmService from "../services/farm"
 import { ConfActions } from "./node/NodeConf"
-import { EmitterService } from "services/notifier/EmitterService"
+import { ErrorService } from "../services/error/ErrorService"
 
 
 /**
@@ -35,7 +35,9 @@ export class RootService extends ServiceBase {
 
 		// services base
 		this.addChild(new FarmService())
-		//this.addChild(new EmitterService())
+		const error = new ErrorService()
+		error.dispatch({type:ConfActions.START})
+		this.addChild(error)
 
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {

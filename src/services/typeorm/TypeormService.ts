@@ -1,8 +1,9 @@
 import { createConnection, Connection, EntitySchema } from "typeorm";
 import path from "path"
 import { ServiceBase } from "../../core/ServiceBase";
-import {NodeState} from "../../core/node/NodeState";
 import { TypeormRepoService } from "./TypeormRepoService";
+import { Bus } from "../../core/path/Bus";
+import { ErrorServiceActions } from "../error/ErrorService";
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
 
@@ -45,7 +46,6 @@ export class TypeormService extends ServiceBase {
 
 
 	protected async onInitAfter(): Promise<void> {
-		await super.onInitAfter()
 		let { typeorm, schemas } = this.state
 
 		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN
@@ -66,7 +66,14 @@ export class TypeormService extends ServiceBase {
 
 		// creo la connessione
 		this.setState({typeorm})
-		this._connection = await createConnection(typeorm)
+
+		try {		
+			this._connection = await createConnection(typeorm)
+		} catch ( e ) {
+			new Bus(this, "/error").dispatch({type: ErrorServiceActions.NOTIFY, payload: e})
+		}
+
+		await super.onInitAfter()
 	}
 
 	protected async onDestroy(): Promise<void> {
