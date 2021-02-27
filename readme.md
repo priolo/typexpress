@@ -284,10 +284,18 @@ Per il momento c'e' solo il supporto a Typeorm (il nome "Typexpress" viene da li
 
 ## Ciclo vita events
 Chiamata PRIMA della creazione dei PROPRI CHILDREN
+[sostituire con]: onCreate
 protected async onInit(): Promise<void> { }
 
 Chiamata DOPO la creazione dei PROPRI CHILDREN
+[sostituire con]: onCreateAfter
 protected async onInitAfter(): Promise<void> { }
+
+[da fare]: chiamato per prima di inizializzare il nodo (e i children)
+protected async onInitBefore(): Promise<void> { }
+
+[da fare]: chiamato per inizializzare il nodo (e i children)
+protected async onInit(): Promise<void> { }
 
 Chiamato dopo il comando STOP e prima della rimozione del nodo dall'albero
 protected async onDestroy(): Promise<void> { }
@@ -313,6 +321,9 @@ un nodo puo' rimanere in ascolto su un altro nodo sugli eventi che genera quest'
 
 
 ## roadmap
+
+### auto-npm install
+se un service ha necessità di un  pacchetto npm deve essere possibile istallarlo in automatico
 
 ### Portals
 permettono di creare servizi che possono far comunicare nodi in diverse posizioni sulla rete

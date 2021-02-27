@@ -46,6 +46,10 @@ test("nodeToJson", async () => {
 				children: [],
 			},
 			{
+				name: "error",
+				children: [],
+			},
+			{
 				name: "child1",
 				children: [
 					{ name: "child1.1", children: [] },
@@ -75,6 +79,10 @@ test("nodeMap", async () => {
 		figli: [
 			{
 				nome: "farm",
+				figli: [],
+			},
+			{
+				nome: "error",
 				figli: [],
 			},
 			{

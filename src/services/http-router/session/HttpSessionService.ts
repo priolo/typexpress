@@ -9,7 +9,7 @@ import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
 import session from 'express-session'
 import {TypeormService} from "../../typeorm/TypeormService"
 import { TypeormStore } from "connect-typeorm";
-
+import { SessionEntity } from "./SessionEntity"
 
 /**
  * middleware 
@@ -32,12 +32,24 @@ export class HttpSessionService extends HttpRouterServiceBase {
         }
     }
 
+    private store:any = null
+
     protected async onInitFinish(): Promise<void> {
-        const { typeorm } = this.state 
-        if ( !typeorm ) return
-        debugger
-        const typeormService = new PathFinder(this).getNode<TypeormService>(typeorm)
-        debugger
+        const { typeorm, options } = this.state 
+
+        if ( typeorm ) {
+            const nodeTypeorm = new PathFinder(this).getNode<TypeormService>(typeorm)
+            const connection = nodeTypeorm.connection
+            const repository = connection.getRepository(SessionEntity)
+            options.store = new TypeormStore({
+                cleanupLimit: 2,
+                limitSubquery: false, // If using MariaDB.
+                ttl: 86400
+            }).connect(repository)
+        }
+        
+        this.store = session(options)
+
         // new Bus(this, typeorm).dispatch({ 
         //     type: ServiceBaseActions.REGISTER, 
         //     payload: ServiceBaseEvents.INIT_AFTER,
@@ -50,7 +62,6 @@ export class HttpSessionService extends HttpRouterServiceBase {
 
         if ( typeorm && event.source==typeorm && event.name==ServiceBaseEvents.INIT_AFTER ) {
             console.log( "connection ok!!" )
-            debugger
         }
     }
 
@@ -60,21 +71,13 @@ export class HttpSessionService extends HttpRouterServiceBase {
 
         const router = express.Router()
         
-        const store = session(options)
-
+ 
         router.use(async (req,res,next)=>{
-            // if (typeorm) {
-            //     const nodeTypeorm = new PathFinder(this).getNode<TypeormService>(typeorm)
-            //     const connection = nodeTypeorm.connection
-            //     const repository = connection.getRepository(Session)
-
-            //     options.store = new TypeormStore({
-            //         cleanupLimit: 2,
-            //         limitSubquery: false, // If using MariaDB.
-            //         ttl: 86400
-            //     }).connect(repository)
-            // }
-            store(req,res,next)
+            if ( this.store ) {
+                this.store(req,res,next)
+                return
+            }
+            next()
         })
 
         return router

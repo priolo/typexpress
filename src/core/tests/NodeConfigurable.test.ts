@@ -1,9 +1,12 @@
+import { NodeState } from "core/node/NodeState"
+import FarmService from "../../services/farm"
 import { RootService } from "../../core/RootService"
 import { ConfActions, NodeConf } from "../node/NodeConf"
 
 
 test("set state and build", async () => {
-	const root = new RootService("root")
+	const root = new NodeConf("root")
+	root.addChild(new FarmService())
 	await root.dispatch({
 		type: ConfActions.START,
 		payload: {
@@ -46,7 +49,8 @@ test("inheritance of config", async () => {
 			propB: "B", propOver: "B", propOver2: "B"
 		}}
 	}
-	const root = new RootService("root")
+	const root = new NodeConf("root")
+	root.addChild(new FarmService())
 	await root.dispatch({
 		type: ConfActions.START,
 		payload: {

@@ -47,7 +47,7 @@ export class ServiceBase extends NodeConf {
 
 	private listeners: IListener[] = []
 
-	private register(listener:IListener): void {
+	protected register(listener:IListener): void {
 		const index = this.listeners.findIndex(l => listenersIsEqual(l, listener))
 		if (index != -1) return
 		this.listeners.push(listener)

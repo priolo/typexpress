@@ -3,7 +3,7 @@ import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 
 @Entity()
-export class Session implements ISession {
+export class SessionEntity implements ISession {
   @Index()
   @Column("bigint")
   public expiredAt = Date.now();
