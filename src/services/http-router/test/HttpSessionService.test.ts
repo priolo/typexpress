@@ -10,17 +10,22 @@ import { HttpSessionService } from "../session/HttpSessionService";
 import TypeormService from "../../typeorm";
 import { SessionEntity } from "../session/SessionEntity"
 
-let root = null
-const dbPath = path.join(__dirname, "/database.sqlite")
+
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const axiosIstance = axios.create({ baseURL: "http://localhost:5001", withCredentials: true });
+const PORT = 5005
+const dbPath = path.join(__dirname, "/database.sqlite")
+const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+
+
+let root = null
+
 
 
 beforeAll(async () => {
 	root = await RootService.Start([
 		{
 			class: "http",
-			port: 5001,
+			port: PORT,
 			children: [
 				{
 					name: "mem-session",

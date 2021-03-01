@@ -7,6 +7,7 @@ import path from "path"
 import { ConfActions } from "../../../core/node/NodeConf"
 
 let root, res
+const PORT = 5008
 
 beforeAll(async() => {
 	root = new RootService()
@@ -16,7 +17,7 @@ beforeAll(async() => {
 			children: [
 				{
 					class: "http",
-					port: 5001,
+					port: PORT,
 					children: [
 						{
 							class: "http-static",
@@ -42,18 +43,18 @@ afterAll(async() => {
 })
 
 test("accesso a PUBLIC", async () => {
-	res = await axios.get("http://localhost:5001/public/text.js")
+	res = await axios.get(`http://localhost:${PORT}/public/text.js`)
 	expect(res.data).toContain<string>('let _test = "pippo"')
 })
 
 test("accesso a SPA con url inesistente", async () => {
-	res = await axios.get("http://localhost:5001/spa/not/exist/url/spa.spa")
+	res = await axios.get(`http://localhost:${PORT}/spa/not/exist/url/spa.spa`)
 	expect(res.data).toContain<string>('let _test = "pippo"')
 })
 
 test("url inesistente in PUBLIC da errore", async () => {
 	try {
-		res = await axios.get("http://localhost:5001/public/not/exist/url/spa.spa")
+		res = await axios.get(`http://localhost:${PORT}/public/not/exist/url/spa.spa`)
 	} catch ( e ) {
 		res = e
 	}

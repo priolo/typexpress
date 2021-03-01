@@ -25,6 +25,7 @@ export class User {
 
 const dbPath = `${__dirname}/database.sqlite`
 let root, user1, user2, users
+const PORT = 5002
 
 beforeAll(async () => {
 
@@ -37,7 +38,7 @@ beforeAll(async () => {
 			children: [
 				{
 					class: "http",
-					port: 5001,
+					port: PORT,
 					children: [
 						{
 							name: "user",

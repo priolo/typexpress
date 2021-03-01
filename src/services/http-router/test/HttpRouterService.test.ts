@@ -25,78 +25,75 @@ class TestRoute extends HttpRouterService {
 }
 
 let root = null
+const PORT = 5001
 
-beforeEach(async () => {
-	root = new RootService()
-	await root.dispatch({
-		type: ConfActions.START,
-		payload: {
+beforeAll(async () => {
+	root = await RootService.Start(
+		{
+			class: "http",
+			port: PORT,
 			children: [
 				{
-					class: "http",
-					port: 5001,
+					name: "test",
+					class: TestRoute,
+					path: "/admin",
+					routers: [
+						{ path: "/user", verb: "get", method: (req, res, next) => res.json({ response: "user-ok" }) }
+					]
+				},
+				{
+					name: "test4",
+					class: "http-router",
+					path: "/async",
+					routers: [
+						{
+							path: "/", verb: "get", method: async (req, res, next) => {
+								await new Promise((rs, rj) => setTimeout(rs, 300))
+								res.json({ response: "async" })
+							}
+						},
+					],
+				},
+				{
+					class: "http-router",
+					path: "/sub",
 					children: [
 						{
-							name: "test",
+							name: "test1",
 							class: TestRoute,
-							path: "/admin",
+							path: "/route1",
+						},
+						{
+							name: "test2",
+							class: TestRoute,
+							path: "/route2",
+						},
+						{
+							name: "test3",
+							class: "http-router",
+							path: "/route3",
+							headers: { "accept": "json" },
 							routers: [
-								{ path: "/user", verb: "get", method: (req, res, next) => res.json({ response: "user-ok" }) }
+								{ path: "/test", verb: "get", method: (req, res, next) => res.json({ response: "with_header" }) },
 							]
 						},
 						{
 							name: "test4",
 							class: "http-router",
-							path: "/async",
+							path: "/route3",
 							routers: [
-								{ path: "/", verb: "get", method: async (req, res, next) => {
-									await new Promise( (rs, rj)=>setTimeout(rs,300) )
-									res.json({ response: "async" })
-								}},
-							],
-						},
-						{
-							class: "http-router",
-							path: "/sub",
-							children: [
-								{
-									name: "test1",
-									class: TestRoute,
-									path: "/route1",
-								},
-								{
-									name: "test2",
-									class: TestRoute,
-									path: "/route2",
-								},
-								{
-									name: "test3",
-									class: "http-router",
-									path: "/route3",
-									headers: {"accept":"json"},
-									routers: [
-										{ path: "/test", verb: "get", method: (req, res, next) => res.json({ response: "with_header" }) },
-									]
-								},
-								{
-									name: "test4",
-									class: "http-router",
-									path: "/route3",
-									routers: [
-										{ path: "/test", verb: "get", method: (req, res, next) => res.json({ response: "without_header" }) },
-									]
-								},
+								{ path: "/test", verb: "get", method: (req, res, next) => res.json({ response: "without_header" }) },
 							]
-						}
+						},
 					]
 				}
 			]
 		}
-	})
+	)
 })
 
-afterEach(async () => {
-	await root.dispatch({ type: ConfActions.STOP })
+afterAll(async () => {
+	await RootService.Stop(root)
 })
 
 
@@ -106,30 +103,32 @@ test("su creazione", async () => {
 	expect(test instanceof TestRoute).toBeTruthy()
 })
 test("request on route", async () => {
-	const { data } = await axios.get("http://localhost:5001/admin/user")
+	const { data } = await axios.get(`http://localhost:${PORT}/admin/user`)
 	expect(data).toEqual({ response: "user-ok" })
 })
 test("request on subroute", async () => {
-	const { data: d2 } = await axios.get("http://localhost:5001/sub/route2/test")
+	const { data: d2 } = await axios.get(`http://localhost:${PORT}/sub/route2/test`)
 	expect(d2).toEqual({ response: "test-ok" })
 })
 
 test("request on subroute with header", async () => {
 	let res = await axios.get(
-		"http://localhost:5001/sub/route3/test",
+		`http://localhost:${PORT}/sub/route3/test`,
 	)
 	expect(res.data).toEqual({ response: "with_header" })
 
 	res = await axios.get(
-		"http://localhost:5001/sub/route3/test",
-		{headers: { 
-			"accept":'' 
-		}}
+		`http://localhost:${PORT}/sub/route3/test`,
+		{
+			headers: {
+				"accept": ''
+			}
+		}
 	)
 	expect(res.data).toEqual({ response: "without_header" })
 })
 
 test("request async", async () => {
-	const { data: d2 } = await axios.get("http://localhost:5001/async")
+	const { data: d2 } = await axios.get(`http://localhost:${PORT}/async`)
 	expect(d2).toEqual({ response: "async" })
 })

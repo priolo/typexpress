@@ -42,8 +42,9 @@ class TestRoute extends HttpRouterRestServiceBase {
 }
 
 let root = null
+const PORT = 5003
 
-beforeEach(async()=>{
+beforeAll(async()=>{
 	root = new RootService()
 	await root.dispatch({
 		type: ConfActions.START,
@@ -51,7 +52,7 @@ beforeEach(async()=>{
 			children: [
 				{
 					class: "http",
-					port: 5001,
+					port: PORT,
 					children: [
 						{
 							name: "test",
@@ -65,7 +66,7 @@ beforeEach(async()=>{
 	})
 })
 
-afterEach(async ()=> {
+afterAll(async ()=> {
 	await root.dispatch({ type: ConfActions.STOP })
 })
 
@@ -74,18 +75,18 @@ test("su creazione", async () => {
 	expect(test instanceof TestRoute).toBeTruthy()
 	axios.defaults.adapter = require('axios/lib/adapters/http')
 
-	let res = await axios.get("http://localhost:5001/user")
+	let res = await axios.get(`http://localhost:${PORT}/user`)
 	expect(res.data).toEqual(users)
 
-	res = await axios.get("http://localhost:5001/user/2")
+	res = await axios.get(`http://localhost:${PORT}/user/2`)
 	expect(res.data).toEqual(users.find(u=>u.id=="2"))
 
-	res = await axios.post("http://localhost:5001/user", { name: "Raffaella" })
+	res = await axios.post(`http://localhost:${PORT}/user`, { name: "Raffaella" })
 	expect(res.data).toEqual(users[users.length-1])
 
-	res = await axios.post("http://localhost:5001/user", { name: "Giovanni", id: "3" })
+	res = await axios.post(`http://localhost:${PORT}/user`, { name: "Giovanni", id: "3" })
 	expect(users.find(u=>u.id=="3").name).toEqual("Giovanni")
 
-	res = await axios.delete("http://localhost:5001/user/3")
+	res = await axios.delete(`http://localhost:${PORT}/user/3`)
 	expect(users.findIndex(u=>u.id=="3")).toEqual(-1)
 })

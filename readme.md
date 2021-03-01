@@ -5,228 +5,172 @@
 Allow the creation of a NodeJs server
 Simply with a basic JSON configuration
 
+## WHY?
+
+
 
 ## INSTALLATION
 
 istalla "typexpress" nel progetto
 `npm typexpress`
 
-
-
 ## DEV
 
 compila nella cartella `/dist` e rimane in "watch" per nuove modifiche
 `npm run build-watch`
 
-
-
 ## QUICK START
 
-### Crea subito il tuo server http
+- Voglio un semplice server http  
+... diciamo con un route `/myroute`
 
-`src/start.js`
+[sandbox](https://codesandbox.io/s/http-router-1-z203w?file=/src/index.js)
+
 ```js
-import path from "path"
-import { ConfActions } from "typexpress/dist/core/node/NodeConf";
-import { RootService } from "typexpress/dist/core/RootService"
+const {RootService} = require("typexpress")
 
-RootService.Start( {
-	class: "http",
-	port: 5001,
-	children: [
-		{
-			class: "http-static",
-			dir: path.join(__dirname, "../public"),
-			path: "/",
-		},						
-	]
-})
-```
-
-`public/index.html`
-```js
-<!DOCTYPE html>
-<html lang="en">
-  	<head>
-		<meta charset="utf-8">
-		<title>Typexpress</title>
-	</head>
-	<body>
-		Ciao Word!
-	</body>
-</html>
-```
-
-fa partire un server http
-ed espone a in "public" 
-la cartella "../public" 
-alla quale si accede dall'url "/"
-
-
-### Mettiamo che vuoi mandare delle informazioni
-E che ci vuole
-
-Fai la pagina con il FORM:
-
-`public/index.html`
-```js
-<!DOCTYPE html>
-<html lang="en">
-	<body>
-		<form action="/hello" method="POST">
-			<label for="fname">Write your name:</label><br>
-			<input type="text" id="name" name="name" value="John"><br><br>
-			<input type="submit" value="Submit">
-		</form>
-	</body>
-</html>
-```
-
-... e il server con l'API "/hello" sulla chiamta POST
-
-`src/start.js`
-```js
 RootService.Start({
 	class: "http",
-	port: 5001,
+	port: 8080,
 	children: [
-		{
-			class: "http-static",
-			dir: path.join(__dirname, "../public"),
-			path: "/",
-			//spaFile: "index.html",
-		},	
 		{
 			class: "http-router",
-			path: "/hello",
-			routers: [
-				{ path: "/", verb: "post", method: (req, res, next) => {
-					res.send(`<p>hey ${req.body.name}</p>`)
-				}},
-			],
-		}
-	]
-})
-```
-
-### BELLO... ma, andiamo, non posso creare pagine HTML cosi !!! Mi serve un... "Template Engine" !
-ok ok automaticamente c'e' il supporto a handlebars
-
-`src/start.js`
-```js
-RootService.Start({
-	class: "http",
-	port: 5001,
-	template: "handlebars",
-	children: [
-		{
-			class: "http-static",
-			dir: path.join(__dirname, "../public"),
-			path: "/",
-		},
-		{
-			class: "http-router",
-			path: "/random",
-			routers: [
-				{
-					path: "/", verb: "post", method: (req, res, next) => {
-						
-						res.render("hi", { name: req.body.name })
-					}
-				},
-			],
-		},
-	]
-})
-```
-
-`views/hi.hbs`
-```
-Hello  {{name}}
-```
-`layout/main.hbs`
-```html
-<!DOCTYPE html>
-<html lang="en">
-	<body>
-		{{body}}
-	</body>
-</html>
-```
-
-### E se voglio una directory navigabile?
-c'e'! Mettiamo che vuoi rendere navigabile "dir"
-
-`src/start.js`
-```js
-RootService.Start({
-	class: "http",
-	port: 5001,
-	template: "handlebars",
-	children: [
-		{
-			class: "http-static",
-			dir: path.join(__dirname, "../dir"),
-			path: "/dir",
-			index: true,
-		}
-	]
-})
-```
-
-### Aspetta! Ma io di solito faccio app in REACT con CRA!
-Puoi creare un entrypoint per SPA
-
-`src/start.js`
-```js
-RootService.Start({
-	class: "http",
-	port: 5001,
-	template: "handlebars",
-	children: [
-		{
-			class: "http-static",
-			dir: path.join(__dirname, "../../client/build"),
-			path: "/dir",
-			index: true,
-		}
-	]
-})
-```
-
-### He si... ma poi per le API?
-E ci metti anche quelle nella giostra
-
-`src/start.js`
-```js
-RootService.Start({
-	class: "http",
-	port: 5001,
-	template: "handlebars",
-	children: [
-		{
-			class: "http-static",
-			dir: path.join(__dirname, "../../client/build"),
-			path: "/dir",
-			index: true,
-		},
-		{
-			class: "http-router",
-			path: "/api",
-			routers: [{ 
-				path: "/faicose", 
-				verb: "get", 
-				method: (req, res, next) => res.json({ response: "ecco!" }) 
+			path: "/myroute",
+			routers: [{
+				verb: "get",
+				method: (req, res, next) => {
+					res.json({response: "hello world"})
+				}
 			}]
 		},
 	]
 })
 ```
 
-### E il DB? Dove sta?
--.- eccolo:
+https://z203w.sse.codesandbox.io/myroute
 
-`src/start.js`
+---
+
+- No aspetta!  
+Voglio un semplice server http statico  
+che punta alla cartella: `/public_static`  
+con la rotta: `/pub`  
+
+[sandbox](https://codesandbox.io/s/http-static-1-sj9bz?file=/src/index.js)
+
+```js
+const {RootService} = require("typexpress")
+const path = require("path")
+
+RootService.Start([
+	{
+		class: "http",
+		port: 8080,
+		children: [
+			{
+				class: "http-static",
+				// local directory in file-system
+				dir: path.join(__dirname, "../public_static"),
+				// path of routing
+				path: "/pub"
+			}
+		]
+	}
+])
+```
+
+https://sj9bz.sse.codesandbox.io/
+
+---
+
+- ... e con visualizzazione dei file nella rotta `/index`
+
+[sandbox](https://codesandbox.io/s/http-static-index-682xm?file=/src/index.js)
+
+https://682xm.sse.codesandbox.io/index
+
+---
+
+- Ma mettiamo che nella cartella static  
+ho una form html  
+e voglio mandare delle informazioni?
+
+[sandbox](https://codesandbox.io/s/http-form-1-cc08y?file=/src/index.js)
+
+```js
+const {RootService} = require("typexpress")
+const path = require("path")
+
+RootService.Start([
+	{
+		class: "http",
+		port: 8080,
+		children: [
+			{
+				class: "http-static",
+				dir: path.join(__dirname, "../public"),
+				path: "/"
+			},
+			{
+				class: "http-router",
+				path: "/greet",
+				routers: [{
+					verb: "post",
+					method: async (req, res, next) => {
+						res.send(`<p>Hallo ${req.body.name}!</p>`)
+					}
+				}]
+			},
+			
+		]
+	}
+])
+```
+
+https://cc08y.sse.codesandbox.io/
+
+---
+
+- BELLO... ma, andiamo, non posso creare pagine HTML cosi !!!   
+Mi serve un... "Template Engine"
+
+- Ok ok automaticamente c'e' il supporto a [handlebars](https://github.com/express-handlebars/express-handlebars)  
+*(supporto da migliorare ed estendere)*
+
+[sandbox](https://codesandbox.io/s/http-form-handlebars-z2o31?file=/src/index.js:130-153)
+
+---
+
+- Aspetta! Aspetta! Ma io di solito faccio app in REACT con CRA!
+- allora puoi creare un entrypoint per SPA
+
+[sandbox](https://codesandbox.io/s/http-static-spa-tbq4l)
+
+```js
+const {RootService} = require("typexpress")
+const path = require("path")
+
+RootService.Start({
+	class: "http",
+	port: 8080,
+	children: [
+		{
+			class: "http-static",
+			dir: path.join(__dirname, "../build"),
+			path: "/cra",
+			spaFile: "index.html",
+		}
+	]
+})
+```
+
+https://tbq4l.sse.codesandbox.io/cra
+
+---
+
+- Si vabbe' pero' i dati poi dove li memorizzo?
+- Mbeh usi [Typeorm](https://typeorm.io/#/) e li metti in un DB... che ne so... facciamo sqlite!?
+
 ```js
 RootService.Start({
 	class: "http",
@@ -237,7 +181,6 @@ RootService.Start({
 			class: "http-static",
 			dir: path.join(__dirname, "../../client/build"),
 			path: "/dir",
-			index: true,
 		},
 		{
 			class: "http-router",

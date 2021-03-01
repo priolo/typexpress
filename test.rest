@@ -1,0 +1,3 @@
+
+
+GET https://z203w.sse.codesandbox.io/async

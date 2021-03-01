@@ -13,10 +13,11 @@ import { Bus } from "../../../core/path/Bus";
 import { JWTActions } from "../../jwt/JWTRepoService";
 
 
-
+axios.defaults.adapter = require('axios/lib/adapters/http')
 const dbPath = `${__dirname}/database.sqlite`
 let root = null
 let user1, user2, token
+const PORT = 5001
 
 
 beforeAll(async () => {
@@ -30,7 +31,7 @@ beforeAll(async () => {
 			children: [
 				{
 					class: "http",
-					port: 5001,
+					port: PORT,
 					children: [
 						{
 							class: "http-router",
@@ -91,11 +92,10 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await root?.dispatch({ type: ConfActions.STOP })
-	//if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
 })
 
 test("creazione", async () => {
-	axios.defaults.adapter = require('axios/lib/adapters/http')
 	const rjwt = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
 	expect(rjwt).toBeInstanceOf(HttpJWTUserService)
 })
@@ -110,7 +110,7 @@ test("crea due USER", async () => {
 test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
 	let err = null
 	try {
-		await axios.get( `http://localhost:5001/user`)
+		await axios.get( `http://localhost:${PORT}/user`)
 	} catch ( e ) {
 		err = e
 	}
@@ -118,14 +118,14 @@ test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
 })
 
 test("simulo il login e ricavo il token", async () => {
-	const { data } = await axios.get(`http://localhost:5001/user/login/${user2.id}`)
+	const { data } = await axios.get(`http://localhost:${PORT}/user/login/${user2.id}`)
 	token = data.token
 	expect(typeof token).toBe("string")
 })
 
 test("se accedo con il token nei cookies non mi da errore", async () => {
 	const {data:reuser2} = await axios.get(
-		`http://localhost:5001/user`, 
+		`http://localhost:${PORT}/user`, 
 		{ headers: { Cookie: `token=${token};` } }
 	)
 	expect(reuser2).toEqual(user2)

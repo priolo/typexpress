@@ -14,6 +14,7 @@ export class TypeormService extends ServiceBase {
 		return {
 			...super.defaultConfig,
 			name: "typeorm",
+			// [II] sostituire con "options"
 			// https://typeorm.io/#/connection-options
 			typeorm: {
 				"type": "sqlite",

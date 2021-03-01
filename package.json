@@ -28,7 +28,7 @@
 		"test-watch": "jest dist --watch",
 		"example": "tsc && node dist/example.js",
 		"admin": "node dist/services/http-admin/start.js",
-		"pub": "tsc && npm publich"
+		"pub": "tsc && npm publish"
 	},
 	"dependencies": {
 		"axios": "^0.21.1",
