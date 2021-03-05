@@ -28,8 +28,11 @@ let root, user1, user2, users
 const PORT = 5002
 
 beforeAll(async () => {
-
-	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	try {
+		if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	} catch (e) {
+		console.log(e)
+	}
 
 	root = new RootService()
 	await root.dispatch({
@@ -70,7 +73,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await root.dispatch({ type: ConfActions.STOP })
-	//if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	try {
+		if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	} catch (e) {
+		console.log(e)
+	}
 })
 
 test("su creazione", async () => {
@@ -79,50 +86,50 @@ test("su creazione", async () => {
 })
 
 test("post: nuovo USER 1", async () => {
-	const { data } = await axios.post("http://localhost:5001/user", 
+	const { data } = await axios.post("http://localhost:5001/user",
 		{ firstName: "Raffaella", lastName: "Iorio", age: 44 }
 	)
 	user1 = data
 	expect(user1).toEqual(
-		{ id:1, firstName: "Raffaella", lastName: "Iorio", age: 44 }
+		{ id: 1, firstName: "Raffaella", lastName: "Iorio", age: 44 }
 	)
 })
 
 test("post: nuovo USER 2", async () => {
-	const { data } = await axios.post("http://localhost:5001/user", 
+	const { data } = await axios.post("http://localhost:5001/user",
 		{ firstName: "Ivano", lastName: "Iorio", age: 45 }
 	)
 	user2 = data
-	expect( user2 ).toEqual(
-		{ id:2, firstName: "Ivano", lastName: "Iorio", age: 45 }
+	expect(user2).toEqual(
+		{ id: 2, firstName: "Ivano", lastName: "Iorio", age: 45 }
 	)
 })
 
 test("index: prelevo tutti gli USER", async () => {
-	const {data}= await axios.get("http://localhost:5001/user")
+	const { data } = await axios.get("http://localhost:5001/user")
 	users = data
-	expect(users).toEqual([user1,user2])
+	expect(users).toEqual([user1, user2])
 })
 
 test("get: prelevo USER 2", async () => {
-	const {data:user2_copy} = await axios.get("http://localhost:5001/user/2")
+	const { data: user2_copy } = await axios.get("http://localhost:5001/user/2")
 	expect(user2_copy).toEqual(user2)
 })
 
 test("post: modifico USER 2", async () => {
-	let {data:user2_modify} = await axios.post(
-		"http://localhost:5001/user", 
-		{ id:2, firstName: "Giovanni" }
+	let { data: user2_modify } = await axios.post(
+		"http://localhost:5001/user",
+		{ id: 2, firstName: "Giovanni" }
 	)
 	user2_modify = { ...user2, ...user2_modify }
 	expect(user2_modify.firstName).not.toEqual(user2.firstName)
-	const {data:user2_current} = await axios.get("http://localhost:5001/user/2")	
+	const { data: user2_current } = await axios.get("http://localhost:5001/user/2")
 	expect(user2_current).toEqual(user2_modify)
 	expect(user2_current).not.toEqual(user2)
 })
 
-test("delete: cancello USER 2", async () => {	
+test("delete: cancello USER 2", async () => {
 	await axios.delete("http://localhost:5001/user/2")
-	const {data:user2_del} = await axios.get("http://localhost:5001/user/2")
+	const { data: user2_del } = await axios.get("http://localhost:5001/user/2")
 	expect(user2_del).toBeNull()
 })

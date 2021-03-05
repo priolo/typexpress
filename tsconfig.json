@@ -20,7 +20,7 @@
     },
     "include": [
         "src/**/*"
-    ],
+, "examples/1/example.ts", "examples/example copy 2.ts"    ],
     // "exclude": [
     //     "node_modules",
     //     "dist",

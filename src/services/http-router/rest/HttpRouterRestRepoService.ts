@@ -17,27 +17,31 @@ export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
     }
 
     protected async getAll(): Promise<any[]> {
-        return await new Bus(this, this.state.repository).dispatch({
+        const { repository } = this.state
+        return await new Bus(this, repository).dispatch({
             type: RepoRestActions.ALL
         })
     }
 
     protected async getById(id: string): Promise<any> {
-        return await new Bus(this, this.state.repository).dispatch({
+        const { repository } = this.state
+        return await new Bus(this, repository).dispatch({
             type: RepoRestActions.GET_BY_ID,
             payload: id
         })
     }
 
     protected async save(entity: any): Promise<any> {
-        return await new Bus(this, this.state.repository).dispatch({
+        const { repository } = this.state
+        return await new Bus(this, repository).dispatch({
             type: RepoRestActions.SAVE,
             payload: entity
         })
     }
 
     protected async delete(id: string): Promise<any> {
-        return await new Bus(this, this.state.repository).dispatch({
+        const { repository } = this.state
+        return await new Bus(this, repository).dispatch({
             type: RepoRestActions.DELETE,
             payload: id
         })

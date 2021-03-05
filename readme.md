@@ -157,61 +157,24 @@ RootService.Start({
 		{
 			class: "http-static",
 			dir: path.join(__dirname, "../build"),
-			path: "/cra",
+			path: "/",		// ATTENZIONE: definire un path necessita una "base dir" nel client!
 			spaFile: "index.html",
 		}
 	]
 })
 ```
 
-https://tbq4l.sse.codesandbox.io/cra
+https://tbq4l.sse.codesandbox.io
 
 ---
 
 - Si vabbe' pero' i dati poi dove li memorizzo?
 - Mbeh usi [Typeorm](https://typeorm.io/#/) e li metti in un DB... che ne so... facciamo sqlite!?
 
+[sandbox](https://codesandbox.io/s/http-static-spa-tbq4l)
+
 ```js
-RootService.Start({
-	class: "http",
-	port: 5001,
-	template: "handlebars",
-	children: [
-		{
-			class: "http-static",
-			dir: path.join(__dirname, "../../client/build"),
-			path: "/dir",
-		},
-		{
-			class: "http-router",
-			path: "/api",
-			routers: [{ 
-				path: "/faicose", 
-				verb: "get", 
-				method: (req, res, next) => res.json({ response: "ecco!" }) 
-			}]
-		},
-		{
-			class: "typeorm",
-			typeorm: {
-				"type": "sqlite",
-				"database": path.join(__dirname, "../../db/database.sqlite"),
-				"synchronize": true,
-				"logging": true,
-				children: [ { 	
-					name: "item", class: "typeorm/repo", 
-					model: {
-						name: "Item",
-						columns: {
-							id: { type: Number, primary: true, generated: true },
-							name: { type: String }
-						}
-					},
-				}]
-			}
-		}
-	]
-})
+
 ```
 
 Ci sono due librerie principali per l'ORM
@@ -219,6 +182,17 @@ Ci sono due librerie principali per l'ORM
 - [Typeorm](https://typeorm.io/)  
 
 Per il momento c'e' solo il supporto a Typeorm (il nome "Typexpress" viene da li)
+
+
+
+
+
+
+
+
+
+
+
 
 ### Mi hai annoiato con sti elenchi puntati! Dimmi riguardo le sessioni.
 ;-( mbeh quelli li gestisci con con JWT

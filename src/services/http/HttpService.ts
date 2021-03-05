@@ -7,13 +7,11 @@ import https from "https"
 import { log, LOG_OPTION } from "../../utils/log"
 import { IHttpRouter } from "./IHttpRouter"
 import cookieParser from 'cookie-parser'
-import session from 'express-session'
 import cors from "cors"
 
 export class HttpService extends ServiceBase implements IHttpRouter {
 
 	private app: Express | null = null
-
 	private server: Server | null = null
 
 	get defaultConfig(): any {
@@ -21,12 +19,19 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			...super.defaultConfig,
 			name: "http",
 			port: 5000,					// porta di ascolto del server
+
 			//// se valorizzato creo un server https
 			// https: {
 			// 	privkey: "privkey.pem", // file path
 			// 	pubcert: "pubcert.pem",	// file path
 			// }
-			//template: "handlebars"
+
+			/// il render da utilizzare per il momento c'e' solo "handlebars"
+			render: null,
+
+			/// le opzioni di express
+			// https://expressjs.com/en/4x/api.html#app.set
+			options: null,
 		}
 	}
 
@@ -34,30 +39,12 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		const { template } = this.state
 
 		this.app = express()
+		this.buildProperties()
 		this.app.use(express.json())	// middleware per contenuti json
 		this.app.use(express.urlencoded({ extended: true }))
 		this.app.use(cookieParser())
-		// this.app.use(
-		// 	session({
-		// 		secret: "a secret string",
-		// 		resave: true,
-		// 		saveUninitialized: false,
-		// 		cookie: { maxAge: 60000 }
-		// 	})
-		// );
 		//this.app.use(cors())
-
-		//[II] da sistemare la gestione del render
-		if (template == "handlebars") {
-			var exphbs = require('express-handlebars');
-			this.app.engine('.hbs', exphbs({
-				//layoutsDir: __dirname + '/views/layouts',
-				extname: '.hbs',
-				//defaultLayout: "layout"
-			}));
-			this.app.set('view engine', '.hbs');
-		}
-
+		this.buildRender()
 		this.server = this.buildServer()
 		await this.listenServer()
 	}
@@ -101,16 +88,38 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		return server
 	}
 
-	private async listenServer(): Promise<void> {
+	private async listenServer(): Promise<http.Server> {
 		const { port } = this.state
-		return new Promise<void>((res, rej) => {
-			this.server.listen(
+		return new Promise<http.Server>((res, rej) => {
+			const listener = this.server.listen(
 				port,
 				() => {
 					log(`HttpService:start:url:[http://localhost:${port}]`, LOG_OPTION.DEBUG)
-					res()
+					res(listener)
 				}
 			)
+		})
+	}
+
+	private buildRender(): void {
+		const { render } = this.state
+		if (!render) return
+		const exphbs = require('express-handlebars')
+
+		// https://github.com/express-handlebars/express-handlebars#api
+		const options = render.options ?? { extname: ".hbs" }
+		const engine = exphbs(options)
+
+		this.app.engine(options.extname, engine)
+		this.app.set('view engine', options.extname);
+	}
+
+	// https://expressjs.com/en/4x/api.html#app.set
+	private buildProperties(): void {
+		const { options } = this.state
+		if (!options) return
+		Object.keys(options).forEach( key => {
+			this.app.set(key, options[key]);
 		})
 	}
 }

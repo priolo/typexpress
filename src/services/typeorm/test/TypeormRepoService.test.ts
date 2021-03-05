@@ -26,8 +26,9 @@ const dbPath = path.join(__dirname, "/database.sqlite")
 let root: RootService = null
 
 beforeAll(async () => {
-	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
-
+	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } 
+	catch (e) { console.log(e) }
+	
 	root = new RootService()
 	await root.dispatch({
 		type: ConfActions.START,
@@ -77,7 +78,7 @@ beforeAll(async () => {
 })
 afterAll(async () => {
 	if (root) await root.dispatch({ type: ConfActions.STOP })
-	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 })
 
 test("USER", async () => {

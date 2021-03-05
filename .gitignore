@@ -6,3 +6,6 @@ admin-db/
 dist/
 _tmp/
 package-lock.json
+
+examples
+src/examples

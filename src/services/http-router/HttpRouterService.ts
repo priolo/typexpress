@@ -43,12 +43,12 @@ export class HttpRouterService extends HttpRouterServiceBase {
 		}
 
 		// ciclo tutti i routers a disposizione e li inserisco nell'oggetto Router
-		routers.forEach((r: IRouteParam) => {
-			let method:IRouteMethod = (typeof r.method === "string")? this[r.method] : r.method
-			if ( !method ) { log(`impossibile creare il nodo`, LOG_OPTION.ERROR, r);  return; }
+		routers.forEach((route: IRouteParam) => {
+			let method:IRouteMethod = (typeof route.method === "string")? this[route.method] : route.method
+			if ( !method ) { log(`impossibile creare il nodo`, LOG_OPTION.ERROR, route);  return; }
 
-			const verb = (r.verb ?? "get").toLocaleLowerCase()
-			router[verb](r.path ?? "/", method.bind(this))
+			const verb = (route.verb ?? "get").toLocaleLowerCase()
+			router[verb](route.path ?? "/", method.bind(this))
 		})
 		
 		return router

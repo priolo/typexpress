@@ -21,8 +21,11 @@ const PORT = 5001
 
 
 beforeAll(async () => {
-
-	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	try {
+		if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	} catch (e) {
+		console.log(e)
+	}
 
 	root = new RootService()
 	await root.dispatch({
@@ -37,14 +40,16 @@ beforeAll(async () => {
 							class: "http-router",
 							path: "/user",
 							routers: [
-								{ path: "/login/:id", method: async function (req, res, next) {
-									res.json({
-										token: await new Bus(this,"/jwt").dispatch({
-											type: JWTActions.ENCODE,
-											payload: req.params.id,
+								{
+									path: "/login/:id", method: async function (req, res, next) {
+										res.json({
+											token: await new Bus(this, "/jwt").dispatch({
+												type: JWTActions.ENCODE,
+												payload: req.params.id,
+											})
 										})
-									})
-								}}
+									}
+								}
 							]
 						},
 						{
@@ -92,7 +97,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
 	await root?.dispatch({ type: ConfActions.STOP })
-	if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	try {
+		if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	} catch (e) {
+		console.log(e)
+	}
 })
 
 test("creazione", async () => {
@@ -101,8 +110,8 @@ test("creazione", async () => {
 })
 
 test("crea due USER", async () => {
-	user1 = await new Bus(root,"/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "priolo" } })
-	user2 = await new Bus(root,"/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "zago" } })
+	user1 = await new Bus(root, "/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "priolo" } })
+	user2 = await new Bus(root, "/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "zago" } })
 	expect(user1).toBeDefined()
 	expect(user2).toBeDefined()
 })
@@ -110,8 +119,8 @@ test("crea due USER", async () => {
 test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
 	let err = null
 	try {
-		await axios.get( `http://localhost:${PORT}/user`)
-	} catch ( e ) {
+		await axios.get(`http://localhost:${PORT}/user`)
+	} catch (e) {
 		err = e
 	}
 	expect(err.response.status).toBe(401)
@@ -124,8 +133,8 @@ test("simulo il login e ricavo il token", async () => {
 })
 
 test("se accedo con il token nei cookies non mi da errore", async () => {
-	const {data:reuser2} = await axios.get(
-		`http://localhost:${PORT}/user`, 
+	const { data: reuser2 } = await axios.get(
+		`http://localhost:${PORT}/user`,
 		{ headers: { Cookie: `token=${token};` } }
 	)
 	expect(reuser2).toEqual(user2)
