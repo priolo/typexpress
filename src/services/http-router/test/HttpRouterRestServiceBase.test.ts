@@ -8,6 +8,10 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { HttpRouterRestServiceBase } from "../rest/HttpRouterRestServiceBase"
 
+axios.defaults.adapter = require('axios/lib/adapters/http')
+
+
+
 const users = [
 	{ id: "1", name: "Ivano" },
 	{ id: "2", name: "Mattia" },
@@ -73,7 +77,6 @@ afterAll(async ()=> {
 test("su creazione", async () => {
 	const test = new PathFinder(root).getNode<TestRoute>("/http/test")
 	expect(test instanceof TestRoute).toBeTruthy()
-	axios.defaults.adapter = require('axios/lib/adapters/http')
 
 	let res = await axios.get(`http://localhost:${PORT}/user`)
 	expect(res.data).toEqual(users)

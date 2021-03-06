@@ -11,15 +11,12 @@ import TypeormService from "../../typeorm";
 import { SessionEntity } from "../session/SessionEntity"
 
 
+
 axios.defaults.adapter = require('axios/lib/adapters/http')
 const PORT = 5005
-const dbPath = path.join(__dirname, "/database.sqlite")
 const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
-
-
+const dbPath = path.join(__dirname, "/database.sqlite")
 let root = null
-
-
 
 beforeAll(async () => {
 	root = await RootService.Start([

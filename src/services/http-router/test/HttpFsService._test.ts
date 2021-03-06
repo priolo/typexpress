@@ -9,6 +9,8 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { HttpRouterService } from "../HttpRouterService"
 
+axios.defaults.adapter = require('axios/lib/adapters/http')
+
 
 class TestRoute extends HttpRouterService {
 	get defaultConfig(): any {
@@ -23,6 +25,7 @@ class TestRoute extends HttpRouterService {
 		res.json({ response: "test-ok" })
 	}
 }
+
 
 let root = null
 
@@ -54,7 +57,6 @@ afterEach(async () => {
 
 
 test("su creazione", async () => {
-	axios.defaults.adapter = require('axios/lib/adapters/http')
 	const test = new PathFinder(root).getNode<TestRoute>("/http/test")
 	expect(test instanceof TestRoute).toBeTruthy()
 })

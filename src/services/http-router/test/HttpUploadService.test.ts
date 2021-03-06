@@ -11,15 +11,15 @@ import fs from "fs"
 import path from "path"
 import FormData from "form-data"
 
+axios.defaults.adapter = require('axios/lib/adapters/http')
+
+
 
 let root = null
 const dirDest = path.join(__dirname, "./dest")
 const PORT = 5006
 
 beforeAll(async () => {
-	// axios
-	axios.defaults.adapter = require('axios/lib/adapters/http')
-
 	// create node
 	root = new RootService()
 	await root.dispatch({

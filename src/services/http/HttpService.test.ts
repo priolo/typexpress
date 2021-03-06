@@ -6,19 +6,13 @@ import { HttpService } from "./HttpService"
 const PORT = 5010
 
 test("su creazione", async () => {
-	const root = new RootService()
-	await root.dispatch( {
-		type: ConfActions.START,
-		payload: {
-			children: [
-				{ class: "http", port: PORT }
-			]
-		}
-	})
+	const root = await RootService.Start(
+		{ class: "http", port: PORT }
+	)
 
 	const http = new PathFinder(root).getNode<HttpService>("/http")
 	expect(http instanceof HttpService).toBeTruthy()
 	expect(http.state.port).toBe(PORT)
 
-	await root.dispatch( { type: ConfActions.STOP })
+	await RootService.Stop(root)
 })

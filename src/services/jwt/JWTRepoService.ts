@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/ServiceBase"
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 
 
 export enum JWTActions {
@@ -13,21 +13,28 @@ export class JWTRepoService extends ServiceBase {
 		return {
 			...super.defaultConfig,
 			name: "jwt",
-			secret: "pippo"
+			secret: "secret_word"
 		}
 	}
 
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[JWTActions.ENCODE] : (state, payload) => jwt.sign(payload, this.state.secret),
-			[JWTActions.DECODE]: async (state, payload) => {
-				try{
-					return jwt.verify(payload, this.state.secret)
-				} catch ( e ) {
-					return null
-				}
-			},
+			[JWTActions.ENCODE]: (state, payload) => this.encode(payload),
+			[JWTActions.DECODE]: async (state, payload) => this.decode(payload),
+		}
+	}
+
+	private encode(data): string {
+		return jwt.sign(data, this.state.secret)
+	}
+
+	private decode(data: string): string {
+		const secret:string = this.state.secret
+		try {
+			return jwt.verify(data, secret) as string
+		} catch (e) {
+			return null
 		}
 	}
 

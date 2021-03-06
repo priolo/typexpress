@@ -13,95 +13,82 @@ import { Bus } from "../../../core/path/Bus";
 import { JWTActions } from "../../jwt/JWTRepoService";
 
 
+
 axios.defaults.adapter = require('axios/lib/adapters/http')
+const PORT = 5001
+const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
 const dbPath = `${__dirname}/database.sqlite`
 let root = null
 let user1, user2, token
-const PORT = 5001
-
 
 beforeAll(async () => {
-	try {
-		if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
-	} catch (e) {
-		console.log(e)
-	}
+	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 
-	root = new RootService()
-	await root.dispatch({
-		type: ConfActions.START,
-		payload: {
+	root = await RootService.Start([
+		{
+			class: "http",
+			port: PORT,
 			children: [
 				{
-					class: "http",
-					port: PORT,
+					class: "http-router",
+					path: "/user",
+					routers: [
+						{
+							path: "/login/:id", method: async function (req, res, next) {
+								res.json({
+									token: await new Bus(this, "/jwt").dispatch({
+										type: JWTActions.ENCODE,
+										payload: req.params.id,
+									})
+								})
+							}
+						}
+					]
+				},
+				{
+					class: "http-router/jwt",
+					repository: "/typeorm/user",
+					jwt: "/jwt",
 					children: [
 						{
 							class: "http-router",
 							path: "/user",
 							routers: [
-								{
-									path: "/login/:id", method: async function (req, res, next) {
-										res.json({
-											token: await new Bus(this, "/jwt").dispatch({
-												type: JWTActions.ENCODE,
-												payload: req.params.id,
-											})
-										})
-									}
-								}
+								{ method: (req, res, next) => res.json(req.user) },
 							]
-						},
-						{
-							class: "http-router/jwt",
-							repository: "/typeorm/user",
-							jwt: "/jwt",
-							children: [
-								{
-									class: "http-router",
-									path: "/user",
-									routers: [
-										{ method: (req, res, next) => res.json(req.user) },
-									]
-								}
-							]
-						},
-					]
-				},
-				{
-					class: "typeorm",
-					typeorm: {
-						"type": "sqlite",
-						"database": dbPath,
-						"synchronize": true,
-					},
-					schemas: [{
-						name: "User",
-						columns: {
-							id: { type: Number, primary: true, generated: true },
-							username: { type: String }
 						}
-					}],
-					children: [
-						{ name: "user", class: "typeorm/repo", model: "User" }
 					]
-				},
-				{
-					class: "jwt",
-					secret: "secret_word!!!"
 				},
 			]
-		}
-	})
+		},
+		{
+			class: "typeorm",
+			typeorm: {
+				"type": "sqlite",
+				"database": dbPath,
+				"synchronize": true,
+			},
+			schemas: [{
+				name: "User",
+				columns: {
+					id: { type: Number, primary: true, generated: true },
+					username: { type: String }
+				}
+			}],
+			children: [
+				{ name: "user", class: "typeorm/repo", model: "User" }
+			]
+		},
+		{
+			class: "jwt",
+			secret: "secret_word!!!"
+		},
+	])
 })
 
 afterAll(async () => {
-	await root?.dispatch({ type: ConfActions.STOP })
-	try {
-		if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
-	} catch (e) {
-		console.log(e)
-	}
+	await RootService.Stop(root)
+	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 })
 
 test("creazione", async () => {
@@ -119,7 +106,7 @@ test("crea due USER", async () => {
 test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
 	let err = null
 	try {
-		await axios.get(`http://localhost:${PORT}/user`)
+		await axiosIstance.get(`/user`)
 	} catch (e) {
 		err = e
 	}
@@ -127,14 +114,14 @@ test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
 })
 
 test("simulo il login e ricavo il token", async () => {
-	const { data } = await axios.get(`http://localhost:${PORT}/user/login/${user2.id}`)
+	const { data } = await axiosIstance.get(`/user/login/${user2.id}`)
 	token = data.token
 	expect(typeof token).toBe("string")
 })
 
 test("se accedo con il token nei cookies non mi da errore", async () => {
-	const { data: reuser2 } = await axios.get(
-		`http://localhost:${PORT}/user`,
+	const { data: reuser2 } = await axiosIstance.get(
+		`/user`,
 		{ headers: { Cookie: `token=${token};` } }
 	)
 	expect(reuser2).toEqual(user2)

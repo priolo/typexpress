@@ -6,6 +6,10 @@ import { RootService } from "../../../core/RootService"
 import path from "path"
 import { ConfActions } from "../../../core/node/NodeConf"
 
+axios.defaults.adapter = require('axios/lib/adapters/http')
+
+
+
 let root, res
 const PORT = 5008
 
@@ -35,7 +39,6 @@ beforeAll(async() => {
 			]
 		}
 	})
-	axios.defaults.adapter = require('axios/lib/adapters/http')
 })
 
 afterAll(async() => {

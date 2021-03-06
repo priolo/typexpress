@@ -7,17 +7,9 @@ import {JWTActions, JWTRepoService} from "./JWTRepoService";
 
 test("su creazione", async () => {
 
-	const root = new RootService()
-	await root.dispatch({
-		type: ConfActions.START,
-		payload: {
-			children: [
-				{
-					class: "jwt",
-					secret: "secret_word!!!"
-				}
-			]
-		}
+	const root = await RootService.Start({
+		class: "jwt",
+		secret: "secret_word!!!"
 	})
 
 	const jwt = new PathFinder(root).getNode<JWTRepoService>("/jwt")
@@ -37,5 +29,5 @@ test("su creazione", async () => {
 
 	expect(str).toBe(str2)
 
-	await root.dispatch({ type: ConfActions.STOP })
+	await RootService.Stop(root)
 })
