@@ -2,24 +2,22 @@
 
 ## DESCRIPTION
 
-Allow the creation of a NodeJs server
+Allow the creation of a NodeJs server  
 Simply with a basic JSON configuration
+
 
 ## WHY?
 
-Non ne posso piu' di dovermi andare a studiare una marea di blog solo per mettere su un server!
-Voglio una configuraizone
- completa di un server 
+Non ne posso piu' di dovermi andare a studiare una marea di blog    
+solo per mettere su un server!  
+Voglio usare un solo JSON che mi permetta di configurare tutto
+
 
 ## INSTALLATION
 
-istalla "typexpress" nel progetto
+istalla "typexpress" nel progetto  
 `npm typexpress`
 
-## DEV
-
-compila nella cartella `/dist` e rimane in "watch" per nuove modifiche
-`npm run build-watch`
 
 ## QUICK START FAQ STYLE
 
@@ -168,7 +166,7 @@ https://tbq4l.sse.codesandbox.io
 ---
 
 ### Si vabbe' pero' i DATI poi dove li metto? Il DB dov'è???
-*[Bob]:* Mbeh usi [Typeorm](https://typeorm.io/#/) e li metti in un DB... che ne so... facciamo sqlite!?  
+*[Bob]:* Mbeh usi [Typeorm](https://typeorm.io/#/) e li metti... che ne so... facciamo sqlite!?  
 Guarda, prendi sto ToDo e divertiti
 
 [sandbox](https://codesandbox.io/s/typeorm-yith3?file=/src/index.js)  
@@ -211,10 +209,12 @@ RootService.Start([
 
 ```js
 root = await RootService.Start([
+	// SERVER HTTP
 	{
 		class: "http",
 		port: PORT,
 		children: [
+			// REST HTTP on USER REPOSITORY
 			{
 				name: "user",
 				path: "/user",
@@ -223,6 +223,7 @@ root = await RootService.Start([
 			}
 		]
 	},
+	// DB
 	{
 		class: "typeorm",
 		typeorm: {
@@ -238,7 +239,7 @@ root = await RootService.Start([
 ])
 ```
  
-> Ci sono due librerie principali per l'ORM
+> in NodeJS ci sono due librerie principali per l'ORM
 > - [Sequelize](https://sequelize.org/)
 > - [Typeorm](https://typeorm.io/)  
 > 
@@ -257,12 +258,14 @@ RootService.Start([
 	{
 		class: "http", port: "8080",
 		children: [
+			// SESSION MIDDLEWARE 
 			{
 				name: "typeorm-session",
 				class: "http-router/session",
 				typeorm: "/typeorm",
 				path: "/sessioned",
 				children: [
+					// ROUTER
 					{
 						class: "http-router",
 						routers: [
@@ -292,10 +295,10 @@ RootService.Start([
 ])
 ```
 
-> Quindi tutti i figli di `http-router/session`
-> avranno la stessa sessione (memorizzata sul DB)
-> In futuro le session faranno riferimento a specifici REPOSITORY
-> in maniera da avere diverse session
+> Quindi tutti i figli di `http-router/session`  
+> avranno la stessa sessione (memorizzata sul DB)  
+> In futuro le session faranno riferimento a specifici REPOSITORY  
+> in maniera da avere diverse session  
 
 ---
 
