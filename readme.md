@@ -306,10 +306,91 @@ con questo code/decode tramite parola segreta.
 Quindi usare un middleware specializzato  
 per caricare i dati dell'utente `htt-router/jwt`
 
-```js
+[sandbox](https://codesandbox.io/s/session-jwt-i3fgb?file=/src/index.js)  
 
+```js
+RootService.Start([
+	// HTTP server
+	{
+		class: "http", port: 8080,
+		children: [
+			{
+				class: "http-router",
+				routers: [
+					// HOME PAGE
+					{
+						method: function (req, res, next) {
+							res.send(`<a href="/login">login</a><br/>
+							<a href="/logout">logout</a><br/>
+							<a href="/protect">enter protect area</a>`)
+						}
+					},
+					// LOGIN
+					{
+						path: "/login", method: async function (req, res, next) {
+							const token = await new Bus(this, "/http/route-jwt").dispatch({
+								type: RouteJWTUserActions.TOKEN_BY_ID,
+								payload: 10,
+							})
+							res.cookie('token', token)
+							res.send(`<p>Logged in with token: ${token}</p>`)
+						}
+					},
+					// LOGOUT
+					{
+						path: "/logout", method: async function (req, res, next) {
+							res.cookie('token', "")
+							res.send(`<p>Logout</p>`)
+						}
+					}
+				]
+			},
+			// JWT MIDDLEWARE
+			{
+				class: "http-router/jwt",
+				repository: "/typeorm/user",
+				jwt: "/jwt",
+				children: [
+					{
+						class: "http-router",
+						path: "/protect",
+						routers: [
+							{ method: (req, res, next) => res.send(`<p>Hi ${req.user.username}</p>`) },
+						]
+					}
+				]
+			},
+		]
+	},
+	// DB
+	{
+		class: "typeorm",
+		typeorm: {
+			"type": "sqlite",
+			"database": `${__dirname}/database.sqlite`,
+			"synchronize": true,
+		},
+		schemas: [{
+			name: "User",
+			columns: {
+				id: { type: Number, primary: true },
+				username: { type: String }
+			}
+		}],
+		children: [
+			{ name: "user", class: "typeorm/repo", model: "User" }
+		]
+	},
+	// code/decode JWT
+	{
+		class: "jwt",
+		secret: "secret_word!!!"
+	},
+
+])
 ```
 
+---
 
 
 
