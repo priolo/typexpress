@@ -1,5 +1,7 @@
 # TYPEXPRESS
 
+![Bob](./img/logo.png)
+
 ## DESCRIPTION
 
 Allow the creation of a NodeJs server  
@@ -16,7 +18,7 @@ Voglio usare un solo JSON che mi permetta di configurare tutto
 ## INSTALLATION
 
 istalla "typexpress" nel progetto  
-`npm typexpress`
+`npm i typexpress`
 
 
 ## QUICK START FAQ STYLE
@@ -182,7 +184,7 @@ RootService.Start([
 	{
 		// istanzia un SQLITE
 		class: "typeorm",
-		typeorm: {
+		options: {
 			type: "sqlite",
 			database: path.join(__dirname, "../db/database.sqlite"),
 			synchronize: true
@@ -226,7 +228,7 @@ root = await RootService.Start([
 	// DB
 	{
 		class: "typeorm",
-		typeorm: {
+		options: {
 			"type": "sqlite",
 			"database": dbPath,
 			"synchronize": true,
@@ -285,7 +287,7 @@ RootService.Start([
 	},
 	{
 		class: "typeorm",
-		typeorm: {
+		options: {
 			"type": "sqlite",
 			"database": path.join(__dirname, "../db/database.sqlite"),
 			"synchronize": true,
@@ -368,7 +370,7 @@ RootService.Start([
 	// DB
 	{
 		class: "typeorm",
-		typeorm: {
+		options: {
 			"type": "sqlite",
 			"database": `${__dirname}/database.sqlite`,
 			"synchronize": true,

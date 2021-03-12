@@ -2,7 +2,7 @@ import { Express, Response, Request } from "express";
 import { HttpRouterService } from "../HttpRouterService";
 
 /**
- * DA IMPLEMENTARE
+ * [ABSTRACT] DA IMPLEMENTARE
  * mappa i metodi REST 
  */
 export abstract class HttpRouterRestServiceBase extends HttpRouterService {

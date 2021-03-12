@@ -1,7 +1,6 @@
 /**
  * @jest-environment node
  */
-
 import axios from "axios"
 import { ConfActions } from "../../../core/node/NodeConf"
 import { Request, Response } from "express"
@@ -9,9 +8,12 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { HttpRouterService } from "../HttpRouterService"
 
+
+
 axios.defaults.adapter = require('axios/lib/adapters/http')
-
-
+const PORT = 5004
+const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let root = null
 
 class TestRoute extends HttpRouterService {
 	get defaultConfig(): any {
@@ -27,8 +29,7 @@ class TestRoute extends HttpRouterService {
 	}
 }
 
-let root = null
-const PORT = 5001
+
 
 beforeAll(async () => {
 	root = await RootService.Start(
@@ -105,22 +106,20 @@ test("su creazione", async () => {
 	expect(test instanceof TestRoute).toBeTruthy()
 })
 test("request on route", async () => {
-	const { data } = await axios.get(`http://localhost:${PORT}/admin/user`)
+	const { data } = await axiosIstance.get(`/admin/user`)
 	expect(data).toEqual({ response: "user-ok" })
 })
 test("request on subroute", async () => {
-	const { data: d2 } = await axios.get(`http://localhost:${PORT}/sub/route2/test`)
+	const { data: d2 } = await axiosIstance.get(`/sub/route2/test`)
 	expect(d2).toEqual({ response: "test-ok" })
 })
 
 test("request on subroute with header", async () => {
-	let res = await axios.get(
-		`http://localhost:${PORT}/sub/route3/test`,
-	)
+	let res = await axiosIstance.get(`/sub/route3/test`)
 	expect(res.data).toEqual({ response: "with_header" })
 
-	res = await axios.get(
-		`http://localhost:${PORT}/sub/route3/test`,
+	res = await axiosIstance.get(
+		`/sub/route3/test`,
 		{
 			headers: {
 				"accept": ''
@@ -131,6 +130,6 @@ test("request on subroute with header", async () => {
 })
 
 test("request async", async () => {
-	const { data: d2 } = await axios.get(`http://localhost:${PORT}/async`)
+	const { data: d2 } = await axiosIstance.get(`/async`)
 	expect(d2).toEqual({ response: "async" })
 })

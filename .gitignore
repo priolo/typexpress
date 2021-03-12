@@ -1,11 +1,7 @@
 *.map
 
 node_modules/
-admin-db/
 .vscode/
 dist/
-_tmp/
-package-lock.json
-
-examples
-src/examples
+examples/
+src/examples/

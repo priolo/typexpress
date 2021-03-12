@@ -36,7 +36,7 @@ beforeAll(async () => {
 			children: [
 				{
 					class: "typeorm",
-					typeorm: {
+					options: {
 						"type": "sqlite",
 						"database": dbPath,
 						"synchronize": true,

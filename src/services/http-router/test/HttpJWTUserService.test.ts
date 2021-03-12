@@ -63,7 +63,7 @@ beforeAll(async () => {
 		},
 		{
 			class: "typeorm",
-			typeorm: {
+			options: {
 				"type": "sqlite",
 				"database": dbPath,
 				"synchronize": true,

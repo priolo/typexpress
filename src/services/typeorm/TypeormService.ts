@@ -16,7 +16,7 @@ export class TypeormService extends ServiceBase {
 			name: "typeorm",
 			// [II] sostituire con "options"
 			// https://typeorm.io/#/connection-options
-			typeorm: {
+			options: {
 				"type": "sqlite",
 				//"username": null,
 				//"password": null,
@@ -24,7 +24,7 @@ export class TypeormService extends ServiceBase {
 				"synchronize": true,
 				"logging": true,
 				"entities": [], // array-schema-entity-directory:mandatory:ex:[path.join(__dirname, "./models/**/*.js")]
-				"schemas":[],	// array-schema
+				"schemas": [],	// array-schema
 				// "migrations": [
 				// 	"./database/migration/**/*.js"
 				// ],
@@ -47,31 +47,31 @@ export class TypeormService extends ServiceBase {
 
 
 	protected async onInitAfter(): Promise<void> {
-		let { typeorm, schemas } = this.state
+		let { options, schemas } = this.state
 
 		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN
 		schemas = [
-			...schemas??[], 
+			...schemas ?? [],
 			...this.children
-				.filter(c=>c instanceof TypeormRepoService && c?.state?.model!=null && typeof c.state.model=="object" )
-				.map(c=>(<TypeormRepoService>c).state.model)
+				.filter(c => c instanceof TypeormRepoService && c?.state?.model != null && typeof c.state.model == "object")
+				.map(c => (<TypeormRepoService>c).state.model)
 		]
 
 		// screo gli oggetti EntitySchema che dovro' passare a typeorm
-		if ( schemas.length>0 ) {
-			typeorm.entities = [
-				...typeorm.entities??[], 
-				...schemas.map(s=>new EntitySchema(s))
+		if (schemas.length > 0) {
+			options.entities = [
+				...options.entities ?? [],
+				...schemas.map(s => new EntitySchema(s))
 			]
 		}
 
 		// creo la connessione
-		this.setState({typeorm})
+		this.setState({ options })
 
-		try {		
-			this._connection = await createConnection(typeorm)
-		} catch ( e ) {
-			new Bus(this, "/error").dispatch({type: ErrorServiceActions.NOTIFY, payload: e})
+		try {
+			this._connection = await createConnection(options)
+		} catch (e) {
+			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: e })
 		}
 
 		await super.onInitAfter()
