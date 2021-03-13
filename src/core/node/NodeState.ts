@@ -39,7 +39,7 @@ export abstract class NodeState extends Node {
 	 */
 	async dispatch(action: Action): Promise<any> {
 		// [II] buffering
-		// [II] spostare gli arg in playload, state, sender
+		// [II] spostare gli arguments della funzione in: playload, state, sender
 		return this.dispatchMap[action.type](this.state, action.payload, action.sender)
 	}
 

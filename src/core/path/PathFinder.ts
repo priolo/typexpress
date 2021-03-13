@@ -6,7 +6,7 @@ import { PathFinderList } from "./PathFinderList"
 
 export class PathFinder {
 	constructor(node: INode) {
-		if ( node==null ) throw new Error("PathFinder:constructor:argument:invalid")
+		if ( node==null || !node.children || !node.name ) throw new Error("PathFinder:constructor:argument:invalid:need-INode")
 		this.node = node
 	}
 
@@ -15,30 +15,30 @@ export class PathFinder {
 	/**
 	 * Restituisce un "PathFinder" che punta ad un "node"
 	 * ricavato seguendo la path del parametro
-	 * @param p 
+	 * @param path 
 	 */
-	path(p: string): PathFinder | null {
-		if (p.length == 0) return this
+	path(path: string): PathFinder | null {
+		if (path.length == 0) return this
 
 		let nextPathFinder: PathFinder | null
 		let nextPath: string
 
 		// vai alla radice
-		if (p.startsWith("/")) {
+		if (path.startsWith("/")) {
 			nextPathFinder = this.getRoot()
-			nextPath = p.slice(1)
+			nextPath = path.slice(1)
 
 		// vai al parent
-		} else if (p.startsWith("..")) {
+		} else if (path.startsWith("..")) {
 			nextPathFinder = new PathFinder(this.node.parent ?? this.node);
-			nextPath = p.slice(2)
+			nextPath = path.slice(2)
 
 		// preleva un nodo tramite il nome / indice / class-type
 		} else {
-			let index = p.indexOf("/")
-			let pattern = index != -1 ? p.slice(0, index) : p
+			let index = path.indexOf("/")
+			let pattern = index != -1 ? path.slice(0, index) : path
 			nextPathFinder = this.getChildren().getBy(pattern)
-			nextPath = index != -1 ? p.slice(index+1) : ""
+			nextPath = index != -1 ? path.slice(index+1) : ""
 		}
 
 		return nextPathFinder ? nextPathFinder.path(nextPath) : null
@@ -46,10 +46,10 @@ export class PathFinder {
 
 	/**
 	 * Come "path" ma restituisce direttamente il "node" tipizzato
-	 * @param p 
+	 * @param path 
 	 */
-	getNode<T>(p: string): T {
-		return this.path(p)?.node as unknown as T
+	getNode<T>(path: string): T {
+		return this.path(path)?.node as unknown as T
 	}
 
 	/**

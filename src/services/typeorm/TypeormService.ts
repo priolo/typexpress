@@ -49,6 +49,8 @@ export class TypeormService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		let { options, schemas } = this.state
 
+		if ( !options ) new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: e })
+
 		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN
 		schemas = [
 			...schemas ?? [],

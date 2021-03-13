@@ -36,6 +36,13 @@ export class PathFinderList {
 		return node != null ? new PathFinder(node) : null
 	}
 
+	/**
+	 * Data una stringa path 
+	 * restituisce la funzione di uguaglianza 
+	 * da utilizzare per quello stesso path
+	 * @param pattern 
+	 * @returns 
+	 */
 	getFnPattern(pattern: string): (n: INode) => boolean {
 
 		// by id

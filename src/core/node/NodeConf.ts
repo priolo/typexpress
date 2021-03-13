@@ -10,13 +10,13 @@ export enum ConfActions {
 	STOP = "stop"		// sostituire con "DESTROY"
 	// START
 	// STOP
-	// CHILDREN_ADD
+	// CHILD_ADD
 }
 
 /**
- * Classe responsabile di: 
- * memorizzare il CONF
- * costruire i CHILDREN attraverso il CONF 
+ * Classe responsabile di:  
+ * - memorizzare il CONF  
+ * - costruire i CHILDREN attraverso il CONF   
  */
 export class NodeConf extends NodeState {
 
@@ -119,7 +119,7 @@ export class NodeConf extends NodeState {
 	protected async onInitAfter(): Promise<void> { }
 
 	/**
-	 * Chiamata DOPO la creazione di tutti i children
+	 * Chiamata DOPO la creazione di tutti i children della ROOT
 	 */
 	protected async onInitFinish(): Promise<void> { }
 

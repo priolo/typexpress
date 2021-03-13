@@ -1,7 +1,10 @@
 import { RootService } from "./core/RootService"
 import { Bus } from "./core/path/Bus"
 import { PathFinder } from "./core/path/PathFinder"
-//import { ServiceBase } from "core/ServiceBase"
+import { RepoRestActions } from "./core/repo/RepoRestActions";
+import { RepoStructActions } from "./core/repo/RepoStructActions";
+
+
 
 import { TypeormService } 				from "./services/typeorm"
 import { ModelBase } 					from "./services/typeorm/models/ModelBase"
@@ -19,8 +22,9 @@ export {
 	RootService,
 	Bus,
 	PathFinder,
+	RepoRestActions,
+	RepoStructActions
 }
-
 
 // TYPEORM
 const Typeorm = {

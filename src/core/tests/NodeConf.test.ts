@@ -1,6 +1,4 @@
-import { NodeState } from "core/node/NodeState"
 import FarmService from "../../services/farm"
-import { RootService } from "../../core/RootService"
 import { ConfActions, NodeConf } from "../node/NodeConf"
 
 
