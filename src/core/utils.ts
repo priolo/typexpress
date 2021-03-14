@@ -5,12 +5,12 @@ import { INode } from "./node/INode"
  * @param nodes 
  * @param callback 
  */
-export function nodeForeach(nodes: INode | INode[], callback: (n: INode) => void): void {
+export async function nodeForeach(nodes: INode | INode[], callback: (n: INode) => Promise<void>): Promise<void> {
 	if (nodes == null) return
 	if (!Array.isArray(nodes)) nodes = [nodes]
 	for (const node of nodes) {
-		callback(node)
-		nodeForeach(node.children, callback)
+		await callback(node)
+		await nodeForeach(node.children, callback)
 	}
 }
 

@@ -4,6 +4,7 @@ import { ServiceBase } from "../../core/ServiceBase";
 import { TypeormRepoService } from "./TypeormRepoService";
 import { Bus } from "../../core/path/Bus";
 import { ErrorServiceActions } from "../error/ErrorService";
+import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
 
@@ -49,13 +50,13 @@ export class TypeormService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		let { options, schemas } = this.state
 
-		if ( !options ) new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: e })
+		if ( !options ) new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: "typeorm:options:obbligatory" })
 
 		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN
 		schemas = [
 			...schemas ?? [],
 			...this.children
-				.filter(c => c instanceof TypeormRepoService && c?.state?.model != null && typeof c.state.model == "object")
+				.filter(c => c instanceof TypeormRepoBaseService && c?.state?.model && typeof c.state.model == "object")
 				.map(c => (<TypeormRepoService>c).state.model)
 		]
 

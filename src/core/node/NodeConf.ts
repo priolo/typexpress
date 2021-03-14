@@ -66,8 +66,8 @@ export class NodeConf extends NodeState {
 		// se questo nodo è il nodo "root" allora richiama ricorsivamente tutti i nodi
 		// per chiamare l'evento onInitFinish
 		if ( this.parent == null ) {
-			nodeForeach(this, (n)=>{
-				if ( n instanceof NodeConf ) (<NodeConf>n).onInitFinish()
+			await nodeForeach(this, async (n)=>{
+				if ( n instanceof NodeConf ) await (<NodeConf>n).onInitFinish()
 			})
 		}
 	}

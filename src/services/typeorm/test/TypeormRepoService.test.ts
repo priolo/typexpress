@@ -3,9 +3,10 @@ import path from "path"
 import { RootService } from "../../../core/RootService"
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder";
-import { TypeormActions, TypeormRepoService } from "../TypeormRepoService";
+import { TypeormRepoService } from "../TypeormRepoService";
 import { ConfActions } from "../../../core/node/NodeConf";
 import { RepoRestActions } from "../../../core/repo/RepoRestActions";
+import { TypeormActions } from "../TypeormRepoBaseService";
 
 @Entity()
 export class User {

@@ -1,82 +1,72 @@
 import fs from "fs"
 import path from "path"
 import { RootService } from "../../../core/RootService"
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder";
 import { TypeormRepoService } from "../TypeormRepoService";
 import { ConfActions } from "../../../core/node/NodeConf";
 import { RepoRestActions } from "../../../core/repo/RepoRestActions";
 import { RepoStructActions } from "../../../core/repo/RepoStructActions";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class User {
-	@PrimaryGeneratedColumn()
-	id: number;
-
-	@Column()
-	firstName: string;
-
-	@Column()
-	lastName: string;
-
-	@Column()
-	age: number;
-}
 
 const dbPath = path.join(__dirname, "/database.sqlite")
 let root: RootService = null
 
+@Entity()
+export class Item {
+	@PrimaryGeneratedColumn()
+	id: number;
+
+	@Column()
+	label: string;
+}
+
+
 beforeAll(async () => {
-	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } 
+	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) }
 	catch (e) { console.log(e) }
-	
-	root = new RootService()
-	await root.dispatch({
-		type: ConfActions.START,
-		payload: {
-			children: [
-				{
-					class: "typeorm",
-					options: {
-						"type": "sqlite",
-						"database": dbPath,
-						"synchronize": true,
-						"entities": [User]
-					},
-					schemas: [
-						{
-							name: "Account",
+
+	root = await RootService.Start(
+		[
+			{
+				class: "typeorm",
+				options: {
+					"type": "sqlite",
+					"database": dbPath,
+					"synchronize": true,
+					entities: [Item]
+				},
+				children: [
+					{
+						name: "user", class: "typeorm/repo",
+						model: {
+							name: "User",
 							columns: {
 								id: { type: Number, primary: true, generated: true },
-								username: { type: String }
+								firstName: { type: String, default: "" },
+								lastName: { type: String, default: "" },
+								age: { type: Number, default: 18 },
 							}
-						}
-					],
-					children: [
-						{
-							name: "user", class: "typeorm/repo",
-							model: "User",
 						},
-						{
-							name: "account", class: "typeorm/repo",
-							model: "Account",
-						},
-						{
-							name: "item", class: "typeorm/repo",
-							model: {
-								name: "Item",
-								columns: {
-									id: { type: Number, primary: true, generated: true },
-									name: { type: String }
-								}
-							},
-						},
-					]
-				}
-			]
-		}
-	})
+					},
+					{
+						name: "item", class: "typeorm/repo", model: "Item",
+						seeds: [
+							{ type: RepoStructActions.TRUNCATE },
+							{ label: "primo" },
+							{ label: "secondo" },
+							{ label: "terzo" },
+							{ label: "quarto" },
+							{ label: "quinto" },
+							{ label: "sesto" },
+						]
+					},
+				]
+			}
+		]
+	)
 })
+
 afterAll(async () => {
 	if (root) await root.dispatch({ type: ConfActions.STOP })
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
@@ -85,10 +75,12 @@ afterAll(async () => {
 test("Check seed create", async () => {
 
 	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/user")
-	await rep.dispatch({type:RepoStructActions.SEED, payload: [
-		`INSERT INTO User (firstName, lastName, age) VALUES ("Ivano", "Iorio", 45);`,
-		{firstName: "Marina", lastName: "Bossi", age: 32 }
-	]})
+	await rep.dispatch({
+		type: RepoStructActions.SEED, payload: [
+			`INSERT INTO User (firstName, lastName, age) VALUES ("Ivano", "Iorio", 45);`,
+			{ firstName: "Marina", lastName: "Bossi", age: 32 }
+		]
+	})
 
 	// preleva tutti gli USER
 	let users = await rep.dispatch({ type: RepoRestActions.ALL })
@@ -97,11 +89,20 @@ test("Check seed create", async () => {
 		{ id: 2, firstName: 'Marina', lastName: 'Bossi', age: 32 }
 	])
 
-	await rep.dispatch({type:RepoStructActions.SEED, payload: [
-		{ type: RepoStructActions.TRUNCATE },
-	]})
+	await rep.dispatch({
+		type: RepoStructActions.SEED, payload: [
+			{ type: RepoStructActions.TRUNCATE },
+		]
+	})
 
 	users = await rep.dispatch({ type: RepoRestActions.ALL })
 	expect(users.length).toEqual(0)
 })
 
+test("Check seed config", async () => {
+	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/item")
+	let items = await rep.dispatch({ type: RepoRestActions.ALL })
+	expect(items[0].label).toBe("primo")
+	expect(items[1].label).toBe("secondo")
+	expect(items[5].label).toBe("sesto")
+})
