@@ -54,16 +54,19 @@ beforeAll(async () => {
 					],
 					children: [
 						{
-							name: "user", class: "typeorm/repo",
-							model: "User",
+							name: "user", 			// nome da usare nella "path" per trovare questo nodo (p.e. questo è "/typeorm/user") 
+							class: "typeorm/repo",
+							model: "User", 			// se è una stringa fa riferimento ad un "model" gia' inserito
 						},
 						{
-							name: "account", class: "typeorm/repo",
+							name: "account", 
+							class: "typeorm/repo",
 							model: "Account",
 						},
 						{
-							name: "item", class: "typeorm/repo",
-							model: {
+							name: "item", 
+							class: "typeorm/repo",
+							model: {				// se è un oggetto è uno "entity-definition" https://typeorm.io/#/separating-entity-definition 
 								name: "Item",
 								columns: {
 									id: { type: Number, primary: true, generated: true },

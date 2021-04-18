@@ -42,6 +42,9 @@ export class HttpJWTService extends HttpRouterServiceBase {
             if ( !token ) return res.sendStatus(401)
 
             // decodifico l'id dell'utente
+            // [II] non va bene!! il "payload" va messo direttamente senza interrogare il db
+            // mettere il db solo opzionale
+            // opzione per usare o cookies httponly
             const id = await new Bus(this, jwt)
                 .dispatch({ type: JWTActions.DECODE, payload: token })
 

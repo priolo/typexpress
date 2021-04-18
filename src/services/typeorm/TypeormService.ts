@@ -52,6 +52,10 @@ export class TypeormService extends ServiceBase {
 
 		if ( !options ) new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: "typeorm:options:obbligatory" })
 
+		// // raccolgo tutti i children che derivano da typeorm-repo e che hanno un "model" cioe' una schema definition
+		// const childRepo = this.children
+		// 	.filter(c => c instanceof TypeormRepoBaseService && c?.state?.model && typeof c.state.model == "object")
+
 		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN
 		schemas = [
 			...schemas ?? [],
@@ -60,7 +64,10 @@ export class TypeormService extends ServiceBase {
 				.map(c => (<TypeormRepoService>c).state.model)
 		]
 
-		// screo gli oggetti EntitySchema che dovro' passare a typeorm
+		// raccolgo tutti le entity presenti nei CHILDREN
+		//entities = 
+
+		// creo gli oggetti EntitySchema che dovro' passare a typeorm
 		if (schemas.length > 0) {
 			options.entities = [
 				...options.entities ?? [],

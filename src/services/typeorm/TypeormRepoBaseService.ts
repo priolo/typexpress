@@ -27,7 +27,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 		return {
 			...super.defaultConfig,
 			model: null, // string:mandatory:MODEL di riferimento per questo REPO
-			seeds: null, // indica le action da fare su questo REPO
+			seeds: null, // indica le action da fare su questo REPO,
 		}
 	}
 
@@ -39,7 +39,8 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 				return await repo.find(query)
 			},
 			[RepoStructActions.SEED]: async (state, seeds) => this.seed(seeds),
-			[RepoStructActions.TRUNCATE]: async (state) => this.truncate()
+			[RepoStructActions.TRUNCATE]: async (state) => this.truncate(),
+			[RepoStructActions.CLEAR]: async (state) => this.clear(),
 		}
 	}
 
@@ -52,7 +53,8 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	}
 
 	protected get model(): any {
-		return typeof this.state.model == "object" ? this.state.model?.name : this.state.model
+		const { model } = this.state
+		return typeof model == "object" ? model?.name : model
 	}
 
 	/**
@@ -98,7 +100,16 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	private async truncate():Promise<void> {
 		const repo = this.getRepo()
 		const qr = this.connection.createQueryRunner()
+		await this.connection.query('PRAGMA foreign_keys=OFF');
 		await qr.clearTable(repo.metadata.tableName)
+		await this.connection.query('PRAGMA foreign_keys=ON');
+	}
+
+	private async clear():Promise<void> {
+		const repo = this.getRepo()
+		//await this.connection.query('PRAGMA foreign_keys=OFF');
+		await repo.query(`DELETE FROM ${repo.metadata.tableName};`);
+		//await this.connection.query('PRAGMA foreign_keys=ON');
 	}
 
 }

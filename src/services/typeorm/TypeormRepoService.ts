@@ -10,7 +10,14 @@ import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
  * di TYPEORM
  */
 export class TypeormRepoService extends TypeormRepoBaseService {
-	
+
+	get defaultConfig(): any {
+		return {
+			...super.defaultConfig,
+			findOptions: null,			// opzione da usare in "ALL"
+		}
+	}
+
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
@@ -19,8 +26,9 @@ export class TypeormRepoService extends TypeormRepoBaseService {
 				return await repo.save(entity);
 			},
 			[RepoRestActions.ALL]: async (state) => {
+				const { findOptions } = state
 				const repo = this.getRepo()
-				return await repo.find();
+				return await repo.find(findOptions);
 			},
 			[RepoRestActions.GET_BY_ID]: async (state, id) => {
 				const repo = this.getRepo()
