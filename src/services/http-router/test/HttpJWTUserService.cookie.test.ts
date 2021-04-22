@@ -6,20 +6,18 @@ import axios from "axios"
 import fs from "fs"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { ConfActions } from "../../../core/node/NodeConf";
 import { RepoRestActions } from "../../../core/repo/RepoRestActions";
-import { HeaderStrategy, HttpJWTUserService } from "../jwt/HttpJWTUserService";
+import { HttpJWTUserService } from "../jwt/HttpJWTUserService";
 import { Bus } from "../../../core/path/Bus";
 import { JWTActions } from "../../jwt/JWTRepoService";
-import { Request, Response } from "express"
 
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
 const PORT = 5001
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
 const dbPath = `${__dirname}/database.sqlite`
 let root = null
-let user1, user2, token
+axios.defaults.adapter = require('axios/lib/adapters/http')
+const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+
 
 beforeAll(async () => {
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
@@ -36,11 +34,11 @@ beforeAll(async () => {
 						{
 							path: "/login/:id", method: async function (req, res, next) {
 								const id = req.params.id
-								const token = await new Bus(this, "/http/route-jwt").dispatch({
+								await new Bus(this, "/http/route-jwt").dispatch({
 									type: RouteJWTUserActions.LOGIN,
-									payload: { id, res },
+									payload: {id, res},
 								})
-								res.json({ token })
+								res.sendStatus(200)
 							}
 						}
 					]
@@ -49,13 +47,16 @@ beforeAll(async () => {
 					class: "http-router/jwt",
 					repository: "/typeorm/user",
 					jwt: "/jwt",
-					strategy: HeaderStrategy,
 					children: [
 						{
 							class: "http-router",
 							path: "/user",
 							routers: [
-								{ method: (req, res, next) => res.json(req.user) },
+								{
+									method: (req, res, next) => {
+										res.json(req.user)
+									}
+								},
 							]
 						}
 					]
@@ -69,20 +70,24 @@ beforeAll(async () => {
 				"database": dbPath,
 				"synchronize": true,
 			},
-			schemas: [{
-				name: "User",
-				columns: {
-					id: { type: Number, primary: true, generated: true },
-					username: { type: String }
-				}
-			}],
 			children: [
 				{
 					name: "user",
 					class: "typeorm/repo",
-					model: "User"
+					model: {
+						name: "user",
+						columns: {
+							id: { type: Number, primary: true, generated: false },
+							username: { type: String }
+						}
+					},
+					seeds: [
+						{ id: 1, username: "Ivano" },
+						{ id: 2, username: "Marina" },
+						{ id: 3, username: "Mattia" },
+					]
 				}
-			]
+			],
 		},
 		{
 			class: "jwt",
@@ -96,19 +101,13 @@ afterAll(async () => {
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 })
 
-test("creazione", async () => {
+test("creation", async () => {
 	const rjwt = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
 	expect(rjwt).toBeInstanceOf(HttpJWTUserService)
 })
 
-test("crea due USER", async () => {
-	user1 = await new Bus(root, "/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "priolo" } })
-	user2 = await new Bus(root, "/typeorm/user").dispatch({ type: RepoRestActions.SAVE, payload: { username: "zago" } })
-	expect(user1).toBeDefined()
-	expect(user2).toBeDefined()
-})
 
-test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
+test("if I log in WITHOUT the token ... it should give me an error", async () => {
 	let err = null
 	try {
 		await axiosIstance.get(`/user`)
@@ -118,16 +117,11 @@ test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
 	expect(err.response.status).toBe(401)
 })
 
-test("simulo il login e ricavo il token", async () => {
-	const { data } = await axiosIstance.get(`/user/login/${user2.id}`)
-	token = data.token
-	expect(typeof token).toBe("string")
-})
-
-test("se accedo con il token nei cookies non mi da errore", async () => {
-	const { data: reuser2 } = await axiosIstance.get(
-		`/user`,
-		{ headers: { Authorization: `Bearer ${token}` } }
-	)
-	expect(reuser2).toEqual(user2)
+test("if I log in with the token in the cookies it doesn't give me an error", async () => {
+	// login
+	const resp = await axiosIstance.get(`/user/login/2`)
+	const cookies = resp.headers["set-cookie"]
+	// get auth data
+	const { data } = await axiosIstance.get(`/user`, { headers: { Cookie: cookies } })
+	expect(data).toMatchObject({ id: 2, username: "Marina" })
 })

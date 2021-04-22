@@ -3,8 +3,6 @@ import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
 
 
 
-
-
 /**
  * Rappresente un REPO di uno specifico MODEL
  * di TYPEORM
@@ -14,7 +12,10 @@ export class TypeormRepoService extends TypeormRepoBaseService {
 	get defaultConfig(): any {
 		return {
 			...super.defaultConfig,
-			findOptions: null,			// opzione da usare in "ALL"
+			// https://typeorm.io/#/find-options
+			// opzione da usare in "ALL", Per esempio se il risultato deve comprendere anche delle relazioni:
+			// findOptions: { relations: ["documents"] },
+			findOptions: null,			
 		}
 	}
 

@@ -54,6 +54,7 @@ beforeAll(async () => {
 								age: { type: Number, default: 18 },
 							},
 							// https://typeorm.io/#/separating-entity-definition
+							// https://typeorm.delightful.studio/interfaces/_entity_schema_entityschemarelationoptions_.entityschemarelationoptions.html
 							relations: {
 								documents: {
 									type: "one-to-many",
@@ -68,18 +69,20 @@ beforeAll(async () => {
 						},
 					},
 					{
-						name: "doc", class: "typeorm/repo",
+						name: "doc", 
+						class: "typeorm/repo",
 						model: {
 							name: "Doc",
 							columns: {
 								id: { type: Number, primary: true, generated: true },
 								text: { type: String, default: "" },
 							},
+							// https://typeorm.io/#/separating-entity-definition
+							// https://typeorm.delightful.studio/interfaces/_entity_schema_entityschemarelationoptions_.entityschemarelationoptions.html
 							relations: {
 								author: {
 									type: "many-to-one",
 									target: "User",
-
 									//createForeignKeyConstraints: false,	
 									//cascade: true,
 									//inverseSide: 'documents',
@@ -90,7 +93,9 @@ beforeAll(async () => {
 						}
 					},
 					{
-						name: "item", class: "typeorm/repo", model: "Item",
+						name: "item", 
+						class: "typeorm/repo", 
+						model: "Item",
 						seeds: [
 							{ type: RepoStructActions.TRUNCATE },
 							{ label: "primo" }, { label: "secondo" }, { label: "terzo" }, { label: "quarto" }, { label: "quinto" }, { label: "sesto" },

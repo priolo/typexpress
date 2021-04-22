@@ -34,29 +34,25 @@ export class HttpJWTService extends HttpRouterServiceBase {
         const router = express.Router()
 
         router.use(async (req: Request, res: Response, next) => {
-//debugger
             const { token } = req.cookies
             const { repository, jwt } = this.state
-
+debugger
             // se non c'e' il token emetto un errore
             if ( !token ) return res.sendStatus(401)
 
             // decodifico l'id dell'utente
-            // [II] non va bene!! il "payload" va messo direttamente senza interrogare il db
-            // mettere il db solo opzionale
-            // opzione per usare o cookies httponly
-            const id = await new Bus(this, jwt)
+            const payload = await new Bus(this, jwt)
                 .dispatch({ type: JWTActions.DECODE, payload: token })
 
             // se non sono riusito a decodificarlo ... errore!
-            if ( !id ) return res.sendStatus(401)
+            if ( !payload ) return res.sendStatus(401)
                 
             // prelevo l'utente
             let user = await new Bus(this, repository).dispatch({
                 type: RepoRestActions.GET_BY_ID,
-                payload: id,
+                payload: payload,
             })
-
+debugger
             // se non c'e' utente allora emetto un errore 401
             if ( !user ) return res.sendStatus(401)
 

@@ -2,7 +2,7 @@ import fs from "fs"
 import { RootService } from "../../core/RootService"
 import { PathFinder } from "../../core/path/PathFinder";
 import { ConfActions } from "../../core/node/NodeConf";
-import {JWTActions, JWTRepoService} from "./JWTRepoService";
+import { JWTActions, JWTRepoService } from "./JWTRepoService";
 
 
 test("su creazione", async () => {
@@ -19,7 +19,7 @@ test("su creazione", async () => {
 
 	const token = await jwt.dispatch({
 		type: JWTActions.ENCODE,
-		payload: str
+		payload: { payload: str }
 	})
 
 	const str2 = await jwt.dispatch({
