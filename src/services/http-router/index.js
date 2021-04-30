@@ -1,6 +1,6 @@
 import {HttpRouterService} from "./HttpRouterService";
 import {HttpRouterRestRepoService} from "./rest/HttpRouterRestRepoService";
-import {HttpJWTUserService} from "./jwt/HttpJWTUserService";
+import {HttpJWTUserService, RouteJWTUserActions} from "./jwt/HttpJWTUserService";
 import {HttpFsService} from "./fs/HttpFsService";
 import {HttpUploadService} from "./upload/HttpUploadService";
 import {HttpSessionService} from "./session/HttpSessionService";
@@ -14,4 +14,5 @@ export {
 	HttpFsService as fss,
 	HttpUploadService as upload,
 	HttpSessionService as session,
+	RouteJWTUserActions,
 }

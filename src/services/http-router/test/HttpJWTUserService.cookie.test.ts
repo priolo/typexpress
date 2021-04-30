@@ -27,7 +27,7 @@ beforeAll(async () => {
 			class: "http",
 			port: PORT,
 			children: [
-				{
+				{ 
 					class: "http-router",
 					path: "/user",
 					routers: [

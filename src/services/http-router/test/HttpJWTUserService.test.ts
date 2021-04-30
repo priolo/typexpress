@@ -1,17 +1,13 @@
 /**
  * @jest-environment node
  */
-
 import axios from "axios"
 import fs from "fs"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { ConfActions } from "../../../core/node/NodeConf";
-import { RepoRestActions } from "../../../core/repo/RepoRestActions";
-import { HeaderStrategy, HttpJWTUserService } from "../jwt/HttpJWTUserService";
+import { RepoRestActions } from "../../../core/repo/RepoRestActions"
+import { HeaderStrategy, HttpJWTUserService } from "../jwt/HttpJWTUserService"
 import { Bus } from "../../../core/path/Bus";
-import { JWTActions } from "../../jwt/JWTRepoService";
-import { Request, Response } from "express"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')

@@ -1,7 +1,7 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { ConfActions } from "../../../core/node/NodeConf"
-import { EmailService, EmailActions, IEmailAccount, IEmail } from "../EmailService"
+import EmailService, { EmailActions, IEmailAccount, IEmail } from "../EmailService"
 
 
 let root = null
@@ -28,6 +28,7 @@ beforeEach(async () => {
 		}
 	})
 })
+
 afterAll(async () => {
 	await root.dispatch({ type: ConfActions.STOP })
 })

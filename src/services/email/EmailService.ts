@@ -1,6 +1,7 @@
 import { ServiceBase } from "../../core/ServiceBase"
 import nodemailer, {Transporter} from "nodemailer"
 import emailCheck from "email-check"
+
 export enum EmailActions {
 	CREATE_TEST_ACCOUNT= "createTestAccount",
 	CREATE_ACCOUNT = "createAccount",
@@ -23,7 +24,7 @@ export interface IEmail {
     html: string, 		// html body
 }
 
-export class EmailService extends ServiceBase {
+class EmailService extends ServiceBase {
 
 	private transporter:Transporter = null
 
@@ -79,3 +80,5 @@ export class EmailService extends ServiceBase {
 	}
 
 }
+
+export default EmailService

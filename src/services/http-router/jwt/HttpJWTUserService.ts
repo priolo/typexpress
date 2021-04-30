@@ -22,10 +22,8 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
             name: "route-jwt",  // string
             // la path del jwt che si occupa di codificare/decodificare
             jwt: "",            // path-jwt:request
-
-            strategy: null,
-
             repository: "",     // path-repo:request
+            strategy: null,     // strategia da attuare per il login
         }
     }
 
@@ -73,14 +71,6 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         return router
     }
 
-    // private async getTokenById(id) {
-    //     const { jwt } = this.state
-    //     const token = await new Bus(this, jwt).dispatch({
-    //         type: JWTActions.ENCODE,
-    //         payload: id,
-    //     })
-    //     return token
-    // }
 }
 
 export const CookieStrategy = {
@@ -131,14 +121,3 @@ export const HeaderStrategy = {
     }
 }
 
-
-
-
-// export async function GetUserFromRepo(req: Request, payload: string, node: HttpJWTUserService) {
-//     const { repository } = node.state
-//     const user = await new Bus(node, repository).dispatch({
-//         type: RepoRestActions.GET_BY_ID,
-//         payload: payload,
-//     })
-//     return user
-// }
