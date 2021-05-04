@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/ServiceBase"
-import { log, LOG_OPTION } from "../../utils/log";
+import { log, LOG_TYPE } from "../../utils/log";
 
 
 export enum ErrorServiceActions {
@@ -27,7 +27,7 @@ export class ErrorService extends ServiceBase {
 	}
 
     private notify ( error:string, sender:string ): void {
-        log(`${sender}::${error}`, LOG_OPTION.ERROR)
+        log(`${sender}::${error}`, LOG_TYPE.ERROR)
     }
 
 }

@@ -4,7 +4,7 @@ import fs from "fs"
 import { ServiceBase } from "../../core/ServiceBase"
 import http, { Server } from "http"
 import https from "https"
-import { log, LOG_OPTION } from "../../utils/log"
+import { log, LOG_TYPE } from "../../utils/log"
 import { IHttpRouter } from "./IHttpRouter"
 import cookieParser from 'cookie-parser'
 import cors from "cors"
@@ -52,7 +52,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	protected async onDestroy(): Promise<void> {
 		return new Promise<void>((res, rej) => {
 			this.server.close((err) => {
-				log(`HttpService:stop`, LOG_OPTION.DEBUG)
+				log(`HttpService:stop`, LOG_TYPE.INFO)
 				this.server = null
 				res()
 			})
@@ -94,7 +94,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			const listener = this.server.listen(
 				port,
 				() => {
-					log(`HttpService:start:url:[http://localhost:${port}]`, LOG_OPTION.DEBUG)
+					log(`HttpService:start:url:[http://localhost:${port}]`, LOG_TYPE.INFO)
 					res(listener)
 				}
 			)

@@ -2,7 +2,7 @@ import express, { Request, Response, Router } from "express"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
 import multer from 'multer'
 import fs from "fs"
-import { log, LOG_OPTION } from "../../../utils/log"
+import { log, LOG_TYPE } from "../../../utils/log"
 import path from "path"
 
 /**
@@ -31,7 +31,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
                 const dirDest = dest ? path.join(baseDir, path.parse(dest).dir) : baseDir
 
                 if (!fs.existsSync(dirDest)) {
-                    log(`Directory "${dirDest}" non trovata. Provo a crearla io`, LOG_OPTION.DEBUG)
+                    log(`Directory "${dirDest}" not found. I try to create it myself`, LOG_TYPE.INFO)
                     fs.mkdirSync(dirDest, { recursive: true })
                 }
 

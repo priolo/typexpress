@@ -15,7 +15,7 @@ import { RouteJWTUserActions } from "./services/http-router"
 
 import EmailService, { EmailActions } from "./services/email";
 
-
+import { log, LOG_LEVEL, LOG_TYPE } from "./utils/log"
 
 
 // CORE
@@ -45,11 +45,11 @@ const Router = {
 	},
 }
 
+// EMAIL
 const Email = {
 	Service: EmailService,
 	Actions: EmailActions,
 }
-
 
 // EXPORT 
 export {
@@ -58,3 +58,10 @@ export {
 	Email,
 }
 
+
+// UTIL
+export {
+	log,
+	LOG_LEVEL,
+	LOG_TYPE,
+}

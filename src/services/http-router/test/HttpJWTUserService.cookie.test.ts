@@ -6,10 +6,10 @@ import axios from "axios"
 import fs from "fs"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { RepoRestActions } from "../../../core/repo/RepoRestActions";
 import { HttpJWTUserService } from "../jwt/HttpJWTUserService";
 import { Bus } from "../../../core/path/Bus";
-import { JWTActions } from "../../jwt/JWTRepoService";
+import { RouteJWTUserActions } from "../jwt/HttpJWTUserService"
+import { RepoRestActions } from "../../../core/repo/RepoRestActions"
 
 
 const PORT = 5001
@@ -32,12 +32,24 @@ beforeAll(async () => {
 					path: "/user",
 					routers: [
 						{
+							// login con ID (è solo un esempio)
 							path: "/login/:id", method: async function (req, res, next) {
-								const id = req.params.id
-								await new Bus(this, "/http/route-jwt").dispatch({
-									type: RouteJWTUserActions.LOGIN,
-									payload: {id, res},
+								const userId = req.params.id
+
+								// get user
+								const user = await new Bus(this, "/typeorm/user").dispatch({
+									type: RepoRestActions.GET_BY_ID,
+									payload: userId,
 								})
+
+								// create token
+								const token = await new Bus(this, "/http/route-jwt").dispatch({
+									type: RouteJWTUserActions.GENERATE_TOKEN,
+									payload: user,
+								})
+
+								// metto il token nei cookie
+								res.cookie('token', token, { maxAge: 900000, httpOnly: true })
 								res.sendStatus(200)
 							}
 						}

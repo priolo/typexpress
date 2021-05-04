@@ -48,6 +48,14 @@ RootService.Start({
 	]
 })
 ```
+> **ATTENZIONE!** la funziona lambda va bene se non si usa il `this`!   
+> Se devi usare il `this` usa `function`:  
+```js
+method: function (req, res, next) {
+	...
+}
+```
+
 
 https://z203w.sse.codesandbox.io/myroute
 
@@ -429,8 +437,11 @@ protected async onDestroy(): Promise<void> { }
 ### Tree structure
 I nodi sono strutturati ad albero per cui è sempre possibile recuperare un NODE tramite il suo "path"
 
+### Config
+Ogni nodo ha un suo "config" che sarebbero delle props del nodo 
+
 ### State
-ogni node ha uno stato interno
+ogni node ha uno stato interno inizialmente il config
 (?history)
 
 ### Dispatch

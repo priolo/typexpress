@@ -1,5 +1,6 @@
 import { Node } from "./Node";
 import { Action } from "./Action";
+import { log, LOG_TYPE } from "../../utils/log";
 
 
 /**
@@ -21,8 +22,8 @@ export abstract class NodeState extends Node {
 	 * notare che si tratta sempre di un MERGE
 	 * @param state 
 	 */
-	public setState( state:any ):void {
-		if ( this._state == state ) return
+	public setState(state: any): void {
+		if (this._state == state) return
 		const old = this._state
 		this._state = { ...this._state, ...state }
 		this.onChangeState(old)
@@ -31,13 +32,14 @@ export abstract class NodeState extends Node {
 	/**
 	 * [abstract] chiamato quando lo stato cambia
 	 */
-	protected onChangeState(old: any): void {}
+	protected onChangeState(old: any): void { }
 
 	/**
 	 * permette di eseguire una Action
 	 * @param action 
 	 */
 	async dispatch(action: Action): Promise<any> {
+		log(`${this.name}:${action.type}`, LOG_TYPE.DEBUG, action.payload)
 		// [II] buffering
 		// [II] spostare gli arguments della funzione in: playload, state, sender
 		return this.dispatchMap[action.type](this.state, action.payload, action.sender)

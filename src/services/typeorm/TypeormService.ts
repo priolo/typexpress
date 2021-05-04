@@ -46,7 +46,9 @@ export class TypeormService extends ServiceBase {
 	};
 	private _connection: Connection | null = null
 
-
+	/**
+	 * Dopo aver creato tutti i "children" li raccolgo per creare i "repo" in typeorm e connettermi al db
+	 */
 	protected async onInitAfter(): Promise<void> {
 		let { options, schemas } = this.state
 

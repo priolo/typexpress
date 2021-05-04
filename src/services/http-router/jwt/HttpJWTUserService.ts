@@ -6,7 +6,7 @@ import { RepoRestActions } from "../../../core/repo/RepoRestActions"
 
 
 export enum RouteJWTUserActions {
-    LOGIN = "login",
+    GENERATE_TOKEN = "generate_token",
 }
 
 
@@ -30,7 +30,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
     get dispatchMap(): any {
         return {
             ...super.dispatchMap,
-            [RouteJWTUserActions.LOGIN]: (state, { id, res }) => this.strategy.login(id, res)(this),
+            [RouteJWTUserActions.GENERATE_TOKEN]: (state, payload) => this.generateToken(payload),
         }
     }
 
@@ -71,51 +71,37 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         return router
     }
 
+
+    protected async generateToken(payload) : Promise<string> {
+        const { jwt } = this.state
+        return new Bus(this, jwt).dispatch({
+            type: JWTActions.ENCODE,
+            payload: { payload, options: { expiresIn: "1h" } },
+        })
+    }
+
 }
 
 export const CookieStrategy = {
-    login: (id, res) => async (node: HttpJWTUserService) => {
-        const { repository, jwt } = node.state
-
-        // get user
-        const user = await new Bus(node, repository).dispatch({
-            type: RepoRestActions.GET_BY_ID,
-            payload: id,
-        })
-        // create token
-        const token = await new Bus(node, jwt).dispatch({
-            type: JWTActions.ENCODE,
-            payload: { payload: user, options: { expiresIn: "1h" } },
-        })
-        // lo metto nei cookie
-        res.cookie('token', token, { maxAge: 900000, httpOnly: true });
-    },
     getToken: (req: Request) => {
         const { token } = req.cookies
         return token
     },
-    getUser: (req: Request, payload: string, node: HttpJWTUserService) => {
+    getUser: (req: Request, payload: any, node: HttpJWTUserService) => {
         return payload
     }
 }
 
 export const HeaderStrategy = {
-    login: (id, res) => async (node: HttpJWTUserService) => {
-        const { jwt } = node.state
-        return await new Bus(node, jwt).dispatch({
-            type: JWTActions.ENCODE,
-            payload: { payload: id },
-        })
-    },
     getToken: (req: Request) => {
         let token = req.headers["authorization"]?.slice(7)
         return token && token.length > 0 ? token : null
     },
-    getUser: async (req: Request, payload: string, node: HttpJWTUserService) => {
+    getUser: async (req: Request, payload: any, node: HttpJWTUserService) => {
         const { repository } = node.state
         const user = await new Bus(node, repository).dispatch({
             type: RepoRestActions.GET_BY_ID,
-            payload: payload,
+            payload: payload?.id,
         })
         return user
     }

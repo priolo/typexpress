@@ -2,7 +2,7 @@ import express, { Router } from "express"
 import serveIndex from "serve-index"
 import fs from "fs"
 import p from "path"
-import { log, LOG_OPTION } from "../../utils/log"
+import { log, LOG_TYPE } from "../../utils/log"
 import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServiceBase"
 
 
@@ -35,11 +35,11 @@ export class HttpStaticService extends HttpRouterServiceBase {
 	protected async onInit(): Promise<void> {
 		const { dir, path } = this.state
 		if (!fs.existsSync(dir)) {
-			log(`Directory "${dir}" non trovata. Provo a crearla io`, LOG_OPTION.DEBUG)
+			log(`Directory "${dir}" not found. I try to create it myself`, LOG_TYPE.INFO)
 			fs.mkdirSync(dir)
 		}
 		await super.onInit()
-		log(`HttpStaticService:start:path:[${path}]>[${dir}]`, LOG_OPTION.DEBUG)
+		log(`HttpStaticService:start:path:[${path}]>[${dir}]`, LOG_TYPE.INFO)
 	}
 
 	protected onBuildRouter(): Router {

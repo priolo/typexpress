@@ -2,7 +2,7 @@ import { Action } from "../node/Action";
 import { INode } from "../node/INode";
 import { NodeState } from "../node/NodeState";
 import { nodePath } from "../utils";
-import { log, LOG_OPTION } from "../../utils/log";
+import { log, LOG_TYPE } from "../../utils/log";
 import { PathFinder } from "./PathFinder";
 import { debounce } from "../../utils/timer"
 /**
@@ -69,7 +69,7 @@ export class Bus {
 	 * @param action 
 	 */
 	private bufferWaitPush(action: Action): void {
-		log(`bus:path:${this.path}:not_found`, LOG_OPTION.ERROR)
+		log(`bus:path:${this.path}:not_found`, LOG_TYPE.ERROR)
 		if (!action.wait || action.wait == 0) return
 		this.bufferWait.push(action)
 	}

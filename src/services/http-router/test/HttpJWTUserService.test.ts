@@ -5,9 +5,10 @@ import axios from "axios"
 import fs from "fs"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { RepoRestActions } from "../../../core/repo/RepoRestActions"
 import { HeaderStrategy, HttpJWTUserService } from "../jwt/HttpJWTUserService"
 import { Bus } from "../../../core/path/Bus";
+import { RepoRestActions } from "../../../core/repo/RepoRestActions"
+import { RouteJWTUserActions } from "../jwt/HttpJWTUserService"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
@@ -33,8 +34,8 @@ beforeAll(async () => {
 							path: "/login/:id", method: async function (req, res, next) {
 								const id = req.params.id
 								const token = await new Bus(this, "/http/route-jwt").dispatch({
-									type: RouteJWTUserActions.LOGIN,
-									payload: { id, res },
+									type: RouteJWTUserActions.GENERATE_TOKEN,
+									payload: {id},
 								})
 								res.json({ token })
 							}

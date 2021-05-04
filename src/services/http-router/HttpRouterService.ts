@@ -1,6 +1,6 @@
 
 import express, { Request, Response, Router } from "express";
-import { log, LOG_OPTION } from "../../utils/log";
+import { log, LOG_TYPE } from "../../utils/log";
 import { HttpRouterServiceBase } from "./HttpRouterServiceBase";
 
 /**
@@ -44,7 +44,7 @@ export class HttpRouterService extends HttpRouterServiceBase {
 		// ciclo tutti i routers a disposizione e li inserisco nell'oggetto Router
 		routers.forEach((route: IRouteParam) => {
 			let method:IRouteMethod = (typeof route.method === "string")? this[route.method] : route.method
-			if ( !method ) { log(`impossibile creare il nodo`, LOG_OPTION.ERROR, route);  return; }
+			if ( !method ) { log(`impossibile creare il nodo`, LOG_TYPE.ERROR, route);  return; }
 
 			const verb = (route.verb ?? "get").toLocaleLowerCase()
 			router[verb](route.path ?? "/", method.bind(this))

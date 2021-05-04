@@ -45,13 +45,16 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	}
 
 	/**
-	 * Restituisce la "Connection" nativa typeorm
+	 * Restituisce la "Connection" nativa typeorm prelevandola dal parent
 	 */
 	protected get connection(): Connection {
 		const ts = new PathFinder(this).getNode<TypeormService>("..")
 		return ts.connection
 	}
 
+	/**
+	 * restituisce il name del model 
+	 */
 	protected get model(): any {
 		const { model } = this.state
 		return typeof model == "object" ? model?.name : model
@@ -86,7 +89,8 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 				continue
 			}
 
-			// is a Action
+			// is a Action ti dispatch
+			// { type: RepoStructActions.TRUNCATE }, 
 			if ( seed.type ) {
 				await this.dispatch(seed)
 				continue

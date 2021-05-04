@@ -45,9 +45,7 @@ export class NodeConf extends NodeState {
 	 * @param conf 
 	 */
 	private async nodeBuild(conf: any = {}): Promise<void> {
-		const confChildren: any[] = conf.children ?? []
-		//const defaultConfig = this.defaultConfig
-		//if (defaultConfig.children instanceof Array) confChildren = [...confChildren, ...defaultConfig.children]
+		const confChildren: any[] = (conf.children ?? []).filter(child => child != null)
 		const config = { ...this.defaultConfig, ...conf }
 		delete config.children
 		delete config.class
@@ -65,9 +63,9 @@ export class NodeConf extends NodeState {
 
 		// se questo nodo è il nodo "root" allora richiama ricorsivamente tutti i nodi
 		// per chiamare l'evento onInitFinish
-		if ( this.parent == null ) {
-			await nodeForeach(this, async (n)=>{
-				if ( n instanceof NodeConf ) await (<NodeConf>n).onInitFinish()
+		if (this.parent == null) {
+			await nodeForeach(this, async (n) => {
+				if (n instanceof NodeConf) await (<NodeConf>n).onInitFinish()
 			})
 		}
 	}
