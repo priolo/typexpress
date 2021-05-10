@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/ServiceBase"
-import { log, LOG_TYPE } from "../../utils/log";
+import { log, LOG_TYPE } from "@priolo/jon-utils";
 
 
 export enum ErrorServiceActions {

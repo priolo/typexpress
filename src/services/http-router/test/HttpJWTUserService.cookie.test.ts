@@ -10,6 +10,7 @@ import { HttpJWTUserService } from "../jwt/HttpJWTUserService";
 import { Bus } from "../../../core/path/Bus";
 import { RouteJWTUserActions } from "../jwt/HttpJWTUserService"
 import { RepoRestActions } from "../../../core/repo/RepoRestActions"
+import { RepoStructActions } from "../../../core/repo/RepoStructActions";
 
 
 const PORT = 5001
@@ -106,6 +107,8 @@ beforeAll(async () => {
 			secret: "secret_word!!!"
 		},
 	])
+
+	await new Bus(root, "/typeorm/user").dispatch({ type: RepoStructActions.SEED })
 })
 
 afterAll(async () => {

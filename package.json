@@ -30,7 +30,12 @@
 		"admin": "node dist/services/http-admin/start.js",
 		"pub": "tsc && npm publish"
 	},
+	"//dependencies": {
+		"@priolo/jon-utils#local": "file:C://Users//iorio//Documents//jon-utils",
+		"@priolo/jon-utils": "^0.2.2"
+	},
 	"dependencies": {
+		"@priolo/jon-utils": "file:C://Users//iorio//Documents//jon-utils",
 		"axios": "^0.21.1",
 		"connect-typeorm": "^1.1.4",
 		"cookie-parser": "^1.4.5",
@@ -53,22 +58,22 @@
 		"typeorm": "^0.2.31"
 	},
 	"devDependencies": {
+		"@tsconfig/node14": "^1.0.0",
+		"@types/cookie-parser": "^1.4.2",
+		"@types/cors": "^2.8.10",
 		"@types/express": "^4.17.8",
 		"@types/express-graphql": "^0.9.0",
 		"@types/express-session": "^1.17.1",
-		"@types/cors": "^2.8.10",
-		"@types/graphql": "^14.5.0",
-		"@types/node": "^14.14.7",
-		"@types/jest": "^26.0.15",
-		"@types/serve-index": "^1.7.30",
-		"@types/jsonwebtoken": "^8.5.0",
-		"@types/nodemailer": "^6.4.0",
-		"@types/cookie-parser": "^1.4.2",
-		"@types/multer": "^1.4.5",
 		"@types/form-data": "^2.5.0",
+		"@types/graphql": "^14.5.0",
+		"@types/jest": "^26.0.15",
+		"@types/jsonwebtoken": "^8.5.0",
+		"@types/multer": "^1.4.5",
+		"@types/node": "^14.14.7",
+		"@types/nodemailer": "^6.4.0",
+		"@types/serve-index": "^1.7.30",
 		"jest": "^26.6.3",
-		"typescript": "^4.1.5",
-		"@tsconfig/node14": "^1.0.0"
+		"typescript": "^4.1.5"
 	},
 	"jest": {
 		"testURL": "http://localhost:5001"

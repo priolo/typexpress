@@ -8,6 +8,7 @@ import { RepoRestActions } from "../../../core/repo/RepoRestActions";
 import { RepoStructActions } from "../../../core/repo/RepoStructActions";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { TypeormActions } from "../TypeormRepoBaseService";
+import { Bus } from "../../../core/path/Bus";
 
 
 const dbPath = path.join(__dirname, "/database.sqlite")
@@ -105,6 +106,8 @@ beforeAll(async () => {
 			}
 		]
 	)
+
+	await new Bus(root, "/typeorm/item").dispatch({ type: RepoStructActions.SEED })
 })
 
 afterAll(async () => {

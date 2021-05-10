@@ -4,7 +4,7 @@ import fs from "fs"
 import { ServiceBase } from "../../core/ServiceBase"
 import http, { Server } from "http"
 import https from "https"
-import { log, LOG_TYPE } from "../../utils/log"
+import { log, LOG_TYPE } from "@priolo/jon-utils"
 import { IHttpRouter } from "./IHttpRouter"
 import cookieParser from 'cookie-parser'
 import cors from "cors"

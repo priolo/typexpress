@@ -2,7 +2,7 @@ import express, { Router } from "express"
 import serveIndex from "serve-index"
 import fs from "fs"
 import p from "path"
-import { log, LOG_TYPE } from "../../utils/log"
+import { log, LOG_TYPE } from "@priolo/jon-utils"
 import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServiceBase"
 
 

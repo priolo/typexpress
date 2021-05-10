@@ -6,6 +6,7 @@ import { TypeormRepoTreeService } from "../TypeormRepoTreeService";
 import { RepoTreeActions } from "../../../core/repo/RepoTreeActions";
 import { Column, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
 import { RepoStructActions } from "../../../core/repo/RepoStructActions";
+import { Bus } from "../../../core/path/Bus";
 
 
 const dbPath = path.join(__dirname, "/database.sqlite")
@@ -96,6 +97,8 @@ beforeAll(async () => {
 			],
 		}
 	])
+
+	await new Bus(root, "/typeorm/index").dispatch({ type: RepoStructActions.SEED })
 })
 
 afterAll(async () => {

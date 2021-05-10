@@ -1,6 +1,6 @@
 
 import express, { Request, Response, Router } from "express";
-import { log, LOG_TYPE } from "../../utils/log";
+import { log, LOG_TYPE } from "@priolo/jon-utils"
 import { HttpRouterServiceBase } from "./HttpRouterServiceBase";
 
 /**

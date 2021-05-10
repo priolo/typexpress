@@ -12,10 +12,7 @@ import { HttpRouterRestServiceBase } from "./services/http-router/rest/HttpRoute
 import { HttpRouterRestRepoService } from "./services/http-router/rest/HttpRouterRestRepoService"
 import { RouteJWTUserActions } from "./services/http-router"
 
-
 import EmailService, { EmailActions } from "./services/email";
-
-import { log, LOG_LEVEL, LOG_TYPE } from "./utils/log"
 
 
 // CORE
@@ -56,12 +53,4 @@ export {
 	Typeorm,
 	Router,
 	Email,
-}
-
-
-// UTIL
-export {
-	log,
-	LOG_LEVEL,
-	LOG_TYPE,
 }

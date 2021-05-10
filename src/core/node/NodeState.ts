@@ -1,6 +1,6 @@
 import { Node } from "./Node";
 import { Action } from "./Action";
-import { log, LOG_TYPE } from "../../utils/log";
+import { log, LOG_TYPE } from "@priolo/jon-utils";
 
 
 /**

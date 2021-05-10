@@ -38,7 +38,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 				const repo = this.getRepo()
 				return await repo.find(query)
 			},
-			[RepoStructActions.SEED]: async (state, seeds) => this.seed(seeds),
+			[RepoStructActions.SEED]: async (state, seeds) => this.seed(seeds ?? state.seeds),
 			[RepoStructActions.TRUNCATE]: async (state) => this.truncate(),
 			[RepoStructActions.CLEAR]: async (state) => this.clear(),
 		}
@@ -72,11 +72,11 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 
 	
 
-	protected async onInitFinish(): Promise<void> {
-		await super.onInitFinish()
-		const { seeds } = this.state
-		await this.seed(seeds)
-	}
+	// protected async onInitFinish(): Promise<void> {
+	// 	await super.onInitFinish()
+	// 	const { seeds } = this.state
+	// 	await this.seed(seeds)
+	// }
 
 	private async seed(seeds:Array<any>): Promise<void> {
 		if (!Array.isArray(seeds)) return

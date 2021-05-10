@@ -2,9 +2,9 @@ import { Action } from "../node/Action";
 import { INode } from "../node/INode";
 import { NodeState } from "../node/NodeState";
 import { nodePath } from "../utils";
-import { log, LOG_TYPE } from "../../utils/log";
+import { log, LOG_TYPE } from "@priolo/jon-utils";
 import { PathFinder } from "./PathFinder";
-import { debounce } from "../../utils/timer"
+import { debounce } from "@priolo/jon-utils"
 /**
  * Permette di consegnare un ACTION ad un NODE
  * tramite il suo PATH
