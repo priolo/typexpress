@@ -88,6 +88,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		return server
 	}
 
+	
 	private async listenServer(): Promise<http.Server> {
 		const { port } = this.state
 		return new Promise<http.Server>((res, rej) => {
@@ -101,6 +102,10 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		})
 	}
 
+	/**
+	 * Setta l'engine handlebars
+	 * @returns 
+	 */
 	private buildRender(): void {
 		const { render } = this.state
 		if (!render) return

@@ -1,6 +1,6 @@
 import EmailService, {EmailActions, IEmailAccount, IEmail} from "./EmailService"
 
-export default EmailService
+export default SocketService
 
 export {
 	EmailActions,
