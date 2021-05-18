@@ -1,4 +1,6 @@
 import { ServiceBase } from "../../core/ServiceBase"
+import nodemailer, { Transporter } from "nodemailer"
+import emailCheck from "email-check"
 import WebSocket from "ws"
 
 
@@ -11,15 +13,12 @@ export enum SocketServerActions {
 }
 
 
-class SocketServerService extends ServiceBase {
+class PushNotificationService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
 			...super.defaultConfig,
-			name: "ws-server",
-			autostart: true,
-			post: 5006,
-			clients: [],
+			name: "push",
 		}
 	}
 
@@ -173,7 +172,7 @@ class SocketServerService extends ServiceBase {
 
 }
 
-export default SocketServerService
+export default PushNotificationService
 
 interface Client {
 	remoteAddress: string,
