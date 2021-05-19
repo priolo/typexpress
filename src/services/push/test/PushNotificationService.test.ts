@@ -1,39 +1,22 @@
 /**
  * @jest-environment node
  */
+import { Bus } from "../../../core/path/Bus"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import SocketServerService, { SocketServerActions } from "../SocketServerService"
-import WebSocket from "ws"
+import PushNotificationService, { PushNotificationActions } from "../PushNotificationService"
+import { nodeToJson } from "../../../core/utils"
+import path from "path"
 
 
-const PORT = 5004
 let root = null
-
-
-
+const pathAutentication = path.join(__dirname, "../../../../extreme-citadel-739-firebase-adminsdk-9re8d-24e3027953.json")
 
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
-			port: PORT,
-			onConnect: function (client) {
-				console.log("onConnection!!!")
-			},
-			onMessage: async function (client, data) {
-				await this.dispatch({
-					type: SocketServerActions.SEND,
-					payload: { client, data }
-				})
-				await this.dispatch({
-					type: SocketServerActions.DISCONNECT,
-					payload: client
-				})
-			},
-			onDisconnect: function ( client) {
-				console.log("onDisconnect")
-			}
+			class: "push",
+			credential: require(pathAutentication),
 		}
 	)
 })
@@ -44,35 +27,21 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const wss = new PathFinder(root).getNode<SocketServerService>("/ws-server")
-	expect(wss).toBeInstanceOf(SocketServerService)
+	const node = new PathFinder(root).getNode<PushNotificationService>("/push")
+	// console.log(nodeToJson(node))
+	expect(node).toBeInstanceOf(PushNotificationService)
 })
 
-test("client connetc/send/close", async () => {
-	
-	const dateNow = Date.now().toString()
-	let result
+test("send notification", async () => {
 
-	const ws = new WebSocket(`ws://localhost:${PORT}/`);
+	const messageId = await new Bus(root, "/push").dispatch({
+		type: PushNotificationActions.SEND,
+		payload: {
+			token: "fbOYl4cnQb6SAWErSeosfM:APA91bEDh8eaNh8Pc22g0drfAvf9afGOU39yXxbbFCqlxtl5Nz9sd6zXc4z1CKYSfHTGzK7ExcbrpDwAYnz5GmxWY5-sGv36Kb4KLqBSylDj7r5PLAfJgK4tMdpeDQO02IrWmBr2K0Sm",
+			notification: { body: "messaggio" }
+		},
+	})
 
-	await (async ()=> {
-		let resolver = null
-		const promise = new Promise(res => resolver = res)
+	console.log( messageId ) 
 
-		ws.on('open', function open() {
-			ws.send(dateNow)
-		});
-	
-		ws.on('message', (data) => {
-			result = data
-		});
-	
-		ws.on('close', function close() {
-			resolver()
-		});
-		return promise
-	})()
-
-	expect(dateNow).toBe(result)
-	
 })

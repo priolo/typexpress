@@ -1,15 +1,15 @@
 import { ServiceBase } from "../../core/ServiceBase"
-import nodemailer, { Transporter } from "nodemailer"
-import emailCheck from "email-check"
-import WebSocket from "ws"
+
+import * as admin from "firebase-admin"
+import { ErrorServiceActions } from "../error/ErrorService"
 
 
 
-export enum SocketServerActions {
-	START = "ws:start",
-	STOP = "ws:stop",
-	SEND = "ws:send",
-	DISCONNECT = "ws:disconnect",
+
+
+
+export enum PushNotificationActions {
+	SEND = "pn:send",
 }
 
 
@@ -19,166 +19,63 @@ class PushNotificationService extends ServiceBase {
 		return {
 			...super.defaultConfig,
 			name: "push",
+			credential: "",
 		}
 	}
 
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[SocketServerActions.START]: async (state) => {
-				await this.startListener()
+			// https://firebase.google.com/docs/cloud-messaging/send-message
+			[PushNotificationActions.SEND]: async (state, message) => {
+				return await this.sendNotify(message)
 			},
-			[SocketServerActions.STOP]: async (state) => {
-				await this.stopListener()
-			},
-			[SocketServerActions.SEND]: (state, payload) => {
-				const { client, data } = payload
-				this.sendToClient(client, data)
-			},
-			[SocketServerActions.DISCONNECT]: (state, client) => {
-				this.disconnectClient(client)
-			},
+
 		}
 	}
 
-	private server: WebSocket.Server = null
+	private app: admin.app.App = null
+
 
 	protected async onInit() {
 		super.onInit()
-		const { autostart } = this.state
-		if (!autostart) return
-		await this.startListener()
 
-	}
+		// JSON credential (from firebase console)
+		const { credential } = this.state
 
-	protected async onDestroy() {
-		super.onDestroy()
-		this.stopListener()
-
-	}
-
-
-
-	private async startListener() {
-		if (this.server) return
-		const { port } = this.state
-		let resolve
-		const promise = new Promise((res,rej)=>resolve=res)
-
-		// se non c'e la porta allora agganciati al servizio htt superiore
-		// TODO
-
-		this.server = new WebSocket.Server(
-			{ port },
-			() => {
-				resolve() 
-				console.log("server:callback") 
-			}
-		)
-		await this.buildEventsServer()
-
-		return promise
-	}
-
-	private async stopListener() {
-		if (!this.server) return
-		this.server.close()
-		this.server = null
-	}
-
-	private sendToClient(client, data) {
-		const cws:WebSocket = this.findCWSByClient(client)
-		cws.send(data)
-	}
-
-	private disconnectClient(client) {
-		const cws:WebSocket = this.findCWSByClient(client)
-		cws.close()
-		
-	}
-
-
-
-
-
-	private findCWSByClient(client:Client) {
-		const iter = this.server.clients as Set<any>
-		for (const cws of iter) {
-			const socket = cws._socket
-			if (clientIsEqual(socket, client)) {
-				return cws
-			}
+		// initialize app
+		try {
+			this.app = admin.initializeApp({
+				credential: admin.credential.cert(credential),
+			})
+		} catch (error) {
+			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "init", error } })
+			throw error
 		}
-		return null
-	}
-	private findClientByCWS(cws:WebSocket) {
-		const { clients } = this.state
-		const socket = (cws as any)._socket
-		const client = clients.find(client => clientIsEqual(client, socket))
-		return client
 	}
 
+	// protected async onDestroy() {
+	// 	super.onDestroy()
+	// }
 
 
-
-
-
-
-	private async buildEventsServer() {
-
-		this.server.on('connection', (cws, req) => {
-			const { onConnect } = this.state
-			const client = {
-				remoteAddress: req.connection.remoteAddress,
-				remotePort: req.connection.remotePort
-			}
-			if (onConnect) onConnect.bind(this)(client)
-			this.addClient(client)
-			this.buildEventsClient(cws)
-		})
-
-		this.server.on("error", (error) => {
-			console.log("server:error:")
-			console.log(error)
-			console.log("---")
-		})
-
-		this.server.on("close", (cws) => {
-			console.log("server:close:")
-			const client = this.findClientByCWS(cws)
-			this.removeClient(client)
-		})
+	/**
+	 * Invia un messaggio ad uno specifico device
+	 * @param message  https://firebase.google.com/docs/reference/admin/node/admin.messaging.Message?hl=en  
+	 * messaggio da inviare
+	 * @returns 
+	 * id del messaggio inviato (e non ci sono errori)
+	 */
+	private async sendNotify(message: admin.messaging.Message): Promise<string> {
+		// Send a message to the device corresponding to the provided registration token.
+		// return the message id
+		try {
+			return await admin.messaging().send(message)
+		} catch (error) {
+			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "send", error } })
+			throw error
+		}
 	}
-
-	private buildEventsClient(cws) {
-		const { onMessage } = this.state
-		cws.on('message', data => {
-			const client = this.findClientByCWS(cws)
-			if (onMessage) onMessage.bind(this)(client, data)
-		})
-	}
-
-	private addClient(client) {
-		const { clients } = this.state
-		clients.push(client)
-		this.setState({ clients })
-	}
-
-	private removeClient(client:Client) {
-		const { clients } = this.state
-		const clientsnew = clients.filter(c => !clientIsEqual(client, c))
-		this.setState({ clients: clientsnew })
-	}
-
 }
 
 export default PushNotificationService
-
-interface Client {
-	remoteAddress: string,
-	remotePort: number,
-}
-
-function clientIsEqual(client:Client, ws:Client): boolean {
-	return client.remoteAddress == ws.remoteAddress && client.remotePort == ws.remotePort
-}

@@ -3,7 +3,7 @@ import { log, LOG_TYPE } from "@priolo/jon-utils";
 
 
 export enum ErrorServiceActions {
-    NOTIFY = "notify"
+	NOTIFY = "notify"
 }
 
 
@@ -12,22 +12,28 @@ export enum ErrorServiceActions {
  */
 export class ErrorService extends ServiceBase {
 
-    get defaultConfig(): any {
+	get defaultConfig(): any {
 		return {
 			...super.defaultConfig,
 			name: "error",
 		}
 	}
 
-    get dispatchMap(): any {
+	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[ErrorServiceActions.NOTIFY]: async (state, error, sender) => this.notify(error, sender),
+			[ErrorServiceActions.NOTIFY]: async (state, error, sender) => this.notify(sender, error),
 		}
 	}
 
-    private notify ( error:string, sender:string ): void {
-        log(`${sender}::${error}`, LOG_TYPE.ERROR)
-    }
+	private notify(sender: string, error: Error|string): void {
+		if (typeof error == "string") error = { code: error }
+		log(`${sender}::${error.code}`, LOG_TYPE.ERROR)
+	}
 
+}
+
+interface Error {
+	code:string,
+	error?: any,
 }
