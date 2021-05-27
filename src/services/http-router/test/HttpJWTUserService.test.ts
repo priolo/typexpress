@@ -8,7 +8,6 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { HeaderStrategy, HttpJWTUserService } from "../jwt/HttpJWTUserService"
 import { Bus } from "../../../core/path/Bus";
 import { RepoRestActions } from "../../../core/repo/RepoRestActions"
-import { RouteJWTUserActions } from "../jwt/HttpJWTUserService"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
@@ -32,11 +31,17 @@ beforeAll(async () => {
 					routers: [
 						{
 							path: "/login/:id", method: async function (req, res, next) {
-								const id = req.params.id
-								const token = await new Bus(this, "/http/route-jwt").dispatch({
-									type: RouteJWTUserActions.GENERATE_TOKEN,
-									payload: {id},
+								const userId = req.params.id
+
+								// get user or any payload
+								const user = await new Bus(this, "/typeorm/user").dispatch({
+									type: RepoRestActions.GET_BY_ID,
+									payload: userId,
 								})
+
+								const jwtService = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
+								const token = await jwtService.putPayload(user, res)
+
 								res.json({ token })
 							}
 						}
@@ -52,7 +57,7 @@ beforeAll(async () => {
 							class: "http-router",
 							path: "/user",
 							routers: [
-								{ method: (req, res, next) => res.json(req.user) },
+								{ method: (req, res, next) => res.json(req.jwtPayload) },
 							]
 						}
 					]
@@ -126,5 +131,5 @@ test("se accedo con il token nei cookies non mi da errore", async () => {
 		`/user`,
 		{ headers: { Authorization: `Bearer ${token}` } }
 	)
-	expect(reuser2).toEqual(user2)
+	expect(reuser2).toEqual(expect.objectContaining(user2)) 
 })

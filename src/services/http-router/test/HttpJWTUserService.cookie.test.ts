@@ -8,7 +8,6 @@ import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { HttpJWTUserService } from "../jwt/HttpJWTUserService";
 import { Bus } from "../../../core/path/Bus";
-import { RouteJWTUserActions } from "../jwt/HttpJWTUserService"
 import { RepoRestActions } from "../../../core/repo/RepoRestActions"
 import { RepoStructActions } from "../../../core/repo/RepoStructActions";
 
@@ -37,12 +36,18 @@ beforeAll(async () => {
 							path: "/login/:id", method: async function (req, res, next) {
 								const userId = req.params.id
 
-								// get user
+								// get user or any payload
 								const user = await new Bus(this, "/typeorm/user").dispatch({
 									type: RepoRestActions.GET_BY_ID,
 									payload: userId,
 								})
 
+								// get service and put payload
+								const jwtService = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
+								await jwtService.putPayload(user, res)
+
+								// other method witout get service
+								/*
 								// create token
 								const token = await new Bus(this, "/http/route-jwt").dispatch({
 									type: RouteJWTUserActions.GENERATE_TOKEN,
@@ -50,7 +55,11 @@ beforeAll(async () => {
 								})
 
 								// metto il token nei cookie
-								res.cookie('token', token, { maxAge: 900000, httpOnly: true })
+								
+								*/
+
+								//res.cookie('token', token, { maxAge: 900000, httpOnly: true })
+
 								res.sendStatus(200)
 							}
 						}
@@ -67,7 +76,7 @@ beforeAll(async () => {
 							routers: [
 								{
 									method: (req, res, next) => {
-										res.json(req.user)
+										res.json(req.jwtPayload)
 									}
 								},
 							]

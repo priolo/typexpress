@@ -14,7 +14,6 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 		return {
 			...super.defaultConfig,
 			path: "/",
-			cors: {},
 		}
 	}
 
@@ -30,7 +29,7 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 		this.router = null
 	}
 
-	protected abstract onBuildRouter(): Router
+	protected onBuildRouter(): Router
 
 	use(router: Router, path:string="/"): void {
 		this.router.use(path, router)
