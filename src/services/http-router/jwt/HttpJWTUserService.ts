@@ -80,19 +80,24 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
 
 }
 
-export const CookieStrategy:JWTStrategy = {
-    getToken: (req: Request) => {
-        const { token } = req.cookies
-        return token
-    },
-    putToken: ( token:string, res:Response) => {
-        res.cookie('token', token, { 
-            maxAge: 900000, 
-            //httpOnly: true,
-            //domain: "localhost:8080"
-        })
-    },
+
+export function CookieStrategyFarm(options):JWTStrategy {
+    return {
+        getToken: (req: Request) => {
+            const { token } = req.cookies
+            return token
+        },
+        putToken: ( token:string, res:Response) => {
+            res.cookie('token', token, options)
+        },
+    }
 }
+
+export const CookieStrategy:JWTStrategy = CookieStrategyFarm({ 
+    maxAge: 900000, 
+    httpOnly: true,
+    //domain: "localhost:8080"
+})
 
 export const HeaderStrategy:JWTStrategy = {
     getToken: (req: Request) => {

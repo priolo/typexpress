@@ -10,7 +10,7 @@ import { ModelBase } from "./services/typeorm/models/ModelBase"
 import { HttpRouterService } from "./services/http-router/HttpRouterService"
 import { HttpRouterRestServiceBase } from "./services/http-router/rest/HttpRouterRestServiceBase"
 import { HttpRouterRestRepoService } from "./services/http-router/rest/HttpRouterRestRepoService"
-import { HttpJWTUserService, RouteJWTUserActions, HeaderStrategy, CookieStrategy } from "./services/http-router/jwt/HttpJWTUserService"
+import { HttpJWTUserService, RouteJWTUserActions, HeaderStrategy, CookieStrategy, CookieStrategyFarm } from "./services/http-router/jwt/HttpJWTUserService"
 
 import EmailService, { EmailActions } from "./services/email";
 
@@ -43,6 +43,7 @@ const Router = {
 		Strategies: {
 			Header: HeaderStrategy,
 			Cookie: CookieStrategy,
+			CookieFarm: CookieStrategyFarm,
 		}
 	}
 }
