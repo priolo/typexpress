@@ -37,8 +37,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
 
     
     protected onBuildRouter(): Router {
-        //super.onBuildRouter()
-        const router = express.Router()
+        const router = super.onBuildRouter()
 
         router.use(async (req: Request, res: Response, next) => {
             const { jwt, strategy } = this.state

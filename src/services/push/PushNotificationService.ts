@@ -1,10 +1,7 @@
 import { ServiceBase } from "../../core/ServiceBase"
-
-import * as admin from "firebase-admin"
 import { ErrorServiceActions } from "../error/ErrorService"
-
-
-
+import { Bus } from "../../core/path/Bus"
+import * as admin from "firebase-admin"
 
 
 
@@ -12,13 +9,15 @@ export enum PushNotificationActions {
 	SEND = "pn:send",
 }
 
-
 class PushNotificationService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
 			...super.defaultConfig,
 			name: "push",
+			// le credenziali per SDK FIREBASE. 
+			// Per i test l'ho generata qui:
+			// https://console.firebase.google.com/u/0/project/extreme-citadel-739/settings/serviceaccounts/adminsdk
 			credential: "",
 		}
 	}
@@ -70,7 +69,9 @@ class PushNotificationService extends ServiceBase {
 		// Send a message to the device corresponding to the provided registration token.
 		// return the message id
 		try {
-			return await admin.messaging().send(message)
+			const messageId = await admin.messaging().send(message)
+			debugger
+			return messageId
 		} catch (error) {
 			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "send", error } })
 			throw error

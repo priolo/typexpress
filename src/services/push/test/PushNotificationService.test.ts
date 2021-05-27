@@ -8,9 +8,16 @@ import PushNotificationService, { PushNotificationActions } from "../PushNotific
 import { nodeToJson } from "../../../core/utils"
 import path from "path"
 
+/*
+key per SDK FIREBASE
+https://console.firebase.google.com/u/0/project/extreme-citadel-739/settings/serviceaccounts/adminsdk
+admin progetto
+https://console.cloud.google.com/iam-admin/iam?authuser=0&folder=&organizationId=&project=extreme-citadel-739
+*/
+
 
 let root = null
-const pathAutentication = path.join(__dirname, "../../../../extreme-citadel-739-firebase-adminsdk-9re8d-24e3027953.json")
+const pathAutentication = path.join(__dirname, "../../../../extreme-citadel-739-firebase-adminsdk-9re8d-2a0bd23afd.json")
 
 beforeAll(async () => {
 	root = await RootService.Start(
@@ -34,14 +41,22 @@ test("su creazione", async () => {
 
 test("send notification", async () => {
 
+	// const messageId = await new Bus(root, "/push").dispatch({
+	// 	type: PushNotificationActions.SEND,
+	// 	payload: {
+	// 		token: "eV7vosX7RaKAQo_a72jTcS:APA91bElESXDC_yWOfSGpp-YULjoMC8SfnriOC7_4fciohThzjhdWV_Z598ygxdvUlpC2gEo11hkIAw9GJoS69f0gbUw3U2e9sOSc9pLz51HNtWpy8ygMvdT1EBtIoxgQFLl3KN_rmSf",
+	// 		notification: { body: "messaggio" },
+	// 	},
+	// })
+	// expect(messageId).toMatch("projects/extreme-citadel-739/messages")
+
+	const message = {
+		data: { score: '850'},
+		topic: 'highScores',
+	}
 	const messageId = await new Bus(root, "/push").dispatch({
 		type: PushNotificationActions.SEND,
-		payload: {
-			token: "fbOYl4cnQb6SAWErSeosfM:APA91bEDh8eaNh8Pc22g0drfAvf9afGOU39yXxbbFCqlxtl5Nz9sd6zXc4z1CKYSfHTGzK7ExcbrpDwAYnz5GmxWY5-sGv36Kb4KLqBSylDj7r5PLAfJgK4tMdpeDQO02IrWmBr2K0Sm",
-			notification: { body: "messaggio" }
-		},
+		payload: message,
 	})
-
-	console.log( messageId ) 
-
+	expect(messageId).toMatch("projects/extreme-citadel-739/messages")
 })

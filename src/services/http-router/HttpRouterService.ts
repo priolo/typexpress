@@ -2,7 +2,7 @@
 import express, { Request, Response, Router } from "express";
 import { log, LOG_TYPE } from "@priolo/jon-utils"
 import { HttpRouterServiceBase } from "./HttpRouterServiceBase";
-import cors from "cors"
+
 
 /**
  * Mappa una richiesta http rest
@@ -14,8 +14,6 @@ export class HttpRouterService extends HttpRouterServiceBase {
 		return {
 			...super.defaultConfig,
 			name: "route",
-			//headers: {"accept":"json"}				// https://expressjs.com/en/4x/api.html#req.accepts
-			cors: null,									// http://expressjs.com/en/resources/middleware/cors.html#configuration-options
 			routers: [ /*
 				{
 					path: "/test", 						// string:default:"/"
@@ -28,25 +26,10 @@ export class HttpRouterService extends HttpRouterServiceBase {
 
 
 	protected onBuildRouter(): Router {
-		//super.onBuildRouter()
+		const router = super.onBuildRouter()
 		const { routers, headers, cors:corsOptions } = this.state
-		const router = express.Router()
 
-		// se c'e' un vincolo di "accept" allora lo utilizzo
-		if ( headers ) {
-			router.use ( (req,res,next) => {
-				const chkHeaders = Object.keys(req.headers).some ( k => {
-					const value = headers[k.toLocaleLowerCase()]
-					return (req.headers[k] as string).toLowerCase().indexOf(value) != -1
-				})
-				next(!chkHeaders?"router":undefined)
-			})
-		}
-
-		// se c'e' un "cors options" allora applico il 
-		if ( corsOptions ) {
-			router.use ( cors(corsOptions) )
-		}
+		
 
 		// ciclo tutti i routers a disposizione e li inserisco nell'oggetto Router
 		routers.forEach((route: IRouteParam) => {

@@ -13,12 +13,12 @@ import { ErrorService } from "../services/error/ErrorService"
 export class RootService extends ServiceBase {
 
 	// [facility]: crea e avvia un json
-	static async Start ( config:any ): Promise<RootService> {
-		if ( !Array.isArray(config)) config = [config]
+	static async Start(config: any): Promise<RootService> {
+		if (!Array.isArray(config)) config = [config]
 		const root = new RootService()
 		await root.dispatch({
 			type: ConfActions.START,
-			payload: { 
+			payload: {
 				children: config
 			}
 		})
@@ -26,7 +26,7 @@ export class RootService extends ServiceBase {
 	}
 
 	// [facility] ferma un servizio
-	static async Stop ( service:ServiceBase ) {
+	static async Stop(service: ServiceBase) {
 		if (service) await service.dispatch({ type: ConfActions.STOP })
 	}
 
@@ -34,10 +34,12 @@ export class RootService extends ServiceBase {
 		super(name)
 
 		// services base
-		this.addChild(new FarmService())
+		const farm = new FarmService()
+		this.addChild(farm)
 		const error = new ErrorService()
-		error.dispatch({type:ConfActions.START})
+		error.dispatch({ type: ConfActions.START })
 		this.addChild(error)
+		// [II] TO DO logService
 
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {
@@ -45,9 +47,12 @@ export class RootService extends ServiceBase {
 			await this.dispatch({ type: ConfActions.STOP })
 		})
 	}
-	
-	get defaultConfig():any { return { ...super.defaultConfig,
-		name: "root",
-	}}
+
+	get defaultConfig(): any {
+		return {
+			...super.defaultConfig,
+			name: "root",
+		}
+	}
 
 }

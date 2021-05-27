@@ -66,11 +66,8 @@ export class HttpSessionService extends HttpRouterServiceBase {
     }
 
     protected onBuildRouter(): Router {
-        //super.onBuildRouter()
+        const router = super.onBuildRouter()
         const { options, typeorm } = this.state
-
-        const router = express.Router()
-        
  
         router.use(async (req,res,next)=>{
             if ( this.store ) {

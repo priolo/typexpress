@@ -21,9 +21,8 @@ export class HttpUploadService extends HttpRouterServiceBase {
     }
 
     protected onBuildRouter(): Router {
-        //super.onBuildRouter()
+        const router = super.onBuildRouter()
         const { baseDir, fields } = this.state
-        const router = express.Router()
 
         var storage = multer.diskStorage({
             destination: function (req, file, cb) {

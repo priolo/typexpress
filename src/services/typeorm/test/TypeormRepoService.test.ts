@@ -113,15 +113,15 @@ test("USER", async () => {
 		type: TypeormActions.FIND,
 		payload: { where: { firstName: "Marina" } }
 	})
-	expect(user).toEqual([
-		{ id: 2, firstName: 'Marina', lastName: 'Bossi', age: 32 }
+	expect(user).toMatchObject([
+		{ firstName: 'Marina', lastName: 'Bossi', age: 32 }
 	])
 
 	// preleva tutti gli USER
 	let users = await rep.dispatch({ type: RepoRestActions.ALL })
-	expect(users).toEqual([
-		{ id: 1, firstName: 'Ivano', lastName: 'Iorio', age: 45 },
-		{ id: 2, firstName: 'Marina', lastName: 'Bossi', age: 32 }
+	expect(users).toMatchObject([
+		{ firstName: 'Ivano', lastName: 'Iorio', age: 45 },
+		{ firstName: 'Marina', lastName: 'Bossi', age: 32 }
 	])
 
 	// modifica lo USER con id = 2

@@ -21,9 +21,8 @@ export class HttpFsService extends HttpRouterServiceBase {
     }
 
     protected onBuildRouter(): Router {
-        //super.onBuildRouter()
+        const router = super.onBuildRouter()
         const { path } = this.state
-        const router = express.Router()
 
         // prelevo i dati della directory
         router.get(path, (req: Request, res: Response, next) => {

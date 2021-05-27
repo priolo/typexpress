@@ -43,9 +43,8 @@ export class HttpStaticService extends HttpRouterServiceBase {
 	}
 
 	protected onBuildRouter(): Router {
-		//super.onBuildRouter()
+		const router = super.onBuildRouter()
 		const { dir, options, index, spaFile } = this.state
-		const router = express.Router()
 
 		router.use(<Router>express.static(dir, options))
 
