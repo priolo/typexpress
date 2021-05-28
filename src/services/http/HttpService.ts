@@ -7,12 +7,15 @@ import https from "https"
 import { log, LOG_TYPE } from "@priolo/jon-utils"
 import { IHttpRouter } from "./IHttpRouter"
 import cookieParser from 'cookie-parser'
-import cors from "cors"
+
 
 export class HttpService extends ServiceBase implements IHttpRouter {
 
 	private app: Express | null = null
 	private server: Server | null = null
+	get testServer():Server {
+		return this.server
+	}
 
 	get defaultConfig(): any {
 		return {

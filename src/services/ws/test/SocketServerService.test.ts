@@ -19,12 +19,12 @@ beforeAll(async () => {
 			class: "ws/server",
 			port: PORT,
 			onConnect: function (client) {
-				console.log("onConnection!!!")
+				console.log("onConnect")
 			},
-			onMessage: async function (client, data) {
+			onMessage: async function (client, message) {
 				await this.dispatch({
 					type: SocketServerActions.SEND,
-					payload: { client, data }
+					payload: { client, message }
 				})
 				await this.dispatch({
 					type: SocketServerActions.DISCONNECT,

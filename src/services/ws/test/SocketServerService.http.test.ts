@@ -16,24 +16,44 @@ let root = null
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
+			class: "http",
 			port: PORT,
-			onConnect: function (client) {
-				console.log("onConnection!!!")
-			},
-			onMessage: async function (client, data) {
-				await this.dispatch({
-					type: SocketServerActions.SEND,
-					payload: { client, data }
-				})
-				await this.dispatch({
-					type: SocketServerActions.DISCONNECT,
-					payload: client
-				})
-			},
-			onDisconnect: function ( client) {
-				console.log("onDisconnect")
-			}
+			children: [
+				{
+					class: "ws/server",
+					name: "ws1",
+					path: "/server1",
+					onConnect: (client) => console.log("ws1::onConnect"),
+					onDisconnect: (client) => console.log("ws1::onDisconnect"),
+					onMessage: async function (client, message) {
+						await this.dispatch({
+							type: SocketServerActions.SEND,
+							payload: { client, message: "from ws1" }
+						})
+						await this.dispatch({
+							type: SocketServerActions.DISCONNECT,
+							payload: client
+						})
+					},
+				},
+				{
+					class: "ws/server",
+					name: "ws2",
+					path: "/server2",
+					onConnect: (client) => console.log("ws2::onConnect"),
+					onDisconnect: (client) => console.log("ws2::onDisconnect"),
+					onMessage: async function (client, message) {
+						await this.dispatch({
+							type: SocketServerActions.SEND,
+							payload: { client, message: "from ws2" }
+						})
+						await this.dispatch({
+							type: SocketServerActions.DISCONNECT,
+							payload: client
+						})
+					},
+				}
+			]
 		}
 	)
 })
@@ -44,35 +64,49 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const wss = new PathFinder(root).getNode<SocketServerService>("/ws-server")
-	expect(wss).toBeInstanceOf(SocketServerService)
+	const ws1 = new PathFinder(root).getNode<SocketServerService>("/http/ws1")
+	expect(ws1).toBeInstanceOf(SocketServerService)
+	const ws2 = new PathFinder(root).getNode<SocketServerService>("/http/ws2")
+	expect(ws2).toBeInstanceOf(SocketServerService)
 })
 
 test("client connetc/send/close", async () => {
-	
-	const dateNow = Date.now().toString()
+
 	let result
+	let client = new WebSocket(`ws://localhost:${PORT}/server1`);
 
-	const ws = new WebSocket(`ws://localhost:${PORT}/`);
-
-	await (async ()=> {
+	await (async () => {
 		let resolver = null
 		const promise = new Promise(res => resolver = res)
-
-		ws.on('open', function open() {
-			ws.send(dateNow)
+		client.on('open', function open() {
+			client.send("from client1")
 		});
-	
-		ws.on('message', (data) => {
+		client.on('message', (data) => {
 			result = data
 		});
-	
-		ws.on('close', function close() {
+		client.on('close', function close() {
 			resolver()
 		});
 		return promise
 	})()
+	expect(result).toBe("from ws1")
 
-	expect(dateNow).toBe(result)
-	
+
+	client = new WebSocket(`ws://localhost:${PORT}/server2`);
+	await (async () => {
+		let resolver = null
+		const promise = new Promise(res => resolver = res)
+		client.on('open', function open() {
+			client.send("from client2")
+		});
+		client.on('message', (data) => {
+			result = data
+		});
+		client.on('close', function close() {
+			resolver()
+		});
+		return promise
+	})()
+	expect(result).toBe("from ws2")
+
 })
