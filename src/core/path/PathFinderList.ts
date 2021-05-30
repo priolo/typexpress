@@ -1,6 +1,8 @@
-import { INode } from "../node/INode";
-import { PathFinder } from "./PathFinder";
+import { INode } from "../node/INode"
+import { PathFinder } from "./PathFinder"
 import { nodeFind } from "../utils"
+import { NodeState } from "../node/NodeState"
+import { obj } from "@priolo/jon-utils"
 
 export class PathFinderList {
 	constructor(nodes: INode[]) {
@@ -17,14 +19,22 @@ export class PathFinderList {
 		return node != null ? new PathFinder(node) : null
 	}
 
+	/**
+	 * Preleva il CHILD tramite il "pattern"
+	 * @param pattern 
+	 * @returns 
+	 */
 	getBy(pattern: string): PathFinder | null {
 		let node = null
 
+		// se è un NUMBER prendo il CHILDREN tramite il suo INDEX
 		let i = parseInt(pattern)
 		if (!isNaN(i)) {
 			node = this.nodes[i]
 
+			// altrimenti...
 		} else {
+			// se inizia con ">" allora fai una ricerca ricorsiva
 			let deep = pattern.startsWith(">")
 			if (deep) pattern = pattern.slice(1)
 			const fn = this.getFnPattern(pattern)
@@ -55,6 +65,13 @@ export class PathFinderList {
 			let className = pattern.slice(1)
 			return (n: INode) => n.constructor && n.constructor.name == className
 
+		// preleva il nodo con le caratteristiche indicate
+		} else if (pattern.startsWith("{")) {
+			const substr = pattern.slice(0,pattern.indexOf("}")+1)
+			const params = JSON.parse(substr)
+			return (node: INode) => {
+				return node instanceof NodeState && obj.objectIsIn(params, node.state)
+			}
 		// by name
 		} else {
 			return (n: INode) => n.name == pattern

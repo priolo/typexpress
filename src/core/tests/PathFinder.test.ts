@@ -13,12 +13,14 @@ beforeAll(async () => {
 			value: 23,
 			children: [
 				{
+					value: 55,
 					name: "child1",
 					children: [
 						{ name: "child1.1" },
 						{ name: "child1.2" },
 						{ 
 							name: "child1.3",
+							value: "pippo",
 							children: [
 								{ name: "child1.3.1" },
 								{ name: "child1.3.2" }
@@ -57,4 +59,11 @@ test("find deep", async () => {
 	expect(node).toBeDefined()
 	node = new PathFinder(root).getNode<any>(`/>*${node.id}`)
 	expect(node).toBeDefined()
+})
+
+test("find by state", async () => {
+	let node = new PathFinder(root).getNode<any>('/>{"value":"pippo"}')
+	expect(node.name).toBe("child1.3")
+	node = new PathFinder(root).getNode<any>('/{"value":55}/child1.2')
+	expect(node.name).toBe("child1.2")
 })

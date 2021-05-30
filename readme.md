@@ -430,7 +430,17 @@ Chiamato dopo il comando STOP e prima della rimozione del nodo dall'albero
 protected async onDestroy(): Promise<void> { }
 
 
+## Filosofia
 
+TOP (tree oriented programming)
+
+- Come in OOP ogni oggetto ha una singola responsabilità
+Ma non esistono piu' "service" o oggetti aggregati
+- Ogni oggetto può essere incapsulato in un parent o di avere un aggregato di children. Quindi l'oggetto diventa un NODE
+- La comunicazione tra NODI è standardizzata (dispatch)
+- L'assenza o il fallimento di un children puo' essere gestita in maniera generica
+- Si puo' accedere a tutte le risorsa dello stesso albero conoscendo la "path" relativa o assoluta
+- Lo stato dell'intero è dovuto alla somma degli stati di ogni NODE
 
 ## Features
 
