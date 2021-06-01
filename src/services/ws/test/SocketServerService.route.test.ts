@@ -3,7 +3,7 @@
  */
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import { SocketServerActions } from "../index"
+import { SocketServerActions } from "../utils"
 import SocketRouteService from "../SocketRouteService"
 
 import WebSocket from "ws"

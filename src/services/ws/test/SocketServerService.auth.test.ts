@@ -6,7 +6,7 @@ import { RootService } from "../../../core/RootService"
 import { Bus } from "../../../core/path/Bus"
 import { JWTActions } from "../../jwt/JWTRepoService"
 import SocketServerService from "../SocketServerService"
-import { SocketServerActions } from "../index"
+import { SocketServerActions } from "../utils"
 
 import WebSocket from "ws"
 
@@ -27,8 +27,9 @@ beforeAll(async () => {
 					class: "ws/server",
 					jwt: "/jwt",
 					onAuth: function (jwtPayload) {
-						return true
+						return jwtPayload!=null
 					},
+					
 					onMessage: async function (client, message, jwtPayload) {
 						await this.dispatch({
 							type: SocketServerActions.SEND,

@@ -4,14 +4,12 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import SocketServerService from "../SocketServerService"
-import { SocketServerActions } from "../index"
+import { SocketServerActions } from "../utils"
 import WebSocket from "ws"
 
 
 const PORT = 5004
 let root = null
-
-
 
 
 beforeAll(async () => {

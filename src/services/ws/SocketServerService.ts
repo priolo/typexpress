@@ -2,32 +2,26 @@ import { Request } from "express"
 import WebSocket from "ws"
 import url, { URLSearchParams } from 'url'
 
-import { ServiceBase } from "../../core/ServiceBase"
 import { HttpService } from "../http/HttpService"
 import { JWTActions } from "../jwt/JWTRepoService"
 import { Bus } from "../../core/path/Bus"
-import { IMessage, SocketServerActions } from "./index"
 import ErrorServiceActions from "../error/ErrorServiceActions"
 
-import { IClient } from "./index"
-import SocketRouteService from "./SocketRouteService"
+import { SocketServerActions, IClient } from "./utils"
+import { SocketCommunicator } from "./SocketCommunicator"
 
 
 
-class SocketServerService extends ServiceBase {
+class SocketServerService extends SocketCommunicator {
 
 	get defaultConfig(): any {
 		return {
 			...super.defaultConfig,
 			name: "ws-server",
 			autostart: true,
-			path: null,
 			port: null,
 			jwt: null,
 			clients: [],
-			onConnect: null,
-			onDisconnect: null,
-			onMessage: null,
 			onAuth: null,
 		}
 	}
@@ -40,17 +34,6 @@ class SocketServerService extends ServiceBase {
 			},
 			[SocketServerActions.STOP]: async (state) => {
 				await this.stopListener()
-			},
-
-			[SocketServerActions.SEND]: (state, payload) => {
-				const { client, message } = payload
-				this.sendToClient(client, message)
-			},
-			[SocketServerActions.BROADCAST]: (state, message) => {
-				this.sendToAll(message)
-			},
-			[SocketServerActions.DISCONNECT]: (state, client) => {
-				this.disconnectClient(client)
 			},
 		}
 	}
@@ -76,8 +59,7 @@ class SocketServerService extends ServiceBase {
 
 
 
-
-
+	//#region FARM
 
 	/**
 	 * Inizializza il server in base a come è impostato il config (come al solito inzomma)
@@ -91,7 +73,7 @@ class SocketServerService extends ServiceBase {
 		} else {
 			this.attachToServerHttp()
 		}
-		await this.buildEventsServer()
+		this.buildEventsServer()
 	}
 
 	/**
@@ -133,7 +115,7 @@ class SocketServerService extends ServiceBase {
 		let jwtPayload
 		if (jwt) {
 			jwtPayload = await this.getJwtPayload(request)
-			const response = onAuth ? onAuth.bind(this)(jwtPayload) : true
+			const response = onAuth ? onAuth.bind(this)(jwtPayload) : jwtPayload!=null
 			if (!response) {
 				socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
 				socket.destroy()
@@ -159,7 +141,8 @@ class SocketServerService extends ServiceBase {
 		const params = new URLSearchParams(querystring)
 		const token = params.get("token")
 		if (!token) return null
-		return await new Bus(this, jwt).dispatch({ type: JWTActions.DECODE, payload: token })
+		const payload = await new Bus(this, jwt).dispatch({ type: JWTActions.DECODE, payload: token })
+		return payload
 	}
 
 	/** Fine della storia */
@@ -170,52 +153,53 @@ class SocketServerService extends ServiceBase {
 		this.server = null
 	}
 
-
-
-
-
-
-
 	/**
-	 * Invia un oggetto JSON ad un CLIENT-JSON
-	 * @param client è un client JSON (da non confondere con un ws-client)
-	 * @param message payload JSON 
+	 * Si mette in ascolto sugli eventi del SERVER-WEB-SOCKET
 	 */
-	sendToClient(client: IClient, message: any) {
-		const cws: WebSocket = this.findCWSByClient(client)
-		try {
-			if (cws.readyState === WebSocket.OPEN) {
-				cws.send(message)
-			}
-		} catch (error) {
-			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:send", error } })
-		}
-	}
+	private buildEventsServer() {
 
-	/**
-	 * Invia un MESSAGE a tutti i client di questo ROUTE
-	 * @param message 
-	 */
-	sendToAll(message: any) {
-		this.server.clients.forEach( cws => {
-			if (cws.readyState === WebSocket.OPEN) {
-				try {
-					cws.send(message)
-				} catch (error) {
-					new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:broadcast", error } })
-				}
+		this.server.on('connection', (cws: WebSocket, req: Request, jwtPayload: any) => {
+			const client = {
+				remoteAddress: req.connection.remoteAddress,
+				remotePort: req.connection.remotePort
 			}
+			this.buildEventsClient(cws, jwtPayload)
+			this.addClient(client) //this.updateClients()
+			this.onConnect(client, jwtPayload)
 		})
+
+		this.server.on("error", (error) => { console.log("server:error:"); debugger })
+
+		this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); debugger })
 	}
 
 	/**
-	 * Chiudi la connessione ad un CLIENT-JSON 
-	 * @param client client JSON
+	 * Si mette in ascolto sugli eventi del CLIENT-WEB-SOCKET arrivato al server
+	 * @param cws CLIENT-WEB-SOCKET
+	 * @param jwtPayload il JWT-PAYLOAD della connessione JWT-TOKEN
 	 */
-	private disconnectClient(client: IClient) {
-		const cws: WebSocket = this.findCWSByClient(client)
-		cws.close()
+	private buildEventsClient(cws: WebSocket, jwtPayload: any) {
+
+		cws.on('message', (message: string) => {
+			const client = this.findClientByCWS(cws)
+			this.onMessage(client, message, jwtPayload)
+		})
+
+		cws.on('error', (error) => { debugger })
+
+		cws.on('close', (code: number, reason: string) => {
+			const client = this.findClientByCWS(cws)
+			this.updateClients()
+			this.onDisconnect(client) //this.removeClient(client)
+		})
+
 	}
+
+	//#endregion
+
+
+
+	//#region ROOM
 
 	/**
 	 * Restituisce un CLIENT-WEB-SOCKET tramite CLIENT-JSON
@@ -268,90 +252,45 @@ class SocketServerService extends ServiceBase {
 		this.setState({ clients: clientsnew })
 	}
 
+	//#endregion
 
 
 
+	//#region COMMUNICATOR 
 
-
-
-	/**
-	 * Si mette in ascolto sugli eventi del SERVER-WEB-SOCKET
-	 */
-	private async buildEventsServer() {
-
-		this.server.on('connection', (cws: WebSocket, req: Request, jwtPayload: any) => {
-			const client = {
-				remoteAddress: req.connection.remoteAddress,
-				remotePort: req.connection.remotePort
+	sendToClient(client: IClient, message: any) {
+		const cws: WebSocket = this.findCWSByClient(client)
+		try {
+			if (cws.readyState === WebSocket.OPEN) {
+				cws.send(message)
 			}
-			this.buildEventsClient(cws, jwtPayload)
-			this.addClient(client) //this.updateClients()
-			this.onConnect(client, jwtPayload)
+		} catch (error) {
+			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:send", error } })
+		}
+	}
+
+	sendToAll(message: any) {
+		this.server.clients.forEach(cws => {
+			if (cws.readyState === WebSocket.OPEN) {
+				try {
+					cws.send(message)
+				} catch (error) {
+					new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:broadcast", error } })
+				}
+			}
 		})
-
-		this.server.on("error", (error) => { console.log("server:error:"); debugger })
-
-		this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); debugger })
 	}
 
-	/**
-	 * Si mette in ascolto sugli eventi del CLIENT-WEB-SOCKET arrivato al server
-	 * @param cws CLIENT-WEB-SOCKET
-	 * @param jwtPayload il JWT-PAYLOAD della connessione JWT-TOKEN
-	 */
-	private buildEventsClient(cws: WebSocket, jwtPayload: any) {
-
-		cws.on('message', (message: string) => {
-			const client = this.findClientByCWS(cws)
-			this.onMessage(client, message, jwtPayload)
-		})
-
-		cws.on('error', (error) => { debugger })
-
-		cws.on('close', (code: number, reason: string) => {
-			const client = this.findClientByCWS(cws)
-			this.updateClients()
-			this.onDisconnect(client) //this.removeClient(client)
-		})
-
+	disconnectClient(client: IClient) {
+		const cws: WebSocket = this.findCWSByClient(client)
+		cws.close()
 	}
 
-
-
-
-	protected onConnect(client: IClient, jwtPayload: any) {
-		const { onConnect } = this.state
-		if (onConnect) onConnect.bind(this)(client, jwtPayload)
-		// this.children.forEach(node => {
-		// 	if (node instanceof SocketRouteService) node.onConnect(client, jwtPayload)
-		// })
+	getClients(): IClient[] {
+		return this.state.clients
 	}
 
-	protected onDisconnect(client: IClient) {
-		const { onDisconnect } = this.state
-		if (onDisconnect) onDisconnect.bind(this)(client)
-	}
-
-	/**
-	 * Richiamato quando c'e' un messaggio dal CLIENT
-
-	 * @param client Il CLIENT che mi manda il MESSAGE
-	 * @param message Dovrebbe essere sempre una stringa
-	 * @param jwtPayload PAYLOAD-JWT se è stato definito
-	 * @returns 
-	 */
-	protected onMessage(client: IClient, message: string, jwtPayload: any) {
-		const { onMessage } = this.state
-		if (onMessage) onMessage.bind(this)(client, message, jwtPayload)
-
-		// se il messaggio è indirizzato ad un route...
-		if (this.children.length == 0) return
-		const messageJson:IMessage = JSON.parse(message)
-		if (!messageJson?.path) return
-		(this.children as SocketRouteService[])
-			.filter(route => route.state.path == messageJson.path)
-			.forEach(route => route.onMessage(client, messageJson, jwtPayload))
-	}
+	//#endregion
 
 }
 
