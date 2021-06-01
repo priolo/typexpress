@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/ServiceBase"
-import { ErrorServiceActions } from "../error/ErrorService"
+import ErrorServiceActions from "../error/ErrorServiceActions"
 import { Bus } from "../../core/path/Bus"
 import * as admin from "firebase-admin"
 

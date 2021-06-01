@@ -3,6 +3,8 @@ import { PathFinder } from "./PathFinder"
 import { nodeFind } from "../utils"
 import { NodeState } from "../node/NodeState"
 import { obj } from "@priolo/jon-utils"
+import { fnNodePattern } from "../utils"
+
 
 export class PathFinderList {
 	constructor(nodes: INode[]) {
@@ -37,7 +39,7 @@ export class PathFinderList {
 			// se inizia con ">" allora fai una ricerca ricorsiva
 			let deep = pattern.startsWith(">")
 			if (deep) pattern = pattern.slice(1)
-			const fn = this.getFnPattern(pattern)
+			const fn = fnNodePattern(pattern)
 			node = deep
 				? nodeFind(this.nodes, n => fn(n))
 				: this.nodes.find(n => fn(n))
@@ -53,30 +55,30 @@ export class PathFinderList {
 	 * @param pattern 
 	 * @returns 
 	 */
-	getFnPattern(pattern: string): (n: INode) => boolean {
+	// getFnPattern(pattern: string): (n: INode) => boolean {
 
-		// by id
-		if (pattern.startsWith("*")) {
-			let id = pattern.slice(1)
-			return (n: INode) => n.id == id
+	// 	// by id
+	// 	if (pattern.startsWith("*")) {
+	// 		let id = pattern.slice(1)
+	// 		return (n: INode) => n.id == id
 
-		// by classname
-		} else if (pattern.startsWith("~")) {
-			let className = pattern.slice(1)
-			return (n: INode) => n.constructor && n.constructor.name == className
+	// 		// by classname
+	// 	} else if (pattern.startsWith("~")) {
+	// 		let className = pattern.slice(1)
+	// 		return (n: INode) => n.constructor && n.constructor.name == className
 
-		// preleva il nodo con le caratteristiche indicate
-		} else if (pattern.startsWith("{")) {
-			const substr = pattern.slice(0,pattern.indexOf("}")+1)
-			const params = JSON.parse(substr)
-			return (node: INode) => {
-				return node instanceof NodeState && obj.objectIsIn(params, node.state)
-			}
-		// by name
-		} else {
-			return (n: INode) => n.name == pattern
-		}
-	}
+	// 		// preleva il nodo con le caratteristiche indicate
+	// 	} else if (pattern.startsWith("{")) {
+	// 		const substr = pattern.slice(0, pattern.indexOf("}") + 1)
+	// 		const params = JSON.parse(substr)
+	// 		return (node: INode) => {
+	// 			return node instanceof NodeState && obj.objectIsIn(params, node.state)
+	// 		}
+	// 		// by name
+	// 	} else {
+	// 		return (n: INode) => n.name == pattern
+	// 	}
+	// }
 
 	forEach(callback: (T) => void, options?: { deep: boolean, clazz: any }): void {
 		if (callback == null) throw new Error("invalid parameter 'callback'")

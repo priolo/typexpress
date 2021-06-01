@@ -1,7 +1,7 @@
 import { ServiceBase } from "./ServiceBase"
 import FarmService from "../services/farm"
 import { ConfActions } from "./node/NodeConf"
-import { ErrorService } from "../services/error/ErrorService"
+import { ErrorService } from "../services/error"
 
 
 /**

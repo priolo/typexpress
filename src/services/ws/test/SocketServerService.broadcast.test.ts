@@ -17,63 +17,18 @@ beforeAll(async () => {
 		{
 			class: "ws/server",
 			port: PORT,
-			// onConnect: function (client) {
-			// 	console.log("onConnect")
-			// },
 			onMessage: async function (client, message) {
 				await this.dispatch({
-					type: SocketServerActions.SEND,
-					payload: { client, message }
-				})
-				await this.dispatch({
-					type: SocketServerActions.DISCONNECT,
-					payload: client
+					type: SocketServerActions.BROADCAST,
+					payload: message
 				})
 			},
-			// onDisconnect: function ( client) {
-			// 	console.log("onDisconnect")
-			// }
 		}
 	)
 })
 
 afterAll(async () => {
 	await RootService.Stop(root)
-})
-
-
-test("su creazione", async () => {
-	const wss = new PathFinder(root).getNode<SocketServerService>("/ws-server")
-	expect(wss).toBeInstanceOf(SocketServerService)
-})
-
-test("client connetc/send/close", async () => {
-	
-	const dateNow = Date.now().toString()
-	let result
-
-	const ws = new WebSocket(`ws://localhost:${PORT}/`);
-
-	await (async ()=> {
-		let resolver = null
-		const promise = new Promise(res => resolver = res)
-
-		ws.on('open', function open() {
-			ws.send(dateNow)
-		});
-	
-		ws.on('message', (data) => {
-			result = data
-		});
-	
-		ws.on('close', function close() {
-			resolver()
-		});
-		return promise
-	})()
-
-	expect(dateNow).toBe(result)
-	
 })
 
 test("send broadcast", async () => {

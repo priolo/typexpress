@@ -1,8 +1,19 @@
 import { RootService } from "../RootService"
 import { PathFinder } from "../path/PathFinder"
-import { ConfActions } from "../node/NodeConf"
+import { ConfActions, NodeConf } from "../node/NodeConf"
 
 let root;
+
+class Test extends NodeConf {
+	get defaultConfig(): any {
+		return {
+			...super.defaultConfig,
+			name: "test",
+			value: "custom"
+		}
+	}
+}
+
 
 beforeAll(async () => {
 	root = new RootService("root")
@@ -31,7 +42,10 @@ beforeAll(async () => {
 				{
 					name: "child2",
 					children: [
-						{ name: "child2.1" }
+						{ name: "child2.1" },
+						{
+							class: Test,
+						}
 					]
 				}
 			]
@@ -66,4 +80,16 @@ test("find by state", async () => {
 	expect(node.name).toBe("child1.3")
 	node = new PathFinder(root).getNode<any>('/{"value":55}/child1.2')
 	expect(node.name).toBe("child1.2")
+})
+
+test("find by class", async () => {
+	const node = new PathFinder(root).getNode<any>('/>~Test')
+	expect(node.state.value).toBe("custom")
+})
+
+test("find parent", async () => {
+	const node = new PathFinder(root).getNode<any>("/>child1.3.1")
+	expect(node.name).toBe("child1.3.1")
+	const nodeRes = new PathFinder(node).getNode<any>('<{"value":55}')
+	expect(nodeRes.name).toBe("child1")
 })

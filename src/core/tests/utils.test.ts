@@ -37,7 +37,7 @@ test("nodeToJson", async () => {
 
 	const json = nodeToJson(root)
 
-	expect(json).toEqual( {
+	expect(json).toEqual({
 		name: "root2",
 		//value: 23,
 		children: [
@@ -63,17 +63,17 @@ test("nodeToJson", async () => {
 				]
 			}
 		]
-	} )
+	})
 })
 
 test("nodeMap", async () => {
 
-	const json = nodeMap (root, (n,children)=>({
-		nome:n.name,
-		figli:children(),
+	const json = nodeMap(root, (n, children) => ({
+		nome: n.name,
+		figli: children(),
 	}))
 
-	expect(json).toEqual( {
+	expect(json).toEqual({
 		nome: "root2",
 		//value: 23,
 		figli: [
@@ -99,7 +99,7 @@ test("nodeMap", async () => {
 				]
 			}
 		]
-	} )
+	})
 })
 
 test("nodePath", async () => {
@@ -108,3 +108,5 @@ test("nodePath", async () => {
 	const path = nodePath(node)
 	expect(path).toBe(pathFind)
 })
+
+

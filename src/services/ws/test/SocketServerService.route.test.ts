@@ -3,52 +3,36 @@
  */
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import SocketServerService, { SocketServerActions } from "../SocketServerService"
+import { SocketServerActions } from "../index"
 import SocketRouteService from "../SocketRouteService"
 
 import WebSocket from "ws"
 
+class RouteCustom extends SocketRouteService {
 
+}
 
 const PORT = 5004
 let root = null
-
-
-
 
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
 			class: "ws/server",
 			port: PORT,
-			onConnect: function (client) {
-				console.log("onConnect")
-			},
-			onMessage: async function (client, message) {
-				await this.dispatch({
-					type: SocketServerActions.SEND,
-					payload: { client, message }
-				})
-				await this.dispatch({
-					type: SocketServerActions.DISCONNECT,
-					payload: client
-				})
-			},
-			onDisconnect: function ( client) {
-				console.log("onDisconnect")
-			},
 			children: [
+				
 				{
 					class: "ws/route",
 					path: "command",
-					onMessage: async function (client, payload) {
-						const { message } = payload
+					onMessage: async function (client, data) {
 						await this.dispatch({
 							type: SocketServerActions.SEND,
-							payload: { client, message: `receive:${message}` }
+							payload: { client, message: `command::receive:${data.payload.message}` }
 						})
 					},
 				},
+
 				{
 					class: "ws/route",
 					path: "room1",
@@ -56,10 +40,16 @@ beforeAll(async () => {
 						const { message } = payload
 						await this.dispatch({
 							type: SocketServerActions.SEND,
-							payload: { client, message: `receive:${message}` }
+							payload: { client, message: `room1::receive:${message}` }
 						})
 					},
+				},
+
+				{
+					class: RouteCustom,
+					path: "room2",
 				}
+
 			]
 		}
 	)
@@ -69,17 +59,15 @@ afterAll(async () => {
 	await RootService.Stop(root)
 })
 
-
 test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<SocketRouteService>('/{"path":"command"}')
+	let srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"command"}')
 	expect(srs).toBeInstanceOf(SocketRouteService)
-	srs = new PathFinder(root).getNode<SocketRouteService>('/{"path":"room1"}')
+	srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room1"}')
 	expect(srs).toBeInstanceOf(SocketRouteService)
 })
 
 test("client connetc/send/close", async () => {
 	
-	const dateNow = Date.now().toString()
 	let result
 
 	const ws = new WebSocket(`ws://localhost:${PORT}/`);
@@ -89,15 +77,16 @@ test("client connetc/send/close", async () => {
 		const promise = new Promise(res => resolver = res)
 
 		ws.on('open', function open() {
-			ws.send({
-				path: "test",
+			ws.send(JSON.stringify({
+				path: "command",
 				action: "message",
 				payload: { message: "ciao!"},
-			})
+			}))
 		});
 	
-		ws.on('message', (data) => {
-			result = data
+		ws.on('message', message => {
+			result = message
+			ws.close()
 		});
 	
 		ws.on('close', function close() {
@@ -106,6 +95,6 @@ test("client connetc/send/close", async () => {
 		return promise
 	})()
 
-	expect(dateNow).toBe(result)
+	expect(result).toBe("command::receive:ciao!")
 	
 })

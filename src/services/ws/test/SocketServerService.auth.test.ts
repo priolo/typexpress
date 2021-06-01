@@ -5,7 +5,8 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { Bus } from "../../../core/path/Bus"
 import { JWTActions } from "../../jwt/JWTRepoService"
-import SocketServerService, { SocketServerActions } from "../SocketServerService"
+import SocketServerService from "../SocketServerService"
+import { SocketServerActions } from "../index"
 
 import WebSocket from "ws"
 

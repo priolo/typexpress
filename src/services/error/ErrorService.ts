@@ -1,16 +1,14 @@
 import { ServiceBase } from "../../core/ServiceBase"
 import { log, LOG_TYPE } from "@priolo/jon-utils";
+import { Error } from "./index"
+import ErrorServiceActions from "./ErrorServiceActions"
 
-
-export enum ErrorServiceActions {
-	NOTIFY = "notify"
-}
 
 
 /**
  * Si occupa di ricevere gli errori dei nodi e intervenire
  */
-export class ErrorService extends ServiceBase {
+class ErrorService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
@@ -26,14 +24,13 @@ export class ErrorService extends ServiceBase {
 		}
 	}
 
-	private notify(sender: string, error: Error|string): void {
+	private notify(sender: string, error: Error | string): void {
+		debugger
 		if (typeof error == "string") error = { code: error }
 		log(`${sender}::${error.code}`, LOG_TYPE.ERROR)
 	}
 
 }
 
-interface Error {
-	code:string,
-	error?: any,
-}
+
+export default ErrorService

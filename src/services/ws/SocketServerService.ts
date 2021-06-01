@@ -1,11 +1,16 @@
+import { Request } from "express"
+import WebSocket from "ws"
+import url, { URLSearchParams } from 'url'
+
 import { ServiceBase } from "../../core/ServiceBase"
 import { HttpService } from "../http/HttpService"
 import { JWTActions } from "../jwt/JWTRepoService"
 import { Bus } from "../../core/path/Bus"
+import { IMessage, SocketServerActions } from "./index"
+import ErrorServiceActions from "../error/ErrorServiceActions"
 
-import { Request } from "express"
-import WebSocket from "ws"
-import url, { URLSearchParams } from 'url'
+import { IClient } from "./index"
+import SocketRouteService from "./SocketRouteService"
 
 
 
@@ -41,12 +46,18 @@ class SocketServerService extends ServiceBase {
 				const { client, message } = payload
 				this.sendToClient(client, message)
 			},
+			[SocketServerActions.BROADCAST]: (state, message) => {
+				this.sendToAll(message)
+			},
 			[SocketServerActions.DISCONNECT]: (state, client) => {
 				this.disconnectClient(client)
 			},
 		}
 	}
 
+	/**
+	 * Semplicemente il server WEB-SOCKET
+	 */
 	private server: WebSocket.Server = null
 
 	protected async onInit() {
@@ -58,6 +69,7 @@ class SocketServerService extends ServiceBase {
 	}
 
 	protected async onDestroy() {
+		debugger
 		super.onDestroy()
 		this.stopListener()
 	}
@@ -140,7 +152,7 @@ class SocketServerService extends ServiceBase {
 	 * @param request 
 	 * @returns 
 	 */
-	private async getJwtPayload (request:Request) {
+	private async getJwtPayload(request: Request) {
 		const { jwt } = this.state
 		const index = request.url.lastIndexOf("?")
 		const querystring = (index == -1 ? url : request.url.slice(index)) as string
@@ -169,21 +181,38 @@ class SocketServerService extends ServiceBase {
 	 * @param client è un client JSON (da non confondere con un ws-client)
 	 * @param message payload JSON 
 	 */
-	private sendToClient(client: Client, message: any) {
+	sendToClient(client: IClient, message: any) {
 		const cws: WebSocket = this.findCWSByClient(client)
 		try {
-			cws.send(message)
+			if (cws.readyState === WebSocket.OPEN) {
+				cws.send(message)
+			}
 		} catch (error) {
-			// [II] gestire errore
-			throw error
+			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:send", error } })
 		}
+	}
+
+	/**
+	 * Invia un MESSAGE a tutti i client di questo ROUTE
+	 * @param message 
+	 */
+	sendToAll(message: any) {
+		this.server.clients.forEach( cws => {
+			if (cws.readyState === WebSocket.OPEN) {
+				try {
+					cws.send(message)
+				} catch (error) {
+					new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:broadcast", error } })
+				}
+			}
+		})
 	}
 
 	/**
 	 * Chiudi la connessione ad un CLIENT-JSON 
 	 * @param client client JSON
 	 */
-	private disconnectClient(client: Client) {
+	private disconnectClient(client: IClient) {
 		const cws: WebSocket = this.findCWSByClient(client)
 		cws.close()
 	}
@@ -193,7 +222,7 @@ class SocketServerService extends ServiceBase {
 	 * @param client 
 	 * @returns 
 	 */
-	private findCWSByClient(client: Client) {
+	private findCWSByClient(client: IClient) {
 		const iter = this.server.clients as Set<any>
 		for (const cws of iter) {
 			const socket = cws._socket
@@ -217,7 +246,7 @@ class SocketServerService extends ServiceBase {
 	}
 
 	private updateClients() {
-		const clients: Array<Client> = [...this.server.clients].map((cws: WebSocket) => {
+		const clients: Array<IClient> = [...this.server.clients].map((cws: WebSocket) => {
 			const socket = (cws as any)._socket
 			return {
 				remoteAddress: socket.remoteAddress,
@@ -227,13 +256,13 @@ class SocketServerService extends ServiceBase {
 		this.setState({ clients })
 	}
 
-	private addClient(client: Client) {
+	private addClient(client: IClient) {
 		const { clients } = this.state
 		clients.push(client)
 		this.setState({ clients })
 	}
 
-	private removeClient(client: Client) {
+	private removeClient(client: IClient) {
 		const { clients } = this.state
 		const clientsnew = clients.filter(c => !clientIsEqual(client, c))
 		this.setState({ clients: clientsnew })
@@ -271,7 +300,7 @@ class SocketServerService extends ServiceBase {
 	 * @param jwtPayload il JWT-PAYLOAD della connessione JWT-TOKEN
 	 */
 	private buildEventsClient(cws: WebSocket, jwtPayload: any) {
-		
+
 		cws.on('message', (message: string) => {
 			const client = this.findClientByCWS(cws)
 			this.onMessage(client, message, jwtPayload)
@@ -290,52 +319,45 @@ class SocketServerService extends ServiceBase {
 
 
 
-	protected onConnect ( client:Client, jwtPayload:any ) {
+	protected onConnect(client: IClient, jwtPayload: any) {
 		const { onConnect } = this.state
 		if (onConnect) onConnect.bind(this)(client, jwtPayload)
+		// this.children.forEach(node => {
+		// 	if (node instanceof SocketRouteService) node.onConnect(client, jwtPayload)
+		// })
 	}
 
-	protected onDisconnect ( client:Client ) {
+	protected onDisconnect(client: IClient) {
 		const { onDisconnect } = this.state
 		if (onDisconnect) onDisconnect.bind(this)(client)
 	}
 
-	protected onMessage ( client:Client, message:any, jwtPayload:any ) {
+	/**
+	 * Richiamato quando c'e' un messaggio dal CLIENT
+
+	 * @param client Il CLIENT che mi manda il MESSAGE
+	 * @param message Dovrebbe essere sempre una stringa
+	 * @param jwtPayload PAYLOAD-JWT se è stato definito
+	 * @returns 
+	 */
+	protected onMessage(client: IClient, message: string, jwtPayload: any) {
 		const { onMessage } = this.state
 		if (onMessage) onMessage.bind(this)(client, message, jwtPayload)
+
+		// se il messaggio è indirizzato ad un route...
+		if (this.children.length == 0) return
+		const messageJson:IMessage = JSON.parse(message)
+		if (!messageJson?.path) return
+		(this.children as SocketRouteService[])
+			.filter(route => route.state.path == messageJson.path)
+			.forEach(route => route.onMessage(client, messageJson, jwtPayload))
 	}
 
 }
 
 export default SocketServerService
 
-interface Client {
-	remoteAddress: string,
-	remotePort: number,
-}
 
-function clientIsEqual(client: Client, ws: Client): boolean {
+function clientIsEqual(client: IClient, ws: IClient): boolean {
 	return client.remoteAddress == ws.remoteAddress && client.remotePort == ws.remotePort
-}
-
-export enum SocketServerActions {
-	/**
-	 * Fa partire il server WEBSOCKET  
-	 * se `autostart` è `true` parte in automatico
-	 */
-	START = "ws:start",
-	/**
-	 * Ferma e libera le risorse del server WEBSOCKET
-	 */
-	STOP = "ws:stop",
-	/**
-	 * Invia una STRINGA ad un CLIENT   
-	 * payload= `{ client:Client, message: JSON.stringify(obj) }`
-	 */
-	SEND = "ws:send",
-	/**
-	 * Disconnette un CLIENT  
-	 * payload= `{ client:Client }`
-	 */
-	DISCONNECT = "ws:disconnect",
 }

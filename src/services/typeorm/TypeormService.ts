@@ -3,7 +3,7 @@ import path from "path"
 import { ServiceBase } from "../../core/ServiceBase";
 import { TypeormRepoService } from "./TypeormRepoService";
 import { Bus } from "../../core/path/Bus";
-import { ErrorServiceActions } from "../error/ErrorService";
+import ErrorServiceActions from "../error/ErrorServiceActions";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";

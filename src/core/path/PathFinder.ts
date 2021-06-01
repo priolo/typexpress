@@ -1,4 +1,4 @@
-import { nodeParents } from "../utils"
+import { fnNodePattern, nodeParents } from "../utils"
 import { INode } from "../node/INode"
 import { PathFinderList } from "./PathFinderList"
 
@@ -30,14 +30,26 @@ export class PathFinder {
 
 		// vai al parent
 		} else if (path.startsWith("..")) {
-			nextPathFinder = new PathFinder(this.node.parent ?? this.node);
+			nextPathFinder = new PathFinder(this.node.parent ?? this.node)
 			nextPath = path.slice(2)
 
 		// preleva un nodo tramite il nome / indice / class-type
 		} else {
 			let index = path.indexOf("/")
 			let pattern = index != -1 ? path.slice(0, index) : path
-			nextPathFinder = this.getChildren().getBy(pattern)
+
+			// se è una ricerca sul parent
+			if ( pattern.startsWith("<") ) {
+				pattern = path.slice(1)
+				const fn = fnNodePattern( pattern )
+				const nodeParent = nodeParents(this.node, (node)=>!fn(node) )
+				nextPathFinder = new PathFinder(nodeParent)
+			
+			// se è una ricerca sui children
+			} else {
+				nextPathFinder = this.getChildren().getBy(pattern)
+			}
+
 			nextPath = index != -1 ? path.slice(index+1) : ""
 		}
 

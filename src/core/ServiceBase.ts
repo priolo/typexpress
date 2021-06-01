@@ -1,6 +1,7 @@
 import { NodeConf } from "./node/NodeConf"
 import { Bus } from "./path/Bus"
 import { nodePath } from "./utils"
+import ErrorServiceActions from "../services/error/ErrorServiceActions"
 
 
 export enum ServiceBaseActions {
@@ -80,7 +81,12 @@ export class ServiceBase extends NodeConf {
 	}
 
 	protected async onInit(): Promise<void> {
-		await super.onInit()
+		try {
+			await super.onInit()
+		} catch ( error ) {
+			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "on_init", error } })
+			return
+		}
 		this.emit(ServiceBaseEvents.INIT)
 	 }
 

@@ -1,11 +1,10 @@
 import { ServiceBase } from "../../core/ServiceBase"
-import { HttpService } from "../http/HttpService"
-import { JWTActions } from "../jwt/JWTRepoService"
-import { Bus } from "../../core/path/Bus"
+import { IClient, IMessage } from "./index"
+import { SocketServerActions } from "./index"
+import  SocketServerService  from "./SocketServerService"
 
-import { Request } from "express"
-import WebSocket from "ws"
-import url, { URLSearchParams } from 'url'
+import { Bus } from "../../core/path/Bus"
+import { PathFinder } from "../../core/path/PathFinder"
 
 
 
@@ -25,121 +24,38 @@ class SocketRouteService extends ServiceBase {
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[SocketServerActions.SEND]: (state, payload) => {
+			[SocketServerActions.SEND]: (state, payload: { client: IClient, message: IMessage }) => {
 				const { client, message } = payload
 				this.sendToClient(client, message)
 			},
 		}
 	}
 
-	protected onConnect ( client:Client ) {
-
+	onMessage(client: IClient, message: IMessage, jwtPayload: any) {
+		const { onMessage } = this.state
+		if (onMessage) onMessage.bind(this)(client, message, jwtPayload)
 	}
 
-	protected onDisconnect ( client:Client ) {
-
-	}
-
-	protected onMessage ( client:Client, message:any ) {
-
-	}
-	
-
-	
-
-	/**
-	 * Invia un oggetto JSON ad un CLIENT-JSON
-	 * @param client è un client JSON (da non confondere con un ws-client)
-	 * @param message payload JSON 
-	 */
-	private sendToClient(client: Client, message: any) {
-		const cws: WebSocket = this.findCWSByClient(client)
-		try {
-			cws.send(message)
-		} catch (error) {
-			// [II] gestire errore
-			throw error
-		}
-	}
-
-	
-
-
-
-
-	/**
-	 * Restituisce un CLIENT-WEB-SOCKET tramite CLIENT-JSON
-	 * @param client 
-	 * @returns 
-	 */
-	private findCWSByClient(client: Client) {
-		const iter = this.server.clients as Set<any>
-		for (const cws of iter) {
-			const socket = cws._socket
-			if (clientIsEqual(socket, client)) {
-				return cws
-			}
-		}
-		return null
-	}
-
-	/**
-	 * Restituisce un CLIENT-JSON tramite CLIENT-WEB-SOCKET
-	 * @param cws 
-	 * @returns 
-	 */
-	private findClientByCWS(cws: WebSocket) {
-		const { clients } = this.state
-		const socket = (cws as any)._socket
-		const client = clients.find(client => clientIsEqual(client, socket))
-		return client
-	}
-
-	
-
-
-	private updateClients() {
-		const clients: Array<Client> = [...this.server.clients].map((cws: WebSocket) => {
-			const socket = (cws as any)._socket
-			return {
-				remoteAddress: socket.remoteAddress,
-				remotePort: socket.remotePort
-			}
+	sendToClient(client: IClient, message: IMessage) {
+		new Bus(this, "<~SocketServerService").dispatch({
+			type: SocketServerActions.SEND,
+			payload: message
 		})
-		this.setState({ clients })
 	}
 
-	private addClient(client: Client) {
-		const { clients } = this.state
-		clients.push(client)
-		this.setState({ clients })
+	sendToAll(message: IMessage) {
+		const parentServer = new PathFinder(this).getNode<SocketServerService>("<~SocketServerService")
+		const clients = this.getClients()
+		clients.forEach( client => {
+			parentServer.sendToClient(client, message)
+		})
 	}
 
-	private removeClient(client: Client) {
-		const { clients } = this.state
-		const clientsnew = clients.filter(c => !clientIsEqual(client, c))
-		this.setState({ clients: clientsnew })
+	getClients(): IClient[] {
+		const { clients } = (this.parent as ServiceBase).state
+		return clients
 	}
 
 }
 
 export default SocketRouteService
-
-interface Client {
-	remoteAddress: string,
-	remotePort: number,
-}
-
-
-export enum SocketServerActions {
-	/**
-	 * Invia una STRINGA ad un CLIENT   
-	 * payload= `{ client:Client, message: JSON.stringify(obj) }`
-	 */
-	SEND = "ws:send",
-	/**
-	 * Disconnette un CLIENT  
-	 * payload= `{ client:Client }`
-	 */
-	DISCONNECT = "ws:disconnect",
-}
