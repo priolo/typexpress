@@ -4,7 +4,7 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import SocketServerService from "../SocketServerService"
-import { SocketServerActions } from "../utils"
+import { SocketRouteActions } from "../utils"
 import WebSocket from "ws"
 
 
@@ -22,11 +22,11 @@ beforeAll(async () => {
 					class: "ws/route",
 					onMessage: async function (client, message) {
 						await this.dispatch({
-							type: SocketServerActions.SEND,
+							type: SocketRouteActions.SEND,
 							payload: { client, message }
 						})
 						await this.dispatch({
-							type: SocketServerActions.DISCONNECT,
+							type: SocketRouteActions.DISCONNECT,
 							payload: client
 						})
 					},
@@ -49,27 +49,21 @@ test("su creazione", async () => {
 test("client connetc/send/close", async () => {
 
 	const dateNow = Date.now().toString()
-	let result
 
 	const ws = new WebSocket(`ws://localhost:${PORT}/`);
 
-	await (async () => {
-		let resolver = null
-		const promise = new Promise(res => resolver = res)
-
+	const result = await new Promise<string>( (res, rej) =>{
+		let result
 		ws.on('open', function open() {
 			ws.send(dateNow)
 		});
-
 		ws.on('message', (data) => {
 			result = data
 		});
-
 		ws.on('close', function close() {
-			resolver()
+			res(result)
 		});
-		return promise
-	})()
+	})
 
 	expect(dateNow).toBe(result)
 

@@ -6,16 +6,12 @@ import { RootService } from "../../../core/RootService"
 import { Bus } from "../../../core/path/Bus"
 import { JWTActions } from "../../jwt/JWTRepoService"
 import SocketServerService from "../SocketServerService"
-import { SocketServerActions } from "../utils"
 
 import WebSocket from "ws"
 
 
-
 const PORT = 5004
 let root = null
-
-
 
 beforeAll(async () => {
 	root = await RootService.Start([
@@ -27,18 +23,11 @@ beforeAll(async () => {
 					class: "ws/server",
 					jwt: "/jwt",
 					onAuth: function (jwtPayload) {
-						return jwtPayload!=null
+						return jwtPayload != null
 					},
-					
 					onMessage: async function (client, message, jwtPayload) {
-						await this.dispatch({
-							type: SocketServerActions.SEND,
-							payload: { client, message: JSON.stringify(jwtPayload) }
-						})
-						await this.dispatch({
-							type: SocketServerActions.DISCONNECT,
-							payload: client
-						})
+						this.sendToClient(client, JSON.stringify(jwtPayload))
+						this.disconnectClient(client)
 					},
 				},
 			]
@@ -60,7 +49,7 @@ test("su creazione", async () => {
 	expect(wss).toBeInstanceOf(SocketServerService)
 })
 
-test("client connetc/send/close", async () => {
+test("connessione con TOKEN JWT", async () => {
 
 	const user = { id: 3, name: "ivano" }
 	const token = await new Bus(root, "/jwt").dispatch({
@@ -69,35 +58,31 @@ test("client connetc/send/close", async () => {
 	const client = new WebSocket(`ws://localhost:${PORT}?token=${token}`)
 	let result
 
-	await (async () => {
-		let resolver = null
-		const promise = new Promise(res => resolver = res)
-		client.on('open', () => {
-			client.send("from client1")
-		})
-		client.on('message', (message) => {
-			result = JSON.parse(message.toString())
-		});
+	client.on('open', () => {
+		client.send("from client1")
+	})
+	client.on('message', (message) => {
+		result = JSON.parse(message.toString())
+	})
+	await new Promise<void>((res, rej) => {
 		client.on('close', () => {
-			resolver()
+			res()
 		})
-		return promise
-	})()
+	})
+
 	expect(result).toMatchObject(user)
 })
 
-test("client no auth", async () => {
+test("non è concesso l'accesso senza TOKEN JWT", async () => {
 
 	const client = new WebSocket(`ws://localhost:${PORT}`)
 
-	const result = await (async () => {
-		let resolver = null
-		const promise = new Promise(res => resolver = res)
+	const result = await new Promise<string>( (resolver, rej) =>{
 		client.on('error', (error) => {
 			resolver("error")
 		})
-		return promise
-	})()
+	})
+
 	expect(result).toBe("error")
 
 })

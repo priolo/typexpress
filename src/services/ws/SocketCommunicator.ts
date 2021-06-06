@@ -1,4 +1,4 @@
-import { IMessage, SocketServerActions, IClient } from "./utils"
+import { IMessage, SocketRouteActions, IClient } from "./utils"
 import { ServiceBase } from "../../core/ServiceBase"
 
 
@@ -19,51 +19,31 @@ export abstract class SocketCommunicator extends ServiceBase {
 		return {
 			...super.dispatchMap,
 
-			[SocketServerActions.SEND]: (state, payload) => {
+			[SocketRouteActions.SEND]: (state, payload) => {
 				const { client, message } = payload
 				this.sendToClient(client, message)
 			},
-			[SocketServerActions.BROADCAST]: (state, message) => {
+			[SocketRouteActions.BROADCAST]: (state, message) => {
 				this.sendToAll(message)
 			},
-			[SocketServerActions.DISCONNECT]: (state, client) => {
+			[SocketRouteActions.DISCONNECT]: (state, client) => {
 				this.disconnectClient(client)
 			},
 		}
 	}
 
-	onConnect(client: IClient, jwtPayload: any) {
+	/**
+	 * Chiamato quando c'e' una NUOVA connessione da un client
+	 * @param client 
+	 * @param jwtPayload 
+	 */
+	onConnect(client: IClient, jwtPayload?: any, params?: any): void {
 		const { onConnect } = this.state
-		if (onConnect) onConnect.bind(this)(client, jwtPayload)
+		if (onConnect) onConnect.bind(this)(client, jwtPayload, params)
 
 		this.children.forEach(node => {
-			if (node instanceof SocketCommunicator) node.onConnect(client, jwtPayload)
+			if (node instanceof SocketCommunicator) node.onConnect(client, jwtPayload, params)
 		})
-	}
-	/**
-	 * Richiamato quando c'e' un messaggio dal CLIENT
-	 * @param client Il CLIENT che mi manda il MESSAGE
-	 * @param message Dovrebbe essere sempre una stringa
-	 * @param jwtPayload PAYLOAD-JWT se è stato definito
-	 * @returns 
-	 */
-	onMessage(client: IClient, message: string | IMessage, jwtPayload: any) {
-		const { onMessage } = this.state
-		if (onMessage) onMessage.bind(this)(client, message, jwtPayload)
-
-		let messageJson: IMessage = null
-		const routes = this.children as SocketCommunicator[]
-		for (const route of routes) {
-			const { path } = route.state
-			if (path && !messageJson) {
-				messageJson = typeof message == "string" ? JSON.parse(message) : message
-			}
-			if (!path) {
-				route.onMessage(client, message, jwtPayload)
-			} else if (messageJson?.path == path) {
-				route.onMessage(client, messageJson, jwtPayload)
-			}
-		}
 	}
 
 	onDisconnect(client: IClient) {
@@ -74,6 +54,54 @@ export abstract class SocketCommunicator extends ServiceBase {
 			if (node instanceof SocketCommunicator) node.onDisconnect(client)
 		})
 	}
+
+	/**
+	 * Richiamato quando c'e' un messaggio dal CLIENT
+	 * @param client Il CLIENT che mi manda il MESSAGE
+	 * @param message Dovrebbe essere sempre una stringa
+	 * @param jwtPayload PAYLOAD-JWT se è stato definito
+	 * @returns 
+	 */
+	// NON VA BENE! la path nel message non deve cambiare... utilizzare un paroprietà di appoggio
+	onMessage(client: IClient, message: string | IMessage, jwtPayload?: any) {
+		const { onMessage, path } = this.state
+
+		// si tratta di un messaggio con "path" <IMessage>
+		if (path && message && typeof message != "string") {
+
+			const msg: IMessage = message
+			const paths = msg.path?.split("/")
+
+			// c'e' corrispondenza richiamo l'evento
+			if (!paths || paths.length == 0 || (paths.length == 1 && paths[0] == path)) {
+				onMessage?.bind(this)(client, message, jwtPayload)
+				return
+
+				// non c'e' corrispondenza ma il primo path corrisponde... devo andare in profondità!
+			} else if (paths[0] == path) {
+				message = { ...message, path: paths.slice(1).join("/") }
+
+			} else {
+				return
+			}
+			// è una semplice stringa non la mando nei ROUTE
+			// } else if (typeof message=="string") {
+			// 	onMessage?.bind(this)(client, message, jwtPayload)
+			// 	return
+			// }
+
+			// è un altro tipo di messaggio...
+		} else {
+			onMessage?.bind(this)(client, message, jwtPayload)
+		}
+
+		// mando il messaggio nei CHILDREN
+		const routes = this.children as SocketCommunicator[]
+		for (const route of routes) {
+			route.onMessage(client, message, jwtPayload)
+		}
+	}
+
 	/**
 	 * Invia un oggetto JSON ad un CLIENT-JSON
 	 * @param client è un client JSON (da non confondere con un ws-client)
@@ -83,14 +111,27 @@ export abstract class SocketCommunicator extends ServiceBase {
 		if (!(this.parent instanceof SocketCommunicator)) return
 		this.parent.sendToClient(client, message)
 	}
+
+	sendToClients(clients: IClient[], message: any) {
+		if (!(this.parent instanceof SocketCommunicator)) return
+		this.parent.sendToClients(clients, message)
+	}
+
 	/**
 	 * Invia un MESSAGE a tutti i client di questo ROUTE
 	 * @param message 
 	 */
 	sendToAll(message: any) {
-		if (!(this.parent instanceof SocketCommunicator)) return
-		this.parent.sendToAll(message)
+		const clients = this.getClients()
+		clients.forEach(client => this.sendToClient(client, message))
 	}
+
+	async sendPing(client: IClient, timeout: number): Promise<number> {
+		if (!(this.parent instanceof SocketCommunicator)) return
+		return await this.parent.sendPing(client, timeout)
+	}
+
+
 	/**
 	 * Chiudi la connessione ad un CLIENT-JSON 
 	 * @param client client JSON
@@ -102,6 +143,6 @@ export abstract class SocketCommunicator extends ServiceBase {
 
 	getClients(): IClient[] {
 		if (!(this.parent instanceof SocketCommunicator)) return
-		this.parent.getClients()
+		return this.parent.getClients()
 	}
 }

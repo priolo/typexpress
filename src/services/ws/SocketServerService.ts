@@ -1,4 +1,4 @@
-import { Request } from "express"
+import { request, Request } from "express"
 import WebSocket from "ws"
 import url, { URLSearchParams } from 'url'
 
@@ -7,7 +7,7 @@ import { JWTActions } from "../jwt/JWTRepoService"
 import { Bus } from "../../core/path/Bus"
 import ErrorServiceActions from "../error/ErrorServiceActions"
 
-import { SocketServerActions, IClient } from "./utils"
+import { SocketServerActions, IClient, IMessage, clientIsEqual } from "./utils"
 import { SocketCommunicator } from "./SocketCommunicator"
 
 
@@ -106,6 +106,7 @@ class SocketServerService extends SocketCommunicator {
 	}
 	private onUpgrade = async (request, socket, head) => {
 		const { path, jwt, onAuth } = this.state
+		const params = this.getUrlParams(request)
 
 		// controllo che il path sia giusto
 		const wsUrl = url.parse(request.url)
@@ -114,8 +115,8 @@ class SocketServerService extends SocketCommunicator {
 		// controllo se c'e' un autentificazione da fare
 		let jwtPayload
 		if (jwt) {
-			jwtPayload = await this.getJwtPayload(request)
-			const response = onAuth ? onAuth.bind(this)(jwtPayload) : jwtPayload!=null
+			jwtPayload = await this.getJwtPayload(params.token)
+			const response = onAuth ? onAuth.bind(this)(jwtPayload) : jwtPayload != null
 			if (!response) {
 				socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
 				socket.destroy()
@@ -123,23 +124,28 @@ class SocketServerService extends SocketCommunicator {
 			}
 		}
 
-		// gestisce la connessione col client			
+		// gestisce la connessione col client	
+		// a qaunto pare non è possibile leggere l'header
+		// https://stackoverflow.com/a/4361358/5224029		
 		this.server.handleUpgrade(request, socket, head, (ws) => {
 			this.server.emit('connection', ws, request, jwtPayload);
 		})
 	}
 
-	/**
-	 * Ricavo il JWT-PAYLOAD dalla request di connessione
-	 * @param request 
-	 * @returns 
-	 */
-	private async getJwtPayload(request: Request) {
-		const { jwt } = this.state
+	private getUrlParams(request: Request): any {
 		const index = request.url.lastIndexOf("?")
 		const querystring = (index == -1 ? url : request.url.slice(index)) as string
 		const params = new URLSearchParams(querystring)
-		const token = params.get("token")
+		return Object.fromEntries(params)
+	}
+
+	/**
+	 * Ricavo il JWT-PAYLOAD 
+	 * @param token 
+	 * @returns 
+	 */
+	private async getJwtPayload(token: string) {
+		const { jwt } = this.state
 		if (!token) return null
 		const payload = await new Bus(this, jwt).dispatch({ type: JWTActions.DECODE, payload: token })
 		return payload
@@ -159,13 +165,14 @@ class SocketServerService extends SocketCommunicator {
 	private buildEventsServer() {
 
 		this.server.on('connection', (cws: WebSocket, req: Request, jwtPayload: any) => {
+			const params = this.getUrlParams(req)
 			const client = {
 				remoteAddress: req.connection.remoteAddress,
 				remotePort: req.connection.remotePort
 			}
 			this.buildEventsClient(cws, jwtPayload)
 			this.addClient(client) //this.updateClients()
-			this.onConnect(client, jwtPayload)
+			this.onConnect(client, jwtPayload, params)
 		})
 
 		this.server.on("error", (error) => { console.log("server:error:"); debugger })
@@ -189,8 +196,8 @@ class SocketServerService extends SocketCommunicator {
 
 		cws.on('close', (code: number, reason: string) => {
 			const client = this.findClientByCWS(cws)
-			this.updateClients()
-			this.onDisconnect(client) //this.removeClient(client)
+			this.updateClients()//this.removeClient(client)
+			this.onDisconnect(client)
 		})
 
 	}
@@ -258,26 +265,53 @@ class SocketServerService extends SocketCommunicator {
 
 	//#region COMMUNICATOR 
 
+	onMessage(client: IClient, message: string | IMessage, jwtPayload: any) {
+		if (typeof message == "string" && message.length > 0) {
+			try {
+				message = JSON.parse(message)
+			} catch (error) { }
+		}
+		super.onMessage(client, message, jwtPayload)
+	}
+
 	sendToClient(client: IClient, message: any) {
 		const cws: WebSocket = this.findCWSByClient(client)
-		try {
-			if (cws.readyState === WebSocket.OPEN) {
-				cws.send(message)
-			}
-		} catch (error) {
-			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:send", error } })
-		}
+		this.sendToCWS(cws, message)
+	}
+
+	sendToClients(clients: IClient[], message: any) {
+		this.server.clients.forEach(cws => {
+			const index = clients.findIndex(client => clientIsEqual(client, (<any>cws)._socket))
+			if (index != -1) this.sendToCWS(cws, message)
+		})
 	}
 
 	sendToAll(message: any) {
 		this.server.clients.forEach(cws => {
-			if (cws.readyState === WebSocket.OPEN) {
-				try {
-					cws.send(message)
-				} catch (error) {
-					new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:broadcast", error } })
-				}
+			this.sendToCWS(cws, message)
+		})
+	}
+
+	async sendPing(client: IClient, timeout: number): Promise<number> {
+		const cws: WebSocket = this.findCWSByClient(client)
+		if (!cws) return
+		return new Promise<number>((res, rej) => {
+			const startTime = Date.now()
+
+			const onPong = () => {
+				clearTimeout(idTimer)
+				const deltaTime = Date.now() - startTime
+				res(deltaTime)
 			}
+
+			const idTimer = setTimeout(() => {
+				cws.off("ping", onPong)
+				clearTimeout(idTimer)
+				res(timeout)
+			}, timeout)
+
+			cws.once("pong", onPong)
+			cws.ping()
 		})
 	}
 
@@ -292,11 +326,18 @@ class SocketServerService extends SocketCommunicator {
 
 	//#endregion
 
+	private sendToCWS(cws: WebSocket, message: string) {
+		if (cws.readyState === WebSocket.OPEN) {
+			try {
+				cws.send(message)
+			} catch (error) {
+				new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:broadcast", error } })
+			}
+		}
+	}
+
 }
 
 export default SocketServerService
 
 
-function clientIsEqual(client: IClient, ws: IClient): boolean {
-	return client.remoteAddress == ws.remoteAddress && client.remotePort == ws.remotePort
-}

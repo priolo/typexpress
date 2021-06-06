@@ -6,7 +6,7 @@ export interface IClient {
 
 export interface IMessage {
 	path: string,
-	action?: "message",
+	action?: string,
 	payload?: any,
 }
 
@@ -20,6 +20,10 @@ export enum SocketServerActions {
 	 * Ferma e libera le risorse del server WEBSOCKET
 	 */
 	STOP = "ws:stop",
+}
+
+
+export enum SocketRouteActions {
 	/**
 	 * Invia una STRINGA ad un CLIENT   
 	 * payload= `{ client:Client, message: JSON.stringify(obj) }`
@@ -34,4 +38,8 @@ export enum SocketServerActions {
 	 * payload= `{ client:Client }`
 	 */
 	DISCONNECT = "ws:disconnect",
+}
+
+export function clientIsEqual(client: IClient, ws: IClient): boolean {
+	return client.remoteAddress == ws.remoteAddress && client.remotePort == ws.remotePort
 }
