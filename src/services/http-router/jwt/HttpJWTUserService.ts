@@ -108,7 +108,7 @@ export const HeaderStrategy:JWTStrategy = {
     },
 }
 
-interface JWTStrategy {
+export interface JWTStrategy {
     getToken (req:Request)
     putToken ( token:string, res:Response )
 }

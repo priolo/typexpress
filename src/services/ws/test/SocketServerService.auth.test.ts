@@ -25,8 +25,8 @@ beforeAll(async () => {
 					onAuth: function (jwtPayload) {
 						return jwtPayload != null
 					},
-					onMessage: async function (client, message, jwtPayload) {
-						this.sendToClient(client, JSON.stringify(jwtPayload))
+					onMessage: async function (client, message) {
+						this.sendToClient(client, JSON.stringify(client.jwtPayload))
 						this.disconnectClient(client)
 					},
 				},

@@ -1,7 +1,6 @@
 /**
  * @jest-environment node
  */
-import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { IMessage, IClient } from "../utils"
 import SocketRouteService from "../SocketRouteService"
@@ -19,7 +18,7 @@ class RouteCustom extends SocketRouteService {
 			const distance = message.payload
 			const clients = this.getClients()
 				.filter(c => distancePoints(c["position"], client["position"]) <= distance)
-			this.sendToClients(clients, "vicinivicini")
+				.forEach( c => this.sendToClient(c, "vicinivicini"))
 		}
 	}
 }
@@ -42,14 +41,6 @@ beforeAll(async () => {
 afterAll(async () => {
 	await RootService.Stop(root)
 })
-
-test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room1"}')
-	expect(srs).toBeInstanceOf(SocketRouteService)
-	srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room2"}')
-	expect(srs).toBeInstanceOf(SocketRouteService)
-})
-
 
 test("send send/receive position near", async () => {
 
@@ -87,10 +78,8 @@ test("send send/receive position near", async () => {
 		clients[senderIndex].send(JSON.stringify({ path: "near", action: "radar", payload: distance }))
 	})
 
-
 	indexNear.sort()
 	indexReceive.sort()
 	expect(indexNear).toEqual(indexReceive)
-
 })
 

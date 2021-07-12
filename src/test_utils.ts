@@ -17,19 +17,22 @@ export function getRandom(min, max) {
 	return Math.round(Math.random() * (max - min) + min)
 }
 
-export async function wsFarm(address: (()=>string) | string , length: number, onConnection?: (client:WebSocket, index?: number) => void): Promise<WebSocket[]> {
-	let resolver = null
-	const promise = new Promise<WebSocket[]>(res => resolver = res)
-	let count = 0
-	const clients = Array.from<any, WebSocket>({ length }, (_, index) => {
-		const strAddress = (typeof address=="function")? address() : address
-		const ws = new WebSocket(strAddress)
-		ws.once('open', () => {
-			onConnection?.(ws, index)
-			count++
-			if (count == length) resolver(clients)
+export async function wsFarm(
+	address: ((index?: number) => string) | string,
+	length: number,
+	onConnection?: (client: WebSocket, index?: number) => void
+): Promise<WebSocket[]> {
+	return new Promise<WebSocket[]>((res, rej) => {
+		let count = 0
+		const clients = Array.from<any, WebSocket>({ length }, (_, index) => {
+			const strAddress = (typeof address == "function") ? address(index) : address
+			const ws = new WebSocket(strAddress)
+			ws.once('open', () => {
+				onConnection?.(ws, index)
+				count++
+				if (count == length) res(clients)
+			})
+			return ws
 		})
-		return ws
 	})
-	return promise
 }

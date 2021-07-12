@@ -52,7 +52,6 @@ class SocketServerService extends SocketCommunicator {
 	}
 
 	protected async onDestroy() {
-		debugger
 		super.onDestroy()
 		this.stopListener()
 	}
@@ -161,6 +160,7 @@ class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Si mette in ascolto sugli eventi del SERVER-WEB-SOCKET
+	 * @param jwtPayload il JWT-PAYLOAD della connessione JWT-TOKEN
 	 */
 	private buildEventsServer() {
 
@@ -168,28 +168,28 @@ class SocketServerService extends SocketCommunicator {
 			const params = this.getUrlParams(req)
 			const client = {
 				remoteAddress: req.connection.remoteAddress,
-				remotePort: req.connection.remotePort
+				remotePort: req.connection.remotePort,
+				params,
+				jwtPayload
 			}
-			this.buildEventsClient(cws, jwtPayload)
+			this.buildEventsClient(cws)
 			this.addClient(client) //this.updateClients()
-			this.onConnect(client, jwtPayload, params)
+			this.onConnect(client)
 		})
 
 		this.server.on("error", (error) => { console.log("server:error:"); debugger })
-
 		this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); debugger })
 	}
 
 	/**
 	 * Si mette in ascolto sugli eventi del CLIENT-WEB-SOCKET arrivato al server
 	 * @param cws CLIENT-WEB-SOCKET
-	 * @param jwtPayload il JWT-PAYLOAD della connessione JWT-TOKEN
 	 */
-	private buildEventsClient(cws: WebSocket, jwtPayload: any) {
+	private buildEventsClient(cws: WebSocket) {
 
 		cws.on('message', (message: string) => {
 			const client = this.findClientByCWS(cws)
-			this.onMessage(client, message, jwtPayload)
+			this.onMessage(client, message)
 		})
 
 		cws.on('error', (error) => { debugger })
@@ -265,25 +265,22 @@ class SocketServerService extends SocketCommunicator {
 
 	//#region COMMUNICATOR 
 
-	onMessage(client: IClient, message: string | IMessage, jwtPayload: any) {
+	//[II] DA FARE
+	onProcessMessage(client: IClient, message: string | IMessage) {
+	}
+
+	onMessage(client: IClient, message: string | IMessage) {
 		if (typeof message == "string" && message.length > 0) {
 			try {
 				message = JSON.parse(message)
 			} catch (error) { }
 		}
-		super.onMessage(client, message, jwtPayload)
+		super.onMessage(client, message)
 	}
 
 	sendToClient(client: IClient, message: any) {
 		const cws: WebSocket = this.findCWSByClient(client)
 		this.sendToCWS(cws, message)
-	}
-
-	sendToClients(clients: IClient[], message: any) {
-		this.server.clients.forEach(cws => {
-			const index = clients.findIndex(client => clientIsEqual(client, (<any>cws)._socket))
-			if (index != -1) this.sendToCWS(cws, message)
-		})
 	}
 
 	sendToAll(message: any) {
@@ -326,14 +323,18 @@ class SocketServerService extends SocketCommunicator {
 
 	//#endregion
 
-	private sendToCWS(cws: WebSocket, message: string) {
+	private sendToCWS(cws: WebSocket, message: any): boolean {
 		if (cws.readyState === WebSocket.OPEN) {
+			if (typeof message != "string") message = JSON.stringify(message)
 			try {
 				cws.send(message)
 			} catch (error) {
 				new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:broadcast", error } })
+				return false
 			}
+			return true
 		}
+		return false
 	}
 
 }

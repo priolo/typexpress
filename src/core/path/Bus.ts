@@ -24,7 +24,8 @@ export class Bus {
 	 * Consegna un "Action" al suo destinatario partendo dal nodo "this.sender"
 	 * @param action 
 	 */
-	async dispatch(action: Action): Promise<any> {
+	async dispatch(action: Action|string): Promise<any> {
+		if ( typeof action=="string" ) action = { type: action } as Action
 		const dest = new PathFinder(this.sender).getNode<NodeState>(this.path)
 		let res = null
 
@@ -35,6 +36,7 @@ export class Bus {
 		// [await:millisec] se presente un opzione il messaggio viene bufferizzato quindi c'e' un controllo se esiste il nodo per tot tempo
 		if (dest) {
 			res = await dest.dispatch(action)
+		// se il nodo destinazione non c'e' allora metto la action nel buffer
 		} else {
 			this.bufferWaitPush(action)
 		}
@@ -69,7 +71,7 @@ export class Bus {
 	 * @param action 
 	 */
 	private bufferWaitPush(action: Action): void {
-		log(`bus:path:${this.path}:not_found`, LOG_TYPE.ERROR)
+		log(`bus:path:[${this.path}]:not_found`, LOG_TYPE.ERROR)
 		if (!action.wait || action.wait == 0) return
 		this.bufferWait.push(action)
 	}

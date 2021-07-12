@@ -14,8 +14,11 @@ test("su creazione", async () => {
 		type: ConfActions.START,
 		payload: {
 			children: [
+				// string: internal name
 				{ class: "http", port: 123 },
+				// class: class to istantiate
 				{ class: TestService, name: "test" },
+				// string: relative path
 				{ class: `./JestTestService`, name: "test2" },
 				{ class: `farm/test`, name: "test3" }
 			]

@@ -2,12 +2,20 @@
 export interface IClient {
 	remoteAddress: string,
 	remotePort: number,
+	/**
+	 * Sono i parametri ricavati dall'URL durante la connessione
+	 */
+	params?: any,
+	/**
+	 * PAYLOAD-JWT se è stato definito
+	 */
+	jwtPayload?: any,
 }
 
 export interface IMessage {
 	path: string,
-	action?: string,
-	payload?: any,
+	action?: string, 	// non serve
+	payload?: any,		// non serve
 }
 
 export enum SocketServerActions {
@@ -21,7 +29,6 @@ export enum SocketServerActions {
 	 */
 	STOP = "ws:stop",
 }
-
 
 export enum SocketRouteActions {
 	/**

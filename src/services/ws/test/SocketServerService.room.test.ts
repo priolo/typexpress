@@ -1,6 +1,7 @@
 /**
  * @jest-environment node
  */
+ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { IMessage, IClient } from "../utils"
 import SocketRouteService from "../SocketRouteService"
@@ -12,7 +13,7 @@ let root = null
 
 class RouteCustom extends SocketRouteService {
 
-	onMessage(client: IClient, message: IMessage, jwtPayload: any) {
+	onMessage(client: IClient, message: IMessage) {
 		const { path } = this.state
 		let res
 		if (message.action == "enter") {
@@ -74,13 +75,12 @@ afterAll(async () => {
 	await RootService.Stop(root)
 })
 
-// test("su creazione", async () => {
-// 	let srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room1"}')
-// 	expect(srs).toBeInstanceOf(SocketRouteService)
-// 	srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room2"}')
-// 	expect(srs).toBeInstanceOf(SocketRouteService)
-// })
-
+test("su creazione", async () => {
+	let srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room1"}')
+	expect(srs).toBeInstanceOf(SocketRouteService)
+	srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room2"}')
+	expect(srs).toBeInstanceOf(SocketRouteService)
+})
 
 test("verifica rioute custom con gestione delle ROOM", async () => {
 	const clientsLength = 5

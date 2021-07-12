@@ -55,7 +55,7 @@
 		"reflect-metadata": "^0.1.13",
 		"serve-index": "^1.9.1",
 		"sqlite3": "^5.0.0",
-		"typeorm": "^0.2.31",
+		"typeorm": "^0.2.34",
 		"ws": "^7.4.5"
 	},
 	"devDependencies": {

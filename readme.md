@@ -466,7 +466,11 @@ un nodo puo' rimanere in ascolto su un altro nodo sugli eventi che genera quest'
 
 ### auto-npm install
 se un service ha necessità di un  pacchetto npm deve essere possibile istallarlo in automatico
+// installare npm
+https://stackoverflow.com/a/57914191/5224029
 
 ### Portals
 permettono di creare servizi che possono far comunicare nodi in diverse posizioni sulla rete
 per creare facilmente microservizi
+
+

@@ -37,12 +37,12 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 * @param client 
 	 * @param jwtPayload 
 	 */
-	onConnect(client: IClient, jwtPayload?: any, params?: any): void {
+	onConnect(client: IClient): void {
 		const { onConnect } = this.state
-		if (onConnect) onConnect.bind(this)(client, jwtPayload, params)
+		if (onConnect) onConnect.bind(this)(client)
 
 		this.children.forEach(node => {
-			if (node instanceof SocketCommunicator) node.onConnect(client, jwtPayload, params)
+			if (node instanceof SocketCommunicator) node.onConnect(client)
 		})
 	}
 
@@ -59,11 +59,10 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 * Richiamato quando c'e' un messaggio dal CLIENT
 	 * @param client Il CLIENT che mi manda il MESSAGE
 	 * @param message Dovrebbe essere sempre una stringa
-	 * @param jwtPayload PAYLOAD-JWT se è stato definito
 	 * @returns 
 	 */
 	// NON VA BENE! la path nel message non deve cambiare... utilizzare un paroprietà di appoggio
-	onMessage(client: IClient, message: string | IMessage, jwtPayload?: any) {
+	onMessage(client: IClient, message: string | IMessage) {
 		const { onMessage, path } = this.state
 
 		// si tratta di un messaggio con "path" <IMessage>
@@ -74,7 +73,7 @@ export abstract class SocketCommunicator extends ServiceBase {
 
 			// c'e' corrispondenza richiamo l'evento
 			if (!paths || paths.length == 0 || (paths.length == 1 && paths[0] == path)) {
-				onMessage?.bind(this)(client, message, jwtPayload)
+				onMessage?.bind(this)(client, message)
 				return
 
 				// non c'e' corrispondenza ma il primo path corrisponde... devo andare in profondità!
@@ -86,19 +85,19 @@ export abstract class SocketCommunicator extends ServiceBase {
 			}
 			// è una semplice stringa non la mando nei ROUTE
 			// } else if (typeof message=="string") {
-			// 	onMessage?.bind(this)(client, message, jwtPayload)
+			// 	onMessage?.bind(this)(client, message)
 			// 	return
 			// }
 
-			// è un altro tipo di messaggio...
+		// è un altro tipo di messaggio...
 		} else {
-			onMessage?.bind(this)(client, message, jwtPayload)
+			onMessage?.bind(this)(client, message)
 		}
 
 		// mando il messaggio nei CHILDREN
 		const routes = this.children as SocketCommunicator[]
 		for (const route of routes) {
-			route.onMessage(client, message, jwtPayload)
+			route.onMessage(client, message)
 		}
 	}
 
@@ -110,11 +109,6 @@ export abstract class SocketCommunicator extends ServiceBase {
 	sendToClient(client: IClient, message: any) {
 		if (!(this.parent instanceof SocketCommunicator)) return
 		this.parent.sendToClient(client, message)
-	}
-
-	sendToClients(clients: IClient[], message: any) {
-		if (!(this.parent instanceof SocketCommunicator)) return
-		this.parent.sendToClients(clients, message)
 	}
 
 	/**

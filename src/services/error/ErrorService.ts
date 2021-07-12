@@ -25,7 +25,7 @@ class ErrorService extends ServiceBase {
 	}
 
 	private notify(sender: string, error: Error | string): void {
-		debugger
+		if (error instanceof Error) error = { code: error.message }
 		if (typeof error == "string") error = { code: error }
 		log(`${sender}::${error.code}`, LOG_TYPE.ERROR)
 	}

@@ -5,6 +5,7 @@ import { RootService } from "../../../core/RootService"
 import { IMessage, IClient, clientIsEqual } from "../utils"
 import SocketRouteService from "../SocketRouteService"
 import { wsFarm, wait, getRandom } from "../../../test_utils"
+import WebSocket from "ws"
 
 
 const PORT = 5004
@@ -15,38 +16,43 @@ class PluginSession extends SocketRouteService {
 	clientsCache: IClient[] = []
 
 
-	onConnect(client: IClient, jwt, params) {
-		super.onConnect(client, jwt, params)
-		let index = this.clientsCache.findIndex( c => c["id"]==params.id )
-		if ( index!=-1 ) {
-			const cdel = this.clientsCache.splice(index, 1)
-			client = { ...cdel, ...client }
+	onConnect(client: IClient) {
+		super.onConnect(client)
+		// se lo trovo tra quelli disconnessi allora gli mando i messaggi in cache
+		let index = this.clientsCache.findIndex(c => c.params.id == client.params.id)
+		if (index != -1) {
+			const [cdel] = this.clientsCache.splice(index, 1)
+			//wait(500).then( ()=> {
+			cdel["cache"].forEach(message => this.sendToClient(client, message))
+			//})
 		}
-		client["id"] =  params.id
-		//this.sendToClient(client, { action:"connected", id: sessionId })
 	}
 
 	onDisconnect(client: IClient) {
 		super.onDisconnect(client)
+		client["cache"] = []
 		this.clientsCache.push(client)
 	}
 
 	onMessage(client: IClient, message: IMessage) {
-		super.onMessage(client, message)
-		this.sendToClient(client, "resend:session:" + client["session_id"])
+		//super.onMessage(client, message)
+		if (message.action == "to-all") {
+			this.sendToAll(message)
+		}
 	}
 
 	sendToClient(client: IClient, message: any) {
-		super.sendToClient(client, message)
-		let index = this.clientsCache.findIndex( c => c["id"]==client["id"] )
-		if ( index!=-1 ) {
-
+		// il cleint è chiuso metto in cache
+		if (client["cache"]) {
+			client["cache"].push(message)
+			// altrimenti lo mando regolarmente
+		} else {
+			super.sendToClient(client, message)
 		}
 	}
 
 	getClients(): IClient[] {
-		if (!(this.parent instanceof SocketCommunicator)) return
-		return this.parent.getClients()
+		return super.getClients().concat(this.clientsCache)
 	}
 
 }
@@ -69,23 +75,54 @@ afterAll(async () => {
 	await RootService.Stop(root)
 })
 
-test("send send/receive position near", async () => {
+test("manage cache", async () => {
 
-	//const { index, code } = await new Promise<any>(async (res, rej) => {
-		const clients = await wsFarm(
-			()=> `ws://localhost:${PORT}/?id=${getRandom(1, 9999)}`,
-			3,
-			(client, index) => {
-				// // simulo il malfunzionamento del client 1
-				// if (index == 1) client["pong"] = () => { }
-				// client.on("close", (code, reason) => {
-				// 	res({ index, code })
-				// })
+	// creo i clients
+	const tmpIds = []
+	const clients = await wsFarm(
+		(index) => {
+			tmpIds[index] = getRandom(1, 9999)
+			return `ws://localhost:${PORT}/?id=${tmpIds[index]}`
+		},
+		3,
+		(client, index) => client["id_session"] = tmpIds[index]
+	)
+
+	// disconnetto un client
+	const clientClose = clients[0]
+	await new Promise((res, rej) => {
+		clientClose.once("close", res)
+		clientClose.close()
+	})
+
+	// mando un messaggio a tutti
+	const clientSend = clients[1]
+	const txtOrigin = "messagge from: " + clientSend["id_session"]
+	await new Promise<void>((res, rej) => {
+		clientSend.once("message", res)
+		clientSend.send(JSON.stringify({
+			action: "to-all",
+			payload: txtOrigin
+		}))
+	})
+
+	// aspetto un po'
+	await wait(500)
+
+	// riconnetto il client disconnesso precedentemente
+	let txtReceive
+	await new Promise<void>(async (res, rej) => {
+		const [clientRestore] = await wsFarm(() => `ws://localhost:${PORT}/?id=${clientClose["id_session"]}`, 1,
+			(client) => {
+				client.once("message", (message:string) => {
+					const msg = JSON.parse(message)
+					txtReceive = msg.payload
+					res()
+				})
 			}
 		)
-	//})
-debugger
-	// expect(index).toBe(1)
-	// expect(code).toBe(1005) // https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent?retiredLocale=it
+	})
+
+	expect(txtOrigin).toBe(txtReceive)
 })
 

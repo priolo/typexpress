@@ -12,7 +12,9 @@ import { HttpRouterRestServiceBase } from "./services/http-router/rest/HttpRoute
 import { HttpRouterRestRepoService } from "./services/http-router/rest/HttpRouterRestRepoService"
 import { HttpJWTUserService, RouteJWTUserActions, HeaderStrategy, CookieStrategy, CookieStrategyFarm } from "./services/http-router/jwt/HttpJWTUserService"
 
-import EmailService, { EmailActions } from "./services/email";
+import EmailService, { EmailActions } from "./services/email"
+
+import * as WS from "./services/ws"
 
 
 // CORE
@@ -59,4 +61,5 @@ export {
 	Typeorm,
 	Router,
 	Email,
+	WS
 }

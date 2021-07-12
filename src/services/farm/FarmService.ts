@@ -31,8 +31,9 @@ export class FarmService extends Node {
         }
         if ( !classes ) return null
 
+        // se è definito un "className" prendo la class con quel "className"
         if ( className ) return classes[className]
-
+        // ... altrimenti prendo la prima della lista (iniziando per defualt se c'e')
         return Object.keys(classes)
             .sort(k => k == "default" ? -1 : 1)
             .map(k => classes[k])[0]
