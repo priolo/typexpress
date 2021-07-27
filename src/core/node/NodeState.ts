@@ -1,5 +1,5 @@
 import { Node } from "./Node";
-import { Action } from "./Action";
+import { IAction } from "./IAction";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
 
 
@@ -38,7 +38,7 @@ export abstract class NodeState extends Node {
 	 * permette di eseguire una Action
 	 * @param action 
 	 */
-	async dispatch(action: Action): Promise<any> {
+	async dispatch(action: IAction): Promise<any> {
 		log(`${this.name}:${action.type}`, LOG_TYPE.DEBUG, action.payload)
 		// [II] buffering
 		// [II] spostare gli arguments della funzione in: playload, state, sender

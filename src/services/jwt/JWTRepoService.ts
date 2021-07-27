@@ -1,4 +1,4 @@
-import { ServiceBase } from "../../core/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import jwt, { Secret } from "jsonwebtoken";
 
 

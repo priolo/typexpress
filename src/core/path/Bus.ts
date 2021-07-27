@@ -1,10 +1,12 @@
-import { Action } from "../node/Action";
+import { IAction } from "../node/IAction";
 import { INode } from "../node/INode";
 import { NodeState } from "../node/NodeState";
 import { nodePath } from "../utils";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
 import { PathFinder } from "./PathFinder";
-import { debounce } from "@priolo/jon-utils"
+import { time } from "@priolo/jon-utils"
+
+
 /**
  * Permette di consegnare un ACTION ad un NODE
  * tramite il suo PATH
@@ -18,14 +20,14 @@ export class Bus {
 
 	private sender: INode = null
 	private path: string = null
-	private bufferWait: Action[] = []
+	private bufferWait: IAction[] = []
 
 	/**
 	 * Consegna un "Action" al suo destinatario partendo dal nodo "this.sender"
 	 * @param action 
 	 */
-	async dispatch(action: Action|string): Promise<any> {
-		if ( typeof action=="string" ) action = { type: action } as Action
+	async dispatch(action: IAction|string): Promise<any> {
+		if ( typeof action=="string" ) action = { type: action } as IAction
 		const dest = new PathFinder(this.sender).getNode<NodeState>(this.path)
 		let res = null
 
@@ -70,7 +72,7 @@ export class Bus {
 	 * Inserisce un action nel buffer
 	 * @param action 
 	 */
-	private bufferWaitPush(action: Action): void {
+	private bufferWaitPush(action: IAction): void {
 		log(`bus:path:[${this.path}]:not_found`, LOG_TYPE.ERROR)
 		if (!action.wait || action.wait == 0) return
 		this.bufferWait.push(action)
@@ -82,7 +84,7 @@ export class Bus {
 	 */
 	private bufferWaitDebounce(): void {
 		if ( this.bufferWait.length == 0 ) return
-		debounce("bus:buffer:wait", this.bufferWaitResolve.bind(this), 500)
+		time.debounce("bus:buffer:wait", this.bufferWaitResolve.bind(this), 500)
 	}
 
 	//#endregion

@@ -1,5 +1,5 @@
 import { Repository, Connection, TreeRepository, Raw, Between } from "typeorm";
-import { ServiceBase } from "../../core/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder";
 import { TypeormService } from "./TypeormService";
 import { RepoStructActions } from "../../core/repo/RepoStructActions";

@@ -1,9 +1,9 @@
 import { createConnection, Connection, EntitySchema } from "typeorm";
 import path from "path"
-import { ServiceBase } from "../../core/ServiceBase";
+import { ServiceBase } from "../../core/service/ServiceBase";
 import { TypeormRepoService } from "./TypeormRepoService";
 import { Bus } from "../../core/path/Bus";
-import ErrorServiceActions from "../error/ErrorServiceActions";
+import { ErrorServiceActions } from "../error";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
@@ -52,7 +52,7 @@ export class TypeormService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		let { options, schemas } = this.state
 
-		if ( !options ) new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: "typeorm:options:obbligatory" })
+		if (!options) new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: "typeorm:options:obbligatory" })
 
 		// // raccolgo tutti i children che derivano da typeorm-repo e che hanno un "model" cioe' una schema definition
 		// const childRepo = this.children

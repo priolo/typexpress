@@ -1,4 +1,4 @@
-import { ServiceBase } from "../../core/ServiceBase";
+import { ServiceBase } from "../../core/service/ServiceBase";
 import { PathFinder } from "../../core/path/PathFinder";
 import express, { Router } from "express";
 import { IHttpRouter } from "../http/IHttpRouter";

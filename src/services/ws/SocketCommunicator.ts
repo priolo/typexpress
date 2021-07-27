@@ -1,5 +1,5 @@
 import { IMessage, SocketRouteActions, IClient } from "./utils"
-import { ServiceBase } from "../../core/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase"
 
 
 

@@ -1,14 +1,14 @@
-import { ServiceBase } from "../../core/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import { log, LOG_TYPE } from "@priolo/jon-utils";
 import { Error } from "./index"
-import ErrorServiceActions from "./ErrorServiceActions"
+import { ErrorServiceActions } from "./index"
 
 
 
 /**
  * Si occupa di ricevere gli errori dei nodi e intervenire
  */
-class ErrorService extends ServiceBase {
+export class ErrorService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
@@ -33,4 +33,3 @@ class ErrorService extends ServiceBase {
 }
 
 
-export default ErrorService

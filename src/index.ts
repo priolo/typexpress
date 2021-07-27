@@ -12,9 +12,13 @@ import { HttpRouterRestServiceBase } from "./services/http-router/rest/HttpRoute
 import { HttpRouterRestRepoService } from "./services/http-router/rest/HttpRouterRestRepoService"
 import { HttpJWTUserService, RouteJWTUserActions, HeaderStrategy, CookieStrategy, CookieStrategyFarm } from "./services/http-router/jwt/HttpJWTUserService"
 
-import EmailService, { EmailActions } from "./services/email"
+//import EmailService, { EmailActions } from "./services/email"
 
 import * as WS from "./services/ws"
+import * as service from "./core/service"
+
+import * as email from "./services/email"
+
 
 
 // CORE
@@ -25,6 +29,9 @@ export {
 	RepoRestActions,
 	RepoStructActions
 }
+
+// 
+
 
 // TYPEORM
 const Typeorm = {
@@ -51,15 +58,21 @@ const Router = {
 }
 
 // EMAIL
-const Email = {
-	Service: EmailService,
-	Actions: EmailActions,
-}
+// declare namespace Email {
+// 	type Service = EmailService
+// 	type Actions = EmailActions
+// }
+// const Email = {
+// 	Service: EmailService,
+// 	Actions: EmailActions,
+// }
 
 // EXPORT 
 export {
 	Typeorm,
 	Router,
-	Email,
-	WS
+	//Email,
+	WS,
+	service,
+	email,
 }

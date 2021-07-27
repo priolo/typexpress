@@ -1,28 +1,8 @@
-import { ServiceBase } from "../../core/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import nodemailer, {Transporter} from "nodemailer"
 import emailCheck from "email-check"
+import { EmailActions, IEmail, IEmailAccount } from "./index"
 
-export enum EmailActions {
-	CREATE_TEST_ACCOUNT= "createTestAccount",
-	CREATE_ACCOUNT = "createAccount",
-	SEND = "send",
-	CHECK = "check",
-}
-
-export interface IEmailAccount {
-	host: string,
-    port: number,
-    secure: boolean,
-    auth: { user: string, pass: string },
-}
-
-export interface IEmail {
-	from: string, 		// sender address
-    to: string, 		// list of receivers
-    subject: string, 	// Subject line
-    text: string, 		// plain text body
-    html: string, 		// html body
-}
 
 class EmailService extends ServiceBase {
 

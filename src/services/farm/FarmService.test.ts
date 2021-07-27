@@ -1,4 +1,4 @@
-import { ServiceBase } from "../../core/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
 import { HttpService } from "../http/HttpService"

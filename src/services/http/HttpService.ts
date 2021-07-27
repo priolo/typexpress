@@ -1,7 +1,7 @@
 
 import express, { Router, Express } from "express"
 import fs from "fs"
-import { ServiceBase } from "../../core/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import http, { Server } from "http"
 import https from "https"
 import { log, LOG_TYPE } from "@priolo/jon-utils"

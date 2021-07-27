@@ -1,5 +1,5 @@
 import { NodeState } from "../node/NodeState"
-import { delay } from "@priolo/jon-utils"
+import { time } from "@priolo/jon-utils"
 
 
 type F = {
@@ -15,7 +15,7 @@ class NodeTest extends NodeState {
 				return "ok-1"
 			},
 			set_state2: async (state, payload: any) => {
-				await delay(10)
+				await time.delay(10)
 				this.setState(payload)
 				return "ok-2"
 			}

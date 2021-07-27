@@ -5,7 +5,7 @@ import url, { URLSearchParams } from 'url'
 import { HttpService } from "../http/HttpService"
 import { JWTActions } from "../jwt/JWTRepoService"
 import { Bus } from "../../core/path/Bus"
-import ErrorServiceActions from "../error/ErrorServiceActions"
+import { ErrorServiceActions } from "../error"
 
 import { SocketServerActions, IClient, IMessage, clientIsEqual } from "./utils"
 import { SocketCommunicator } from "./SocketCommunicator"

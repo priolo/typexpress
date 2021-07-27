@@ -1,4 +1,4 @@
-import { ServiceBase, ServiceBaseActions, IEvent, ServiceBaseEvents } from "../../core/ServiceBase"
+import { ServiceBase, ServiceBaseActions, IEvent, ServiceBaseEvents } from "../service"
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
 import { Bus } from "../../core/path/Bus"
@@ -50,7 +50,7 @@ test("register", async () => {
 
 	new Bus(receiver, "/root/child2/emitter").dispatch({
 		type: ServiceBaseActions.REGISTER,
-		payload: "state:change",
+		payload: ServiceBaseEvents.STATE_CHANGE,
 	})
 
 	emitter.setState({ value: "pippo" })

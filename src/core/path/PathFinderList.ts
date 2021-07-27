@@ -1,8 +1,6 @@
 import { INode } from "../node/INode"
 import { PathFinder } from "./PathFinder"
 import { nodeFind } from "../utils"
-import { NodeState } from "../node/NodeState"
-import { obj } from "@priolo/jon-utils"
 import { fnNodePattern } from "../utils"
 
 
