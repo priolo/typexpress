@@ -8,8 +8,7 @@ import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { HttpJWTUserService } from "../jwt/HttpJWTUserService";
 import { Bus } from "../../../core/path/Bus";
-import { RepoRestActions } from "../../../core/repo/RepoRestActions"
-import { RepoStructActions } from "../../../core/repo/RepoStructActions";
+import { RepoStructActions, RepoRestActions } from "../../../core/repo/utils";
 
 
 const PORT = 5001

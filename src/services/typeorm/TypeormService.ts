@@ -52,7 +52,10 @@ export class TypeormService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		let { options, schemas } = this.state
 
-		if (!options) new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: "typeorm:options:obbligatory" })
+		if (!options) new Bus(this, "/error").dispatch({ 
+			type: ErrorServiceActions.NOTIFY, 
+			payload: "typeorm:options:obbligatory" 
+		})
 
 		// // raccolgo tutti i children che derivano da typeorm-repo e che hanno un "model" cioe' una schema definition
 		// const childRepo = this.children
@@ -83,7 +86,10 @@ export class TypeormService extends ServiceBase {
 		try {
 			this._connection = await createConnection(options)
 		} catch (e) {
-			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: e })
+			new Bus(this, "/error").dispatch({ 
+				type: ErrorServiceActions.NOTIFY, 
+				payload: e 
+			})
 		}
 
 		await super.onInitAfter()

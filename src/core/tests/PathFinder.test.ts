@@ -1,6 +1,8 @@
 import { RootService } from "../RootService"
 import { PathFinder } from "../path/PathFinder"
-import { ConfActions, NodeConf } from "../node/NodeConf"
+import { NodeConf } from "../node/NodeConf"
+import { ConfActions } from "../node/utils"
+
 
 let root;
 

@@ -1,5 +1,5 @@
 import { Node } from "./Node";
-import { IAction } from "./IAction";
+import { IAction } from "./utils";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
 
 

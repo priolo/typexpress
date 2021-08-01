@@ -1,17 +1,9 @@
-import { Repository, Connection, TreeRepository, Raw, Between } from "typeorm";
+import { Repository, Connection, Raw, Between } from "typeorm";
 import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder";
 import { TypeormService } from "./TypeormService";
-import { RepoStructActions } from "../../core/repo/RepoStructActions";
-
-
-export enum TypeormActions {
-	/**
-	 * Ricerca con una query typeorm  
-	 * https://typeorm.io/#/find-options
-	 */
-	FIND = "find",
-}
+import { RepoStructActions } from "../../core/repo/utils";
+import { TypeormActions } from "./utils";
 
 
 

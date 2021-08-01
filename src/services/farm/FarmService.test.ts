@@ -2,7 +2,7 @@ import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
 import { HttpService } from "../http/HttpService"
-import { ConfActions } from "../../core/node/NodeConf"
+import { ConfActions } from "../../core/node/utils"
 
 class TestService extends ServiceBase {
 	get prop() { return 54 }

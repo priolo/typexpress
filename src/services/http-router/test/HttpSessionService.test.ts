@@ -5,7 +5,7 @@ import path from "path"
 import axios from "axios"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { ConfActions } from "../../../core/node/NodeConf";
+import { ConfActions } from "../../../core/node/utils";
 import { HttpSessionService } from "../session/HttpSessionService";
 import TypeormService from "../../typeorm";
 import { SessionEntity } from "../session/SessionEntity"

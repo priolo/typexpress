@@ -1,7 +1,8 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import { ConfActions } from "../../../core/node/NodeConf"
-import { FsService, FsActions, FsType } from "../FsService"
+import { ConfActions } from "../../../core/node/utils"
+import { FsService } from "../FsService"
+import { FsActions, FsType } from "../utils"
 import path from "path"
 
 

@@ -1,6 +1,7 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
 import fs from "fs"
 import path from "path"
+import { FsActions, FsItem, FsType } from "./utils"
 
 
 export class FsService extends ServiceBase {
@@ -57,24 +58,4 @@ export class FsService extends ServiceBase {
 			},
 		}
 	}
-}
-
-export enum FsActions {
-	LIST = "list",
-	NEW_DIR = "newDir",
-	MOVE = "move",
-	RENAME = "rename",
-	DELETE = "delete",
-	NEW_TEXT = "newText",
-	GET_TEXT = "getText",
-}
-
-export interface FsItem {
-	name: string,
-	type: FsType,
-	parent: string,
-}
-
-export enum FsType {
-	FILE = 0, DIR
 }

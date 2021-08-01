@@ -3,7 +3,7 @@
  */
 
 import axios from "axios"
-import { ConfActions } from "../../../core/node/NodeConf"
+import { ConfActions } from "../../../core/node/utils"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { HttpRouterRestServiceBase } from "../rest/HttpRouterRestServiceBase"

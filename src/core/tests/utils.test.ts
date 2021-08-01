@@ -1,8 +1,7 @@
 import { RootService } from "../RootService"
-import { ConfActions } from "../node/NodeConf"
 import { nodeToJson, nodeMap, nodePath } from "../utils"
 import { PathFinder } from "../path/PathFinder";
-import { INode } from "../node/INode";
+import { ConfActions, INode } from "../node/utils";
 
 
 let root;

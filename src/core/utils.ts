@@ -1,5 +1,5 @@
-import { INode } from "./node/INode"
-import { NodeState } from "./node/NodeState"
+import { INode } from "./node/utils"
+//import { NodeState } from "./node/NodeState"
 import { obj } from "@priolo/jon-utils"
 
 
@@ -124,7 +124,8 @@ export function fnNodePattern(pattern: string): CallbackFnPattern {
 		const substr = pattern.slice(0, pattern.indexOf("}") + 1)
 		const params = JSON.parse(substr)
 		return (node: INode) => {
-			return node instanceof NodeState && obj.objectIsIn(params, node.state)
+			//return node instanceof NodeState && obj.objectIsIn(params, node.state)
+			return node && obj.objectIsIn(params, node["state"])
 		}
 
 	// by name

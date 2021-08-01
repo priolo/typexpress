@@ -4,7 +4,7 @@ import { RootService } from "../../../core/RootService"
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder"
 import { HttpRouterRestRepoService } from "../rest/HttpRouterRestRepoService";
-import { ConfActions } from "../../../core/node/NodeConf";
+import { ConfActions } from "../../../core/node/utils";
 
 
 

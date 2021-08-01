@@ -3,9 +3,9 @@ import { EventEmitter } from "events"
 import { NodeConf } from "../node/NodeConf"
 import { Bus } from "../path/Bus"
 import { nodePath } from "../utils"
-import { ErrorServiceActions } from "../../services/error"
-import { IAction } from "../node/IAction"
-import { IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./index"
+import { ErrorServiceActions } from "../../services/error/utils"
+import { IAction } from "../node/utils"
+import { IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./utils"
 
 
 
@@ -80,7 +80,10 @@ export class ServiceBase extends NodeConf {
 		try {
 			await super.onInit()
 		} catch (error) {
-			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "on_init", error } })
+			new Bus(this, "/error").dispatch({ 
+				type: ErrorServiceActions.NOTIFY, 
+				payload: { code: "on_init", error } 
+			})
 			return
 		}
 		this.emit(ServiceBaseEvents.INIT)

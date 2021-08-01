@@ -1,5 +1,6 @@
 import FarmService from "../../services/farm"
-import { ConfActions, NodeConf } from "../node/NodeConf"
+import { NodeConf } from "../node/NodeConf"
+import { ConfActions } from "../node/utils"
 
 
 test("set state and build", async () => {
@@ -38,14 +39,20 @@ test("set state and build", async () => {
 
 test("inheritance of config", async () => {
 	class NodeA extends NodeConf {
-		get defaultConfig():any { return { ...super.defaultConfig,
-			propA: "A", propOver: "A", propOver2: "A"
-		}}
+		get defaultConfig(): any {
+			return {
+				...super.defaultConfig,
+				propA: "A", propOver: "A", propOver2: "A"
+			}
+		}
 	}
 	class NodeB extends NodeA {
-		get defaultConfig():any { return { ...super.defaultConfig,
-			propB: "B", propOver: "B", propOver2: "B"
-		}}
+		get defaultConfig(): any {
+			return {
+				...super.defaultConfig,
+				propB: "B", propOver: "B", propOver2: "B"
+			}
+		}
 	}
 	const root = new NodeConf("root")
 	root.addChild(new FarmService())

@@ -2,7 +2,7 @@ import { Bus } from "../../../core/path/Bus"
 import express, { Request, Response, Router } from "express"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
 import { JWTActions } from "../../jwt/JWTRepoService"
-import { RepoRestActions } from "../../../core/repo/RepoRestActions"
+import { RepoRestActions } from "../../../core/repo/utils"
 
 export enum RouteJWTUserActions {
     GET_TOKEN = "get-token"

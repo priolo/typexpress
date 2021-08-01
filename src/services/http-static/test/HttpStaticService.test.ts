@@ -4,7 +4,7 @@
 import axios from "axios"
 import { RootService } from "../../../core/RootService"
 import path from "path"
-import { ConfActions } from "../../../core/node/NodeConf"
+import { ConfActions } from "../../../core/node/utils"
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
 

@@ -7,7 +7,7 @@ import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { HeaderStrategy, HttpJWTUserService } from "../jwt/HttpJWTUserService"
 import { Bus } from "../../../core/path/Bus";
-import { RepoRestActions } from "../../../core/repo/RepoRestActions"
+import { RepoRestActions } from "../../../core/repo/utils"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')

@@ -1,4 +1,4 @@
-import { INode } from "../node/INode"
+import { INode } from "../node/utils"
 import { PathFinder } from "./PathFinder"
 import { nodeFind } from "../utils"
 import { fnNodePattern } from "../utils"

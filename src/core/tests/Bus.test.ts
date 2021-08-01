@@ -1,6 +1,7 @@
 import { Bus } from "../path/Bus"
 import FarmService from "../../services/farm"
-import { ConfActions, NodeConf } from "../node/NodeConf"
+import { NodeConf } from "../node/NodeConf"
+import { ConfActions } from "../node/utils"
 
 
 

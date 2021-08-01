@@ -1,3 +1,5 @@
-import { HttpService } from "./HttpService";
 
+import { HttpService } from "./HttpService";
 export default HttpService; 
+
+export * from "./utils"

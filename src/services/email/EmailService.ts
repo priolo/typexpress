@@ -1,9 +1,12 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
 import nodemailer, {Transporter} from "nodemailer"
 import emailCheck from "email-check"
-import { EmailActions, IEmail, IEmailAccount } from "./index"
+import { Actions, IEmail, IAccount } from "./utils"
 
 
+/**
+ * Gestisce il traffico in uscita delle email tramite un account definito nel config
+ */
 class EmailService extends ServiceBase {
 
 	private transporter:Transporter = null
@@ -20,18 +23,18 @@ class EmailService extends ServiceBase {
 		return {
 			...super.dispatchMap,
 
-			[EmailActions.CREATE_TEST_ACCOUNT]: async (state) => {
+			[Actions.CREATE_TEST_ACCOUNT]: async (state) => {
 				const account = await nodemailer.createTestAccount()
 				this.setState( {account} )
 			},
 
-			[EmailActions.CREATE_ACCOUNT]: (state, account:IEmailAccount) => {
+			[Actions.CREATE_ACCOUNT]: (state, account:IAccount) => {
 				this.setState( {account} )
 			},
-			[EmailActions.SEND]: async (state, email:IEmail) => {
+			[Actions.SEND]: async (state, email:IEmail) => {
 				await this.transporter.sendMail(email)
 			},
-			[EmailActions.CHECK]: async (state, address:string) => {
+			[Actions.CHECK]: async (state, address:string) => {
 				let res = false
 				try {
 					res = await emailCheck(address)

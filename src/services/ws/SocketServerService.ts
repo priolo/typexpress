@@ -329,7 +329,10 @@ class SocketServerService extends SocketCommunicator {
 			try {
 				cws.send(message)
 			} catch (error) {
-				new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "ws:broadcast", error } })
+				new Bus(this, "/error").dispatch({ 
+					type: ErrorServiceActions.NOTIFY, 
+					payload: { code: "ws:broadcast", error } 
+				})
 				return false
 			}
 			return true

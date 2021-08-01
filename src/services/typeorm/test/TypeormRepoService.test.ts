@@ -4,9 +4,9 @@ import { RootService } from "../../../core/RootService"
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder";
 import { TypeormRepoService } from "../TypeormRepoService";
-import { ConfActions } from "../../../core/node/NodeConf";
-import { RepoRestActions } from "../../../core/repo/RepoRestActions";
-import { TypeormActions } from "../TypeormRepoBaseService";
+import { ConfActions } from "../../../core/node/utils";
+import { RepoRestActions } from "../../../core/repo/utils";
+import { TypeormActions } from "../utils";
 
 @Entity()
 export class User {

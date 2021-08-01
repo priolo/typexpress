@@ -62,7 +62,11 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         return router
     }
 
-
+    /**
+     * Genera il TOKEN JWT in base al payload passato come parametro
+     * @param payload 
+     * @returns 
+     */
     protected async generateToken(payload:any) : Promise<string> {
         const { jwt } = this.state
         return new Bus(this, jwt).dispatch({
@@ -71,6 +75,11 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         })
     }
 
+    /** 
+     * quando il LOGIN ha avuto successo 
+     * valorizzo il parametro "payload" (generalmente l'user loggato)
+     * e ricevo il TOKEN JWT
+     */
     public async putPayload(payload:any, res:Response) : Promise<string> {
         const { strategy } = this.state
         const token = await this.generateToken(payload)
@@ -80,7 +89,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
 
 }
 
-
+/** Genera una STRATEGY di tipo COOKIE per la gestione del JWT */
 export function CookieStrategyFarm(options):JWTStrategy {
     return {
         getToken: (req: Request) => {
@@ -93,12 +102,14 @@ export function CookieStrategyFarm(options):JWTStrategy {
     }
 }
 
+/** STRATEGY di default per la gestione COOKIES del JWT */
 export const CookieStrategy:JWTStrategy = CookieStrategyFarm({ 
     maxAge: 900000, 
     httpOnly: true,
     //domain: "localhost:8080"
 })
 
+/** STRATEGY per la gestione HEAD del JWT */
 export const HeaderStrategy:JWTStrategy = {
     getToken: (req: Request) => {
         let token = req.headers["authorization"]?.slice(7)

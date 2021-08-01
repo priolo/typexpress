@@ -1,17 +1,10 @@
 import { NodeState } from "./NodeState";
 import FarmService from "../../services/farm";
 import { PathFinder } from "../path/PathFinder";
-import { INode } from "./INode";
+import { INode, ConfActions } from "./utils";
 import { nodeForeach } from "../utils";
 
-//[II]
-export enum ConfActions {
-	START = "start", 	// sostituire con "CREATE" (with config)
-	STOP = "stop"		// sostituire con "DESTROY"
-	// START
-	// STOP
-	// CHILD_ADD
-}
+
 
 /**
  * Classe responsabile di:  

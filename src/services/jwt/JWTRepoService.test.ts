@@ -1,7 +1,7 @@
 import fs from "fs"
 import { RootService } from "../../core/RootService"
 import { PathFinder } from "../../core/path/PathFinder";
-import { ConfActions } from "../../core/node/NodeConf";
+import { ConfActions } from "../../core/node/utils";
 import { JWTActions, JWTRepoService } from "./JWTRepoService";
 
 

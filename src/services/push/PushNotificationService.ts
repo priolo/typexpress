@@ -48,7 +48,10 @@ class PushNotificationService extends ServiceBase {
 				credential: admin.credential.cert(credential),
 			})
 		} catch (error) {
-			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "init", error } })
+			new Bus(this, "/error").dispatch({ 
+				type: ErrorServiceActions.NOTIFY, 
+				payload: { code: "init", error } 
+			})
 			throw error
 		}
 	}
@@ -73,7 +76,10 @@ class PushNotificationService extends ServiceBase {
 			debugger
 			return messageId
 		} catch (error) {
-			new Bus(this, "/error").dispatch({ type: ErrorServiceActions.NOTIFY, payload: { code: "send", error } })
+			new Bus(this, "/error").dispatch({ 
+				type: ErrorServiceActions.NOTIFY, 
+				payload: { code: "send", error } 
+			})
 			throw error
 		}
 	}

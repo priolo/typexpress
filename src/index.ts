@@ -1,23 +1,23 @@
 import { RootService } from "./core/RootService"
 import { Bus } from "./core/path/Bus"
 import { PathFinder } from "./core/path/PathFinder"
-import { RepoRestActions } from "./core/repo/RepoRestActions";
-import { RepoStructActions } from "./core/repo/RepoStructActions";
+import { RepoRestActions, RepoStructActions } from "./core/repo/utils";
 
-import TypeormService, { repo, TypeormActions } from "./services/typeorm"
-import { ModelBase } from "./services/typeorm/models/ModelBase"
 
 import { HttpRouterService } from "./services/http-router/HttpRouterService"
 import { HttpRouterRestServiceBase } from "./services/http-router/rest/HttpRouterRestServiceBase"
 import { HttpRouterRestRepoService } from "./services/http-router/rest/HttpRouterRestRepoService"
 import { HttpJWTUserService, RouteJWTUserActions, HeaderStrategy, CookieStrategy, CookieStrategyFarm } from "./services/http-router/jwt/HttpJWTUserService"
 
-//import EmailService, { EmailActions } from "./services/email"
 
-import * as WS from "./services/ws"
 import * as service from "./core/service"
-
 import * as email from "./services/email"
+// import * as error from "./services/error"
+// import * as farm from "./services/farm"
+// import * as fs from "./services/fs"
+// import * as http from "./services/http"
+import * as typeorm from "./services/typeorm"
+import * as ws from "./services/ws"
 
 
 
@@ -30,16 +30,7 @@ export {
 	RepoStructActions
 }
 
-// 
 
-
-// TYPEORM
-const Typeorm = {
-	Service: TypeormService,
-	ModelBase, 			// base model for repository (entity) typeorm
-	Repo: repo,
-	Actions: TypeormActions,
-}
 
 // ROUTER
 const Router = {
@@ -57,22 +48,17 @@ const Router = {
 	}
 }
 
-// EMAIL
-// declare namespace Email {
-// 	type Service = EmailService
-// 	type Actions = EmailActions
-// }
-// const Email = {
-// 	Service: EmailService,
-// 	Actions: EmailActions,
-// }
 
 // EXPORT 
 export {
-	Typeorm,
 	Router,
-	//Email,
-	WS,
+	
 	service,
 	email,
+	// error,
+	// farm,
+	// fs,
+	// http,
+	typeorm,
+	ws,
 }

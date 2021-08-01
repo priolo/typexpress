@@ -1,6 +1,6 @@
 import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase"
 import { Bus } from "../../../core/path/Bus"
-import { RepoRestActions } from "../../../core/repo/RepoRestActions"
+import { RepoRestActions } from "../../../core/repo/utils"
 
 /**
  * Collega un ROUTE con un REPO 

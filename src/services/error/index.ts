@@ -1,11 +1,3 @@
 
-export enum ErrorServiceActions {
-	NOTIFY = "notify"
-}
-
-export interface Error {
-	code:string,
-	error?: any,
-}
-
+export * from "./utils"
 export { ErrorService } from "./ErrorService"

@@ -3,11 +3,10 @@ import path from "path"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder";
 import { TypeormRepoService } from "../TypeormRepoService";
-import { ConfActions } from "../../../core/node/NodeConf";
-import { RepoRestActions } from "../../../core/repo/RepoRestActions";
-import { RepoStructActions } from "../../../core/repo/RepoStructActions";
+import { ConfActions } from "../../../core/node/utils";
+import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { TypeormActions } from "../TypeormRepoBaseService";
+import { TypeormActions } from "../utils";
 import { Bus } from "../../../core/path/Bus";
 
 

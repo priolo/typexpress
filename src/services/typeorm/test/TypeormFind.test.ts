@@ -3,8 +3,8 @@ import path from "path"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder";
 import { TypeormRepoService } from "../TypeormRepoService";
-import { RepoStructActions } from "../../../core/repo/RepoStructActions";
-import { TypeormActions } from "../TypeormRepoBaseService";
+import { RepoStructActions } from "../../../core/repo/utils";
+import { TypeormActions } from "../utils";
 import { Bus } from "../../../core/path/Bus";
 import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
 

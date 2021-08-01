@@ -1,4 +1,4 @@
-import { RepoRestActions } from "../../core/repo/RepoRestActions";
+import { RepoRestActions } from "../../core/repo/utils";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
 
 

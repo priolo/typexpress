@@ -1,7 +1,7 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 
-import EmailService, { EmailActions, IEmailAccount, IEmail } from "../index"
+import EmailService, { Actions, IAccount, IEmail } from "../index"
 import { ServiceBaseEvents } from "../../../core/service"
 
 
@@ -10,7 +10,7 @@ let root = null
 beforeEach(async () => {
 	root = await RootService.Start({
 		class: "email",
-		account: <IEmailAccount>{
+		account: <IAccount>{
 			// https://ethereal.email/login
 			host: 'smtp.ethereal.email',
 			port: 587,
@@ -39,7 +39,7 @@ test("invio email", async () => {
 	})
 	// invio l'email
 	await email.dispatch({
-		type: EmailActions.SEND,
+		type: Actions.SEND,
 		payload: <IEmail>{
 			from: "from@test.com",
 			to: "to@test.com",
@@ -54,7 +54,7 @@ test("invio email", async () => {
 	
 	// controllo esista un email
 	res = await email.dispatch({
-		type: EmailActions.CHECK,
+		type: Actions.CHECK,
 		payload: "iorioivano@gmail.com"
 	})
 	expect(res).toBeTruthy()
@@ -62,7 +62,7 @@ test("invio email", async () => {
 
 	// controllo esista un email
 	res = await email.dispatch({
-		type: EmailActions.CHECK,
+		type: Actions.CHECK,
 		payload: "pippojksdfhlghsjkfsd@gmail.com"
 	})
 	expect(res).not.toBeTruthy()

@@ -1,7 +1,6 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
+import { ServiceBase } from "../../core/service"
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { Error } from "./index"
-import { ErrorServiceActions } from "./index"
+import { Error, ErrorServiceActions } from "./utils"
 
 
 
