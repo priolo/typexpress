@@ -1,10 +1,11 @@
 import SocketServerService from "./SocketServerService"
 import SocketRouteService from "./SocketRouteService"
-import * as utils from "./utils"
 
 
 export {
-	SocketServerService as server,
+	SocketServerService as Service,
+	SocketServerService as default,
 	SocketRouteService as route,
-	utils
 }
+
+export * from "./utils"

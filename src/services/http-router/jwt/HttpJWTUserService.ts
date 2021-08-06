@@ -1,15 +1,9 @@
 import { Bus } from "../../../core/path/Bus"
-import express, { Request, Response, Router } from "express"
+import { Request, Response, Router } from "express"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
-import { JWTActions } from "../../jwt/JWTRepoService"
 
-
-
-export const JWT_PAYLOAD_PROP = "jwtPayload"
-
-export enum RouteJWTUserActions {
-    GENERATE_TOKEN = "generate_token",
-}
+import * as jwtNs from "../../jwt"
+import { CookieStrategy, JWT_PAYLOAD_PROP, RouteJWTUserActions } from "./utils"
 
 
 /**
@@ -50,7 +44,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
 
             // decodifico il jwt
             const payload = await new Bus(this, jwt)
-                .dispatch({ type: JWTActions.DECODE, payload: token })
+                .dispatch({ type: jwtNs.Actions.DECODE, payload: token })
             // se non sono riusito a decodificarlo ... errore!
             if (!payload) return res.sendStatus(401)
 
@@ -70,7 +64,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
     protected async generateToken(payload:any) : Promise<string> {
         const { jwt } = this.state
         return new Bus(this, jwt).dispatch({
-            type: JWTActions.ENCODE,
+            type: jwtNs.Actions.ENCODE,
             payload: { payload, options: { expiresIn: "1h" } },
         })
     }
@@ -87,39 +81,4 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         return token
     }
 
-}
-
-/** Genera una STRATEGY di tipo COOKIE per la gestione del JWT */
-export function CookieStrategyFarm(options):JWTStrategy {
-    return {
-        getToken: (req: Request) => {
-            const { token } = req.cookies
-            return token
-        },
-        putToken: ( token:string, res:Response) => {
-            res.cookie('token', token, options)
-        },
-    }
-}
-
-/** STRATEGY di default per la gestione COOKIES del JWT */
-export const CookieStrategy:JWTStrategy = CookieStrategyFarm({ 
-    maxAge: 900000, 
-    httpOnly: true,
-    //domain: "localhost:8080"
-})
-
-/** STRATEGY per la gestione HEAD del JWT */
-export const HeaderStrategy:JWTStrategy = {
-    getToken: (req: Request) => {
-        let token = req.headers["authorization"]?.slice(7)
-        return token && token.length > 0 ? token : null
-    },
-    putToken: ( token:string, res:Response) => {
-    },
-}
-
-export interface JWTStrategy {
-    getToken (req:Request)
-    putToken ( token:string, res:Response )
 }

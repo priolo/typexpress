@@ -1,3 +1,5 @@
+
+/** Le ACTIONS che è possibile mandare al SERVICE email */
 export enum Actions {
     CREATE_TEST_ACCOUNT = "createTestAccount",
     /**
@@ -17,6 +19,7 @@ export enum Actions {
     CHECK = "check",
 }
 
+/** STRUCT account */
 export interface IAccount {
     host: string,
     port: number,
@@ -24,6 +27,7 @@ export interface IAccount {
     auth: { user: string, pass: string },
 }
 
+/** STRUCT message */
 export interface IEmail {
     from: string, 		// sender address
     to: string, 		// list of receivers

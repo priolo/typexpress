@@ -3,9 +3,11 @@
  */
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import SocketServerService from "../SocketServerService"
-import { SocketRouteActions } from "../utils"
 import WebSocket from "ws"
+
+import { SocketRouteActions } from "../utils"
+import * as wsNs from "../index"
+
 
 
 const PORT = 5004
@@ -15,7 +17,7 @@ let root = null
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
+			class: "ws",
 			port: PORT,
 			children: [
 				{
@@ -42,8 +44,8 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const wss = new PathFinder(root).getNode<SocketServerService>("/ws-server")
-	expect(wss).toBeInstanceOf(SocketServerService)
+	const wss = new PathFinder(root).getNode<wsNs.Service>("/ws-server")
+	expect(wss).toBeInstanceOf(wsNs.Service)
 })
 
 test("client connetc/send/close", async () => {

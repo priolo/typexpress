@@ -1,5 +1,5 @@
 
-export enum TypeormActions {
+export enum Actions {
 	/**
 	 * Ricerca con una query typeorm  
 	 * https://typeorm.io/#/find-options

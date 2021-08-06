@@ -1,10 +1,12 @@
 /**
  * @jest-environment node
  */
+import WebSocket from "ws"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import SocketServerService from "../SocketServerService"
-import WebSocket from "ws"
+
+import * as wsNs from "../index"
+
 
 
 const PORT = 5004
@@ -18,7 +20,7 @@ beforeAll(async () => {
 			port: PORT,
 			children: [
 				{
-					class: "ws/server",
+					class: "ws",
 					name: "ws1",
 					path: "/server1",
 					onMessage: async function (client, message) {
@@ -27,7 +29,7 @@ beforeAll(async () => {
 					},
 				},
 				{
-					class: "ws/server",
+					class: "ws",
 					name: "ws2",
 					path: "/server2",
 					onMessage: async function (client, message) {
@@ -46,10 +48,10 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const ws1 = new PathFinder(root).getNode<SocketServerService>("/http/ws1")
-	expect(ws1).toBeInstanceOf(SocketServerService)
-	const ws2 = new PathFinder(root).getNode<SocketServerService>("/http/ws2")
-	expect(ws2).toBeInstanceOf(SocketServerService)
+	const ws1 = new PathFinder(root).getNode<wsNs.Service>("/http/ws1")
+	expect(ws1).toBeInstanceOf(wsNs.Service)
+	const ws2 = new PathFinder(root).getNode<wsNs.Service>("/http/ws2")
+	expect(ws2).toBeInstanceOf(wsNs.Service)
 })
 
 test("verifica connetc/send/close su servizio WS montato su servizio HTTP ", async () => {

@@ -1,6 +1,6 @@
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
-import { HttpService } from "./HttpService"
+import HttpService from "./index"
 
 const PORT = 5010
 

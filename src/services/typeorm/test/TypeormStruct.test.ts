@@ -1,13 +1,15 @@
 import fs from "fs"
 import path from "path"
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder";
-import { TypeormRepoService } from "../TypeormRepoService";
 import { ConfActions } from "../../../core/node/utils";
 import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { TypeormActions } from "../utils";
 import { Bus } from "../../../core/path/Bus";
+
+import * as orm from "../index"
+
 
 
 const dbPath = path.join(__dirname, "/database.sqlite")
@@ -18,7 +20,7 @@ export class Item {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column()
+	@Column({ type: "varchar"})
 	label: string;
 }
 
@@ -117,7 +119,7 @@ afterAll(async () => {
 test("Check seed create", async () => {
 
 	// creo gli user con un SEED
-	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/user")
+	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/user")
 	await rep.dispatch({
 		type: RepoStructActions.SEED,
 		payload: [
@@ -160,7 +162,7 @@ test("Check seed create", async () => {
 test("Check seed config", async () => {
 
 	// ESEGUO UN SEED DA CONFIG
-	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/item")
+	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/item")
 	let items = await rep.dispatch({ type: RepoRestActions.ALL })
 	expect(items[0].label).toBe("primo")
 	expect(items[1].label).toBe("secondo")
@@ -169,7 +171,7 @@ test("Check seed config", async () => {
 
 test("Check delete cascade", async () => {
 	// creo gli user con un SEED
-	let rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/user")
+	let rep = new PathFinder(root).getNode<orm.Service>("/typeorm/user")
 	await rep.dispatch({
 		type: RepoStructActions.SEED,
 		payload: [
@@ -188,13 +190,13 @@ test("Check delete cascade", async () => {
 		]
 	})
 
-	let users = await rep.dispatch({ type: TypeormActions.FIND, payload: { where: { firstName: "Marina" }} })
+	let users = await rep.dispatch({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
 	await rep.dispatch({ type: RepoRestActions.DELETE, payload: users[0].id})
 
-	users = await rep.dispatch({ type: TypeormActions.FIND, payload: { where: { firstName: "Marina" }} })
+	users = await rep.dispatch({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
 	expect(users.length).toBe(0)
 
-	rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/doc")
+	rep = new PathFinder(root).getNode<orm.Service>("/typeorm/doc")
 	let docs = await rep.dispatch({ type: RepoRestActions.ALL})
 	expect(docs.length).toBe(1)
 })

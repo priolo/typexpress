@@ -1,8 +1,8 @@
-import {FarmService} from "./FarmService";
-import {JestTestService} from "./JestTestService";
+import FarmService from "./FarmService";
+import { JestTestService } from "./JestTestService";
 
-export default FarmService
 
 export {
+	FarmService as default,
 	JestTestService as test
 }

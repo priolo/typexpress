@@ -1,4 +1,9 @@
 import PushNotificationService from "./PushNotificationService"
 
 
-export default PushNotificationService
+export {
+	PushNotificationService as Service,
+	PushNotificationService as default
+}
+
+export * from "./utils"

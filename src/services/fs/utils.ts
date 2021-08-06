@@ -1,7 +1,21 @@
+/**
+ * ACTION per la gestione del FILE SYSTEM
+ * fanno tutte riferimento alla "baseDir" 
+ */
+export enum Actions {
 
-export enum FsActions {
+	/** 
+	 * lista della directory 
+	 * payload(:string) path directory
+	*/
 	LIST = "list",
+	
+	/** 
+	 * crea una nuova directory 
+	 * payload(:string) 
+	 * */
 	NEW_DIR = "newDir",
+
 	MOVE = "move",
 	RENAME = "rename",
 	DELETE = "delete",

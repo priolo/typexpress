@@ -7,7 +7,7 @@ import { Actions, IEmail, IAccount } from "./utils"
 /**
  * Gestisce il traffico in uscita delle email tramite un account definito nel config
  */
-class EmailService extends ServiceBase {
+export default class EmailService extends ServiceBase {
 
 	private transporter:Transporter = null
 
@@ -63,5 +63,3 @@ class EmailService extends ServiceBase {
 	}
 
 }
-
-export default EmailService

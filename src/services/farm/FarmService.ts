@@ -7,7 +7,7 @@ import { NodeConf } from "../../core/node/NodeConf"
 /**
  * Il SEVICE che si occupa di caricare l'array di classi presenti in un file js
  */
-export class FarmService extends Node {
+export default class FarmService extends Node {
 
     name: string = "farm"
 
@@ -21,7 +21,6 @@ export class FarmService extends Node {
     async loadClassFromFile(path: string): Promise<any> {
         if (path == null) return null
         const { path:loc, className } = this.getAlias(path)
-
         let classes = null
         try { 
             classes = await require(loc) 
@@ -32,7 +31,11 @@ export class FarmService extends Node {
         if ( !classes ) return null
 
         // se è definito un "className" prendo la class con quel "className"
-        if ( className ) return classes[className]
+        if ( className ) {
+            const clazz = classes[className]
+            return clazz.default ?? clazz
+        }
+
         // ... altrimenti prendo la prima della lista (iniziando per defualt se c'e')
         return Object.keys(classes)
             .sort(k => k == "default" ? -1 : 1)

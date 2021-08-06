@@ -1,10 +1,10 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
 import fs from "fs"
 import path from "path"
-import { FsActions, FsItem, FsType } from "./utils"
+import { Actions, FsItem, FsType } from "./utils"
 
 
-export class FsService extends ServiceBase {
+export default class FsService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
@@ -18,7 +18,7 @@ export class FsService extends ServiceBase {
 		return {
 			...super.dispatchMap,
 
-			[FsActions.LIST]: async (state, dir: string) => {
+			[Actions.LIST]: async (state, dir: string) => {
 				const { baseDir } = this.state
 				const d = path.join(baseDir, dir)
 				const files = await fs.promises.readdir(d, { withFileTypes: true })
@@ -28,7 +28,7 @@ export class FsService extends ServiceBase {
 					parent: d,
 				}))
 			},
-			[FsActions.NEW_DIR]: async (state, dir: string) => {
+			[Actions.NEW_DIR]: async (state, dir: string) => {
 				const d = path.join(this.state.baseDir, dir)
 				await fs.promises.mkdir(d, { recursive: true })
 				const newDP = path.parse(d)
@@ -38,22 +38,22 @@ export class FsService extends ServiceBase {
 					parent: path.relative(this.state.baseDir, newDP.dir),
 				}
 			},
-			[FsActions.MOVE]: async (state, dir: string) => {
+			[Actions.MOVE]: async (state, dir: string) => {
 				//return await fs.promises.mkdir(dir, { recursive: true })
 			},
-			[FsActions.RENAME]: async (state, { dirOld, dirNew }) => {
+			[Actions.RENAME]: async (state, { dirOld, dirNew }) => {
 				const dOld = path.join(this.state.baseDir, dirOld)
 				const dNew = path.join(this.state.baseDir, dirNew)
 				await fs.promises.rename(dOld, dNew)
 			},
-			[FsActions.DELETE]: async (state, dir: string) => {
+			[Actions.DELETE]: async (state, dir: string) => {
 				const d = path.join(this.state.baseDir, dir)
 				await fs.promises.unlink(d)
 			},
-			[FsActions.NEW_TEXT]: async (state, {dir,data}) => {
+			[Actions.NEW_TEXT]: async (state, {dir,data}) => {
 				
 			},
-			[FsActions.GET_TEXT]: async (state, dir: string) => {
+			[Actions.GET_TEXT]: async (state, dir: string) => {
 				
 			},
 		}

@@ -1,13 +1,12 @@
-import { ServiceBase } from "../../core/service"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { Error, ErrorServiceActions } from "./utils"
-
+import { Error, Actions } from "./utils"
 
 
 /**
  * Si occupa di ricevere gli errori dei nodi e intervenire
  */
-export class ErrorService extends ServiceBase {
+export default class ErrorService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
@@ -19,7 +18,7 @@ export class ErrorService extends ServiceBase {
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[ErrorServiceActions.NOTIFY]: async (state, error, sender) => this.notify(sender, error),
+			[Actions.NOTIFY]: async (state, error, sender) => this.notify(sender, error),
 		}
 	}
 

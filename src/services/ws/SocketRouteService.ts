@@ -2,7 +2,7 @@ import { SocketCommunicator } from "./SocketCommunicator"
 
 
 
-class SocketRouteService extends SocketCommunicator {
+export default class SocketRouteService extends SocketCommunicator {
 
 	get defaultConfig(): any {
 		return {
@@ -13,4 +13,3 @@ class SocketRouteService extends SocketCommunicator {
 
 }
 
-export default SocketRouteService

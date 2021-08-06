@@ -1,8 +1,6 @@
-import fs from "fs"
 import { RootService } from "../../core/RootService"
 import { PathFinder } from "../../core/path/PathFinder";
-import { ConfActions } from "../../core/node/utils";
-import { JWTActions, JWTRepoService } from "./JWTRepoService";
+import * as jwtNs from "./index"
 
 
 test("su creazione", async () => {
@@ -12,18 +10,18 @@ test("su creazione", async () => {
 		secret: "secret_word!!!"
 	})
 
-	const jwt = new PathFinder(root).getNode<JWTRepoService>("/jwt")
-	expect(jwt instanceof JWTRepoService).toBeTruthy()
+	const jwt = new PathFinder(root).getNode<jwtNs.Service>("/jwt")
+	expect(jwt instanceof jwtNs.Service).toBeTruthy()
 
 	const str = "test"
 
 	const token = await jwt.dispatch({
-		type: JWTActions.ENCODE,
+		type: jwtNs.Actions.ENCODE,
 		payload: { payload: str }
 	})
 
 	const str2 = await jwt.dispatch({
-		type: JWTActions.DECODE,
+		type: jwtNs.Actions.DECODE,
 		payload: token
 	})
 

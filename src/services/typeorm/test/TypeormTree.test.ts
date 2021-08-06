@@ -1,11 +1,14 @@
 import fs from "fs"
 import path from "path"
+import { Column, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
+
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder";
-import { TypeormRepoTreeService } from "../TypeormRepoTreeService";
-import { Column, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
 import { RepoStructActions, RepoTreeActions } from "../../../core/repo/utils";
 import { Bus } from "../../../core/path/Bus";
+
+import * as orm from "../index";
+
 
 
 const dbPath = path.join(__dirname, "/database.sqlite")
@@ -107,7 +110,7 @@ afterAll(async () => {
 
 test("Check seed tree", async () => {
 
-	const rep = new PathFinder(root).getNode<TypeormRepoTreeService>("/typeorm/index")
+	const rep = new PathFinder(root).getNode<orm.tree>("/typeorm/index")
 
 	const roots = await rep.dispatch({ type: RepoTreeActions.GET_ROOTS})
 

@@ -5,9 +5,10 @@ import axios from "axios"
 import fs from "fs"
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { HeaderStrategy, HttpJWTUserService } from "../jwt/HttpJWTUserService"
 import { Bus } from "../../../core/path/Bus";
 import { RepoRestActions } from "../../../core/repo/utils"
+
+import * as jwt from "../jwt"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
@@ -39,7 +40,7 @@ beforeAll(async () => {
 									payload: userId,
 								})
 
-								const jwtService = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
+								const jwtService = new PathFinder(root).getNode<jwt.Service>("/http/route-jwt")
 								const token = await jwtService.putPayload(user, res)
 
 								res.json({ token })
@@ -51,7 +52,7 @@ beforeAll(async () => {
 					class: "http-router/jwt",
 					repository: "/typeorm/user",
 					jwt: "/jwt",
-					strategy: HeaderStrategy,
+					strategy: jwt.HeaderStrategy,
 					children: [
 						{
 							class: "http-router",
@@ -99,8 +100,8 @@ afterAll(async () => {
 })
 
 test("creazione", async () => {
-	const rjwt = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
-	expect(rjwt).toBeInstanceOf(HttpJWTUserService)
+	const rjwt = new PathFinder(root).getNode<jwt.Service>("/http/route-jwt")
+	expect(rjwt).toBeInstanceOf(jwt.Service)
 })
 
 test("crea due USER", async () => {

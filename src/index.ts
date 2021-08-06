@@ -6,8 +6,8 @@ import { RepoRestActions, RepoStructActions } from "./core/repo/utils";
 
 import { HttpRouterService } from "./services/http-router/HttpRouterService"
 import { HttpRouterRestServiceBase } from "./services/http-router/rest/HttpRouterRestServiceBase"
-import { HttpRouterRestRepoService } from "./services/http-router/rest/HttpRouterRestRepoService"
-import { HttpJWTUserService, RouteJWTUserActions, HeaderStrategy, CookieStrategy, CookieStrategyFarm } from "./services/http-router/jwt/HttpJWTUserService"
+//import { HttpRouterRestRepoService } from "./services/http-router/rest/HttpRouterRestRepoService"
+//import { HttpJWTUserService, RouteJWTUserActions, HeaderStrategy, CookieStrategy, CookieStrategyFarm } from "./services/http-router/jwt/HttpJWTUserService"
 
 
 import * as service from "./core/service"
@@ -18,7 +18,7 @@ import * as email from "./services/email"
 // import * as http from "./services/http"
 import * as typeorm from "./services/typeorm"
 import * as ws from "./services/ws"
-
+import * as httpRouter from "./services/http-router"
 
 
 // CORE
@@ -33,28 +33,29 @@ export {
 
 
 // ROUTER
-const Router = {
-	Service: HttpRouterService,
-	Repo: HttpRouterRestRepoService,
-	Rest: HttpRouterRestServiceBase,
-	JWT: {
-		Route: HttpJWTUserService,
-		Action: RouteJWTUserActions,
-		Strategies: {
-			Header: HeaderStrategy,
-			Cookie: CookieStrategy,
-			CookieFarm: CookieStrategyFarm,
-		}
-	}
-}
+// const Router = {
+// 	Service: HttpRouterService,
+// 	Repo: HttpRouterRestRepoService,
+// 	Rest: HttpRouterRestServiceBase,
+// 	JWT: {
+// 		Route: HttpJWTUserService,
+// 		Action: RouteJWTUserActions,
+// 		Strategies: {
+// 			Header: HeaderStrategy,
+// 			Cookie: CookieStrategy,
+// 			CookieFarm: CookieStrategyFarm,
+// 		}
+// 	}
+// }
 
 
 // EXPORT 
 export {
-	Router,
+	//Router,
 	
 	service,
 	email,
+	httpRouter,
 	// error,
 	// farm,
 	// fs,

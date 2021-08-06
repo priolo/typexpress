@@ -1,7 +1,7 @@
 import { ServiceBase } from "./service/ServiceBase"
 import FarmService from "../services/farm"
 import { ConfActions } from "./node/utils"
-import { ErrorService } from "../services/error"
+import ErrorService from "../services/error"
 
 
 /**

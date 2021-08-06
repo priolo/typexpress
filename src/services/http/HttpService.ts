@@ -9,12 +9,12 @@ import { IHttpRouter } from "./utils"
 import cookieParser from 'cookie-parser'
 
 
-export class HttpService extends ServiceBase implements IHttpRouter {
+export default class HttpService extends ServiceBase implements IHttpRouter {
 
 	private app: Express | null = null
-	private server: Server | null = null
-	get testServer():Server {
-		return this.server
+	private _server: Server | null = null
+	get server():Server {
+		return this._server
 	}
 
 	get defaultConfig(): any {
@@ -48,19 +48,19 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		this.app.use(cookieParser())
 		//this.app.use(cors())
 		this.buildRender()
-		this.server = this.buildServer()
+		this._server = this.buildServer()
 		await this.listenServer()
 	}
 
 	protected async onDestroy(): Promise<void> {
 		return new Promise<void>((res, rej) => {
-			this.server.close((err) => {
+			this._server.close((err) => {
 				log(`HttpService:stop`, LOG_TYPE.INFO)
-				this.server = null
+				this._server = null
 				res()
 			})
 			setImmediate(() => {
-				this.server?.emit('close')
+				this._server?.emit('close')
 				//res()
 			})
 		})
@@ -95,7 +95,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	private async listenServer(): Promise<http.Server> {
 		const { port } = this.state
 		return new Promise<http.Server>((res, rej) => {
-			const listener = this.server.listen(
+			const listener = this._server.listen(
 				port,
 				() => {
 					log(`HttpService:start:url:[http://localhost:${port}]`, LOG_TYPE.INFO)

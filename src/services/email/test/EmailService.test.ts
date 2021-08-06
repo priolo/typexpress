@@ -1,8 +1,9 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-
-import EmailService, { Actions, IAccount, IEmail } from "../index"
 import { ServiceBaseEvents } from "../../../core/service"
+
+//import EmailService, { Actions, IAccount, IEmail } from "../index"
+import * as emailNs from "../index"
 
 
 let root = null
@@ -10,7 +11,7 @@ let root = null
 beforeEach(async () => {
 	root = await RootService.Start({
 		class: "email",
-		account: <IAccount>{
+		account: <emailNs.IAccount>{
 			// https://ethereal.email/login
 			host: 'smtp.ethereal.email',
 			port: 587,
@@ -27,8 +28,8 @@ afterAll(async () => {
 })
 
 test("invio email", async () => {
-	const email = new PathFinder(root).getNode<EmailService>("/email")
-	expect(email).toBeInstanceOf(EmailService)
+	const email = new PathFinder(root).getNode<emailNs.Service>("/email")
+	expect(email).toBeInstanceOf(emailNs.Service)
 
 	let res = false
 
@@ -39,8 +40,8 @@ test("invio email", async () => {
 	})
 	// invio l'email
 	await email.dispatch({
-		type: Actions.SEND,
-		payload: <IEmail>{
+		type: emailNs.Actions.SEND,
+		payload: <emailNs.IEmail>{
 			from: "from@test.com",
 			to: "to@test.com",
 			subject: "this is a test!",
@@ -54,7 +55,7 @@ test("invio email", async () => {
 	
 	// controllo esista un email
 	res = await email.dispatch({
-		type: Actions.CHECK,
+		type: emailNs.Actions.CHECK,
 		payload: "iorioivano@gmail.com"
 	})
 	expect(res).toBeTruthy()
@@ -62,7 +63,7 @@ test("invio email", async () => {
 
 	// controllo esista un email
 	res = await email.dispatch({
-		type: Actions.CHECK,
+		type: emailNs.Actions.CHECK,
 		payload: "pippojksdfhlghsjkfsd@gmail.com"
 	})
 	expect(res).not.toBeTruthy()

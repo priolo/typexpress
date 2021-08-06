@@ -4,13 +4,10 @@ import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder";
 import { TypeormRepoService } from "../TypeormRepoService";
 import { RepoStructActions } from "../../../core/repo/utils";
-import { TypeormActions } from "../utils";
 import { Bus } from "../../../core/path/Bus";
+
 import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
-
-
-import { Raw, Between, Column, Entity, PrimaryGeneratedColumn } from "typeorm"
-
+import * as orm from "../index"
 
 
 
@@ -108,13 +105,13 @@ test("Find item with WHERE", async () => {
 	let results
 
 	results = await rep.dispatch({
-		type: TypeormActions.FIND,
+		type: orm.Actions.FIND,
 		payload: { where: { text: "message 3" } }
 	})
 	expect(results[0]).toMatchObject({ x: 100, y: 67 })
 
 	results = await rep.dispatch({
-		type: TypeormActions.FIND,
+		type: orm.Actions.FIND,
 		payload: { where: { 
 			x: { type: "raw", sql:`{*} BETWEEN 0 AND 10` }, 
 			y: { type: "between", from: 0, to: 10 },
@@ -127,12 +124,12 @@ test("Find item with WHERE", async () => {
 
 
 	// results = await rep.dispatch({
-	// 	type: TypeormActions.FIND,
+	// 	type: orm.Actions.FIND,
 	// 	payload: { where: { x: Between(0, 10), y: Between(0, 10) } }
 	// })
 
 	// results = await rep.dispatch({
-	// 	type: TypeormActions.FIND,
+	// 	type: orm.Actions.FIND,
 	// 	payload: { where: { x: Raw(alias=>`${alias} BETWEEN 0 AND 10`), y: Raw(alias=>`${alias} BETWEEN 0 AND 10`) } }
 	// })
 

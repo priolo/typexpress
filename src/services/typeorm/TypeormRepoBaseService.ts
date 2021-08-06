@@ -1,9 +1,11 @@
 import { Repository, Connection, Raw, Between } from "typeorm";
+
 import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder";
-import { TypeormService } from "./TypeormService";
 import { RepoStructActions } from "../../core/repo/utils";
-import { TypeormActions } from "./utils";
+
+import { TypeormService } from "./TypeormService";
+import { Actions } from "./utils";
 
 
 
@@ -26,7 +28,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[TypeormActions.FIND]: async (state, query) => await this.find(query),
+			[Actions.FIND]: async (state, query) => await this.find(query),
 			[RepoStructActions.SEED]: async (state, seeds) => await this.seed(seeds ?? state.seeds),
 			[RepoStructActions.TRUNCATE]: async (state) => await this.truncate(),
 			[RepoStructActions.CLEAR]: async (state) => await this.clear(),

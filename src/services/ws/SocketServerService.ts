@@ -2,17 +2,20 @@ import { request, Request } from "express"
 import WebSocket from "ws"
 import url, { URLSearchParams } from 'url'
 
-import { HttpService } from "../http/HttpService"
-import { JWTActions } from "../jwt/JWTRepoService"
+
+import * as jwtNs from "../jwt"
 import { Bus } from "../../core/path/Bus"
-import { ErrorServiceActions } from "../error"
+
+
+import * as http from "../http"
+import * as errorNs from "../error"
 
 import { SocketServerActions, IClient, IMessage, clientIsEqual } from "./utils"
 import { SocketCommunicator } from "./SocketCommunicator"
 
 
 
-class SocketServerService extends SocketCommunicator {
+export default class SocketServerService extends SocketCommunicator {
 
 	get defaultConfig(): any {
 		return {
@@ -92,14 +95,14 @@ class SocketServerService extends SocketCommunicator {
 	 * Attacca il SERVER-WEB-SOCKET al SERVER-HTTP superiore
 	 */
 	private attachToServerHttp() {
-		const parentHttp = this.parent instanceof HttpService ? this.parent.testServer : null
+		const parentHttp = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
 		if (!parentHttp) throw new Error("non c'e' il server http")
 
 		this.server = new WebSocket.Server({ noServer: true })
 		parentHttp.on('upgrade', this.onUpgrade)
 	}
 	private detachToServerHttp() {
-		const parentHttp = this.parent instanceof HttpService ? this.parent.testServer : null
+		const parentHttp = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
 		if (!parentHttp) return
 		parentHttp.off('upgrade', this.onUpgrade)
 	}
@@ -146,7 +149,10 @@ class SocketServerService extends SocketCommunicator {
 	private async getJwtPayload(token: string) {
 		const { jwt } = this.state
 		if (!token) return null
-		const payload = await new Bus(this, jwt).dispatch({ type: JWTActions.DECODE, payload: token })
+		const payload = await new Bus(this, jwt).dispatch({ 
+			type: jwtNs.Actions.DECODE, 
+			payload: token 
+		})
 		return payload
 	}
 
@@ -330,7 +336,7 @@ class SocketServerService extends SocketCommunicator {
 				cws.send(message)
 			} catch (error) {
 				new Bus(this, "/error").dispatch({ 
-					type: ErrorServiceActions.NOTIFY, 
+					type: errorNs.Actions.NOTIFY, 
 					payload: { code: "ws:broadcast", error } 
 				})
 				return false
@@ -341,7 +347,3 @@ class SocketServerService extends SocketCommunicator {
 	}
 
 }
-
-export default SocketServerService
-
-

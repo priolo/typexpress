@@ -2,23 +2,24 @@
  * @jest-environment node
  */
 import { RootService } from "../../../core/RootService"
-import { IMessage, IClient } from "../utils"
-import SocketRouteService from "../SocketRouteService"
-import {distancePoints,getRandom,wsFarm,wait} from "../../../test_utils"
+import { distancePoints, getRandom, wsFarm, wait } from "../../../test_utils"
+
+import * as wsNs from "../index"
+
 
 
 const PORT = 5004
 let root = null
 
-class RouteCustom extends SocketRouteService {
-	onMessage(client: IClient, message: IMessage) {
+class RouteCustom extends wsNs.Service {
+	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
 		if (message.action == "position") {
 			client["position"] = message.payload
 		} else if (message.action == "radar") {
 			const distance = message.payload
 			const clients = this.getClients()
 				.filter(c => distancePoints(c["position"], client["position"]) <= distance)
-				.forEach( c => this.sendToClient(c, "vicinivicini"))
+				.forEach(c => this.sendToClient(c, "vicinivicini"))
 		}
 	}
 }
@@ -26,7 +27,7 @@ class RouteCustom extends SocketRouteService {
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
+			class: "ws",
 			port: PORT,
 			children: [
 				{
@@ -54,13 +55,13 @@ test("send send/receive position near", async () => {
 
 	const indexReceive = []
 
-	await new Promise<void>( async (res, rej) => {
+	await new Promise<void>(async (res, rej) => {
 
 		// creo e mando la posizione dei client
 		const clients = await wsFarm(`ws://localhost:${PORT}/`, positions.length, (client, index) => {
 
 			client.send(JSON.stringify({ path: "near", action: "position", payload: positions[index] }))
-			
+
 			// il client "near" riceve il messaggio "radar" del CLIENT-RANDOM
 			client.on('message', message => {
 				indexReceive.push(index)

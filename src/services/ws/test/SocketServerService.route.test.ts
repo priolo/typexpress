@@ -3,10 +3,10 @@
  */
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import { SocketRouteActions } from "../utils"
-import SocketRouteService from "../SocketRouteService"
-
 import WebSocket from "ws"
+
+import * as wsNs from "../index"
+
 
 
 const PORT = 5004
@@ -15,7 +15,7 @@ let root = null
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
+			class: "ws",
 			port: PORT,
 			onMessage: async function (client, data) {
 				this.sendToClient(client, `root::receive:${data}`)
@@ -49,10 +49,10 @@ afterAll(async () => {
 })
 
 test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"command"}')
-	expect(srs).toBeInstanceOf(SocketRouteService)
-	srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room1"}')
-	expect(srs).toBeInstanceOf(SocketRouteService)
+	let srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"command"}')
+	expect(srs).toBeInstanceOf(wsNs.Service)
+	srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"room1"}')
+	expect(srs).toBeInstanceOf(wsNs.Service)
 })
 
 test("message on subpath", async () => {

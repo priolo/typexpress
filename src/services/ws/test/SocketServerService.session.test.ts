@@ -2,21 +2,21 @@
  * @jest-environment node
  */
 import { RootService } from "../../../core/RootService"
-import { IMessage, IClient, clientIsEqual } from "../utils"
-import SocketRouteService from "../SocketRouteService"
 import { wsFarm, wait, getRandom } from "../../../test_utils"
-import WebSocket from "ws"
+
+import * as wsNs from "../index"
+
 
 
 const PORT = 5004
 let root = null
 
-class PluginSession extends SocketRouteService {
+class PluginSession extends wsNs.Service {
 
-	clientsCache: IClient[] = []
+	clientsCache: wsNs.IClient[] = []
 
 
-	onConnect(client: IClient) {
+	onConnect(client: wsNs.IClient) {
 		super.onConnect(client)
 		// se lo trovo tra quelli disconnessi allora gli mando i messaggi in cache
 		let index = this.clientsCache.findIndex(c => c.params.id == client.params.id)
@@ -28,20 +28,20 @@ class PluginSession extends SocketRouteService {
 		}
 	}
 
-	onDisconnect(client: IClient) {
+	onDisconnect(client: wsNs.IClient) {
 		super.onDisconnect(client)
 		client["cache"] = []
 		this.clientsCache.push(client)
 	}
 
-	onMessage(client: IClient, message: IMessage) {
+	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
 		//super.onMessage(client, message)
 		if (message.action == "to-all") {
 			this.sendToAll(message)
 		}
 	}
 
-	sendToClient(client: IClient, message: any) {
+	sendToClient(client: wsNs.IClient, message: any) {
 		// il cleint è chiuso metto in cache
 		if (client["cache"]) {
 			client["cache"].push(message)
@@ -51,7 +51,7 @@ class PluginSession extends SocketRouteService {
 		}
 	}
 
-	getClients(): IClient[] {
+	getClients(): wsNs.IClient[] {
 		return super.getClients().concat(this.clientsCache)
 	}
 
@@ -60,7 +60,7 @@ class PluginSession extends SocketRouteService {
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
+			class: "ws",
 			port: PORT,
 			children: [
 				{

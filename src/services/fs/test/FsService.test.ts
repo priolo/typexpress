@@ -1,9 +1,10 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { ConfActions } from "../../../core/node/utils"
-import { FsService } from "../FsService"
-import { FsActions, FsType } from "../utils"
 import path from "path"
+
+import * as fs from "../index"
+
 
 
 let root = null
@@ -28,15 +29,15 @@ afterAll(async () => {
 
 
 test("create dir and files", async () => {
-	const fss = new PathFinder(root).getNode<FsService>("/fs")
-	expect(fss).toBeInstanceOf(FsService)
+	const fss = new PathFinder(root).getNode<fs.Service>("/fs")
+	expect(fss).toBeInstanceOf(fs.Service)
 
 	let res = await fss.dispatch({
-		type: FsActions.NEW_DIR,
+		type: fs.Actions.NEW_DIR,
 		payload: "./testDir",
 	})
 
-	expect(res).toEqual({name: "testDir", type: FsType.DIR, parent: ""})
+	expect(res).toEqual({name: "testDir", type: fs.FsType.DIR, parent: ""})
 })
 
 // test("get list file and dir", async () => {	

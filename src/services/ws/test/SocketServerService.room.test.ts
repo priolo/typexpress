@@ -1,19 +1,20 @@
 /**
  * @jest-environment node
  */
- import { PathFinder } from "../../../core/path/PathFinder"
+import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import { IMessage, IClient } from "../utils"
-import SocketRouteService from "../SocketRouteService"
 import { wsFarm } from "../../../test_utils"
+
+import * as wsNs from "../index"
+
 
 
 const PORT = 5004
 let root = null
 
-class RouteCustom extends SocketRouteService {
+class RouteCustom extends wsNs.Service {
 
-	onMessage(client: IClient, message: IMessage) {
+	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
 		const { path } = this.state
 		let res
 		if (message.action == "enter") {
@@ -38,7 +39,7 @@ class RouteCustom extends SocketRouteService {
 		}
 	}
 
-	getClients(): IClient[] {
+	getClients(): wsNs.IClient[] {
 		const { path } = this.state
 		const clients = super.getClients()
 		return clients.filter(client => {
@@ -52,7 +53,7 @@ class RouteCustom extends SocketRouteService {
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
+			class: "ws",
 			port: PORT,
 			children: [
 
@@ -76,10 +77,10 @@ afterAll(async () => {
 })
 
 test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room1"}')
-	expect(srs).toBeInstanceOf(SocketRouteService)
-	srs = new PathFinder(root).getNode<SocketRouteService>('/ws-server/{"path":"room2"}')
-	expect(srs).toBeInstanceOf(SocketRouteService)
+	let srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"room1"}')
+	expect(srs).toBeInstanceOf(wsNs.Service)
+	srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"room2"}')
+	expect(srs).toBeInstanceOf(wsNs.Service)
 })
 
 test("verifica rioute custom con gestione delle ROOM", async () => {

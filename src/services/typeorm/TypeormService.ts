@@ -3,7 +3,7 @@ import path from "path"
 import { ServiceBase } from "../../core/service/ServiceBase";
 import { TypeormRepoService } from "./TypeormRepoService";
 import { Bus } from "../../core/path/Bus";
-import { ErrorServiceActions } from "../error";
+import * as errorNs from "../error";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
@@ -53,7 +53,7 @@ export class TypeormService extends ServiceBase {
 		let { options, schemas } = this.state
 
 		if (!options) new Bus(this, "/error").dispatch({ 
-			type: ErrorServiceActions.NOTIFY, 
+			type: errorNs.Actions.NOTIFY, 
 			payload: "typeorm:options:obbligatory" 
 		})
 
@@ -87,7 +87,7 @@ export class TypeormService extends ServiceBase {
 			this._connection = await createConnection(options)
 		} catch (e) {
 			new Bus(this, "/error").dispatch({ 
-				type: ErrorServiceActions.NOTIFY, 
+				type: errorNs.Actions.NOTIFY, 
 				payload: e 
 			})
 		}

@@ -1,3 +1,6 @@
 import { HttpStaticService } from "./HttpStaticService"
 
-export default HttpStaticService 
+export {
+	HttpStaticService as Service,
+	HttpStaticService as default
+}

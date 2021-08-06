@@ -6,7 +6,7 @@ import { log, LOG_TYPE } from "@priolo/jon-utils"
 import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServiceBase"
 
 
-export class HttpStaticService extends HttpRouterServiceBase {
+export default class HttpStaticService extends HttpRouterServiceBase {
 
 	get defaultConfig(): any {
 		return {

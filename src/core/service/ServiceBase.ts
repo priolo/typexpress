@@ -3,10 +3,11 @@ import { EventEmitter } from "events"
 import { NodeConf } from "../node/NodeConf"
 import { Bus } from "../path/Bus"
 import { nodePath } from "../utils"
-import { ErrorServiceActions } from "../../services/error/utils"
 import { IAction } from "../node/utils"
 import { IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./utils"
 
+// bisogna importarlo direttamente da "utils" altrimenti c'e' un import-circolare
+import { Actions as ErrorActions } from "../../services/error/utils"
 
 
 /**
@@ -81,7 +82,7 @@ export class ServiceBase extends NodeConf {
 			await super.onInit()
 		} catch (error) {
 			new Bus(this, "/error").dispatch({ 
-				type: ErrorServiceActions.NOTIFY, 
+				type: ErrorActions.NOTIFY, 
 				payload: { code: "on_init", error } 
 			})
 			return

@@ -4,9 +4,9 @@
 import { Bus } from "../../../core/path/Bus"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import PushNotificationService, { PushNotificationActions } from "../PushNotificationService"
-import { nodeToJson } from "../../../core/utils"
+import * as push from "../index"
 import path from "path"
+
 
 /*
 key per SDK FIREBASE
@@ -34,9 +34,9 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const node = new PathFinder(root).getNode<PushNotificationService>("/push")
+	const node = new PathFinder(root).getNode<push.Service>("/push")
 	// console.log(nodeToJson(node))
-	expect(node).toBeInstanceOf(PushNotificationService)
+	expect(node).toBeInstanceOf(push.Service)
 })
 
 test("send notification", async () => {
@@ -55,7 +55,7 @@ test("send notification", async () => {
 		topic: 'highScores',
 	}
 	const messageId = await new Bus(root, "/push").dispatch({
-		type: PushNotificationActions.SEND,
+		type: push.Actions.SEND,
 		payload: message,
 	})
 	expect(messageId).toMatch("projects/extreme-citadel-739/messages")

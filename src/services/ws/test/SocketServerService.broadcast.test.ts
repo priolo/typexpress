@@ -11,7 +11,7 @@ let root = null
 beforeAll(async () => {
 	root = await RootService.Start(
 		{
-			class: "ws/server",
+			class: "ws",
 			port: PORT,
 			onMessage: async function (client, message) {
 				this.sendToAll(message)

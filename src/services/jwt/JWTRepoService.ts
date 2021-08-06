@@ -1,21 +1,11 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
 import jwt, { Secret } from "jsonwebtoken";
+import { Actions } from "./utils";
 
 
-export enum JWTActions {
-	/**
-	 * PAYLOAD -> JWT-TOKEN  
-	 * payload= `{ payload:json-like, options: https://github.com/auth0/node-jsonwebtoken#usage}`
-	 */
-	ENCODE = "encode",
-	/**
-	 * JWT-TOKEN -> PAYLOAD
-	 * payload= `token: string`
-	 */
-	DECODE = "decode",
-}
 
-export class JWTRepoService extends ServiceBase {
+
+export default class JWTRepoService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
@@ -28,8 +18,8 @@ export class JWTRepoService extends ServiceBase {
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[JWTActions.ENCODE]: (state, { payload, options }) => this.encode(payload, options),
-			[JWTActions.DECODE]: async (state, payload) => this.decode(payload),
+			[Actions.ENCODE]: (state, { payload, options }) => this.encode(payload, options),
+			[Actions.DECODE]: async (state, payload) => this.decode(payload),
 		}
 	}
 

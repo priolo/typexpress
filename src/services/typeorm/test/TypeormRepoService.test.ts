@@ -1,25 +1,28 @@
 import fs from "fs"
 import path from "path"
+
 import { RootService } from "../../../core/RootService"
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder";
-import { TypeormRepoService } from "../TypeormRepoService";
 import { ConfActions } from "../../../core/node/utils";
 import { RepoRestActions } from "../../../core/repo/utils";
-import { TypeormActions } from "../utils";
+
+import * as orm from "../index"
+
+
 
 @Entity()
 export class User {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column()
+	@Column({ type: "varchar"})
 	firstName: string;
 
-	@Column()
+	@Column({ type: "varchar"})
 	lastName: string;
 
-	@Column()
+	@Column({ type: "int"})
 	age: number;
 }
 
@@ -87,8 +90,8 @@ afterAll(async () => {
 
 test("USER", async () => {
 
-	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/user")
-	expect(rep instanceof TypeormRepoService).toBeTruthy()
+	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/user")
+	expect(rep instanceof orm.Service).toBeTruthy()
 
 	// crea due USER
 	await rep.dispatch({
@@ -110,7 +113,7 @@ test("USER", async () => {
 
 	// preleva uno specifico USER
 	let user = await rep.dispatch({
-		type: TypeormActions.FIND,
+		type: orm.Actions.FIND,
 		payload: { where: { firstName: "Marina" } }
 	})
 	expect(user).toMatchObject([
@@ -149,8 +152,8 @@ test("USER", async () => {
 
 test("ACCOUNT", async () => {
 
-	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/account")
-	expect(rep instanceof TypeormRepoService).toBeTruthy()
+	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/account")
+	expect(rep instanceof orm.Service).toBeTruthy()
 
 	// crea due ACCOUNT
 	await rep.dispatch({
@@ -168,7 +171,7 @@ test("ACCOUNT", async () => {
 
 	// preleva uno specifico ACCOUNT
 	let [account2] = await rep.dispatch({
-		type: TypeormActions.FIND,
+		type: orm.Actions.FIND,
 		payload: { where: { username: "huetotolin" } }
 	})
 	expect(account).toEqual(account2)
@@ -176,8 +179,8 @@ test("ACCOUNT", async () => {
 
 test("ITEMS", async () => {
 
-	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/item")
-	expect(rep).toBeInstanceOf(TypeormRepoService)
+	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/item")
+	expect(rep).toBeInstanceOf(orm.Service)
 
 	// crea due ITEM
 	await rep.dispatch({
@@ -195,7 +198,7 @@ test("ITEMS", async () => {
 
 	// preleva uno specifico ITEM
 	let [item2] = await rep.dispatch({
-		type: TypeormActions.FIND,
+		type: orm.Actions.FIND,
 		payload: { where: { name: "barattolo" } }
 	})
 	expect(item).toEqual(item2)

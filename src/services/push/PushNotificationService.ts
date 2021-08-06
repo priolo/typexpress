@@ -1,15 +1,13 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
-import { ErrorServiceActions } from "../error"
 import { Bus } from "../../core/path/Bus"
+import * as errorNs from "../error"
 import * as admin from "firebase-admin"
+import { Actions } from "./utils"
 
 
 
-export enum PushNotificationActions {
-	SEND = "pn:send",
-}
 
-class PushNotificationService extends ServiceBase {
+export default class PushNotificationService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
@@ -26,7 +24,7 @@ class PushNotificationService extends ServiceBase {
 		return {
 			...super.dispatchMap,
 			// https://firebase.google.com/docs/cloud-messaging/send-message
-			[PushNotificationActions.SEND]: async (state, message) => {
+			[Actions.SEND]: async (state, message) => {
 				return await this.sendNotify(message)
 			},
 
@@ -48,9 +46,9 @@ class PushNotificationService extends ServiceBase {
 				credential: admin.credential.cert(credential),
 			})
 		} catch (error) {
-			new Bus(this, "/error").dispatch({ 
-				type: ErrorServiceActions.NOTIFY, 
-				payload: { code: "init", error } 
+			new Bus(this, "/error").dispatch({
+				type: errorNs.Actions.NOTIFY,
+				payload: { code: "init", error }
 			})
 			throw error
 		}
@@ -76,13 +74,13 @@ class PushNotificationService extends ServiceBase {
 			debugger
 			return messageId
 		} catch (error) {
-			new Bus(this, "/error").dispatch({ 
-				type: ErrorServiceActions.NOTIFY, 
-				payload: { code: "send", error } 
+			new Bus(this, "/error").dispatch({
+				type: errorNs.Actions.NOTIFY,
+				payload: { code: "send", error }
 			})
 			throw error
 		}
 	}
 }
 
-export default PushNotificationService
+

@@ -1,7 +1,7 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
-import { HttpService } from "../http/HttpService"
+import * as http from "../http"
 import { ConfActions } from "../../core/node/utils"
 
 class TestService extends ServiceBase {
@@ -25,7 +25,7 @@ test("su creazione", async () => {
 		}
 	})
 
-	const http = new PathFinder(root).getNode<HttpService>("/http")
+	const http = new PathFinder(root).getNode<http.Service>("/http")
 	expect(http.state.port).toBe(123)	
 	const test = new PathFinder(root).getNode<TestService>("/test")
 	expect(test.prop).toBe(54)

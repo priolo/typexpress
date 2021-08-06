@@ -1,13 +1,16 @@
 /**
  * @jest-environment node
  */
+ import WebSocket from "ws"
+
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import { Bus } from "../../../core/path/Bus"
-import { JWTActions } from "../../jwt/JWTRepoService"
-import SocketServerService from "../SocketServerService"
 
-import WebSocket from "ws"
+import * as jwtNs from "../../jwt"
+import * as wsNs from "../index"
+
+
 
 
 const PORT = 5004
@@ -20,7 +23,7 @@ beforeAll(async () => {
 			port: PORT,
 			children: [
 				{
-					class: "ws/server",
+					class: "ws",
 					jwt: "/jwt",
 					onAuth: function (jwtPayload) {
 						return jwtPayload != null
@@ -45,15 +48,15 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
-	const wss = new PathFinder(root).getNode<SocketServerService>("/http/ws-server")
-	expect(wss).toBeInstanceOf(SocketServerService)
+	const wss = new PathFinder(root).getNode<wsNs.Service>("/http/ws-server")
+	expect(wss).toBeInstanceOf(wsNs.Service)
 })
 
 test("connessione con TOKEN JWT", async () => {
 
 	const user = { id: 3, name: "ivano" }
 	const token = await new Bus(root, "/jwt").dispatch({
-		type: JWTActions.ENCODE, payload: { payload: user }
+		type: jwtNs.Actions.ENCODE, payload: { payload: user }
 	})
 	const client = new WebSocket(`ws://localhost:${PORT}?token=${token}`)
 	let result
