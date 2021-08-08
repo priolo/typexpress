@@ -2,13 +2,15 @@
  * @jest-environment node
  */
 import axios from "axios"
-import { ConfActions } from "../../../core/node/utils"
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-import { HttpUploadService } from "../upload/HttpUploadService"
 import fs from "fs"
 import path from "path"
 import FormData from "form-data"
+
+import { ConfActions } from "../../../core/node/utils"
+import { PathFinder } from "../../../core/path/PathFinder"
+import { RootService } from "../../../core/RootService"
+
+import { HttpUploadService } from "../upload/HttpUploadService"
 
 
 
@@ -50,6 +52,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
 	await root.dispatch({ type: ConfActions.STOP })
+
 })
 
 
@@ -61,10 +64,10 @@ test("su creazione", async () => {
 
 test("upload multiple files", async () => {
 
-	const fileDest1 = path.join(dirDest, "./HttpUploadService.test.js")
-	const fileSurce1 = path.join(__dirname, './HttpUploadService.test.js')
-	const fileDest2 = path.join(dirDest, "./HttpRouterService.test.js")
-	const fileSurce2 = path.join(__dirname, './HttpRouterService.test.js')
+	const fileDest1 = path.join(dirDest, "./file1.json")
+	const fileSurce1 = path.join(__dirname, './file1.json')
+	const fileDest2 = path.join(dirDest, "./file2.json")
+	const fileSurce2 = path.join(__dirname, './file2.json')
 
 	const form = new FormData();
 	form.append("file1", fs.createReadStream(fileSurce1));
@@ -77,7 +80,7 @@ test("upload multiple files", async () => {
 
 test("upload file with path", async () => {
 
-	const fileSource = path.join(__dirname, "./HttpRouterService.test.js")
+	const fileSource = path.join(__dirname, "./file1.json")
 	const fileDestRelative = "./subdir/file.txt"
 	const fileDestAbsolute = path.join(__dirname, "./dest", fileDestRelative)
 	expect(fs.existsSync(fileDestAbsolute)).toBeFalsy()

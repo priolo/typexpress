@@ -1,5 +1,6 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
 import { Bus } from "../../core/path/Bus"
+
 import * as errorNs from "../error"
 import * as admin from "firebase-admin"
 import { Actions } from "./utils"
@@ -7,7 +8,7 @@ import { Actions } from "./utils"
 
 
 
-export default class PushNotificationService extends ServiceBase {
+export class PushNotificationService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {

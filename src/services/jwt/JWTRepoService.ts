@@ -1,11 +1,12 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
 import jwt, { Secret } from "jsonwebtoken";
+
+import { ServiceBase } from "../../core/service/ServiceBase"
+
 import { Actions } from "./utils";
 
 
 
-
-export default class JWTRepoService extends ServiceBase {
+export class JWTRepoService extends ServiceBase {
 
 	get defaultConfig(): any {
 		return {
@@ -30,7 +31,7 @@ export default class JWTRepoService extends ServiceBase {
 	 * vedere anche: https://tools.ietf.org/html/rfc7519
 	 * @returns 
 	 */
-	private encode(payload:string | object | Buffer, options:jwt.SignOptions): string {
+	private encode(payload: string | object | Buffer, options: jwt.SignOptions): string {
 		return jwt.sign(payload, this.state.secret, options)
 	}
 

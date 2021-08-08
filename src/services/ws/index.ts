@@ -1,5 +1,5 @@
-import SocketServerService from "./SocketServerService"
-import SocketRouteService from "./SocketRouteService"
+import { SocketServerService } from "./SocketServerService"
+import { SocketRouteService } from "./SocketRouteService"
 
 
 export {

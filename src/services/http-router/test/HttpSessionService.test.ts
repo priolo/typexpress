@@ -3,11 +3,13 @@
  */
 import path from "path"
 import axios from "axios"
+
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { ConfActions } from "../../../core/node/utils";
-import { HttpSessionService } from "../session/HttpSessionService";
-import TypeormService from "../../typeorm";
+import { ConfActions } from "../../../core/node/utils"
+import { HttpSessionService } from "../session/HttpSessionService"
+
+import * as typeormNs  from "../../typeorm";
 import { SessionEntity } from "../session/SessionEntity"
 
 
@@ -102,8 +104,8 @@ test("creazione", async () => {
 	const sesType = new PathFinder(root).getNode<HttpSessionService>("/http/typeorm-session")
 	expect(sesType).toBeInstanceOf(HttpSessionService)
 
-	const typeorm = new PathFinder(root).getNode<TypeormService>("/typeorm")
-	expect(typeorm).toBeInstanceOf(TypeormService)
+	const typeorm = new PathFinder(root).getNode<typeormNs.Service>("/typeorm")
+	expect(typeorm).toBeInstanceOf(typeormNs.Service)
 })
 
 test("write and read in mem", async () => {

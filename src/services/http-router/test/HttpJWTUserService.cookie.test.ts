@@ -1,14 +1,16 @@
 /**
  * @jest-environment node
  */
-
 import axios from "axios"
 import fs from "fs"
+
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { HttpJWTUserService } from "../jwt/HttpJWTUserService";
-import { Bus } from "../../../core/path/Bus";
-import { RepoStructActions, RepoRestActions } from "../../../core/repo/utils";
+import { Bus } from "../../../core/path/Bus"
+import { RepoStructActions, RepoRestActions } from "../../../core/repo/utils"
+
+import * as jwtNs from "../jwt"
+
 
 
 const PORT = 5001
@@ -42,7 +44,7 @@ beforeAll(async () => {
 								})
 
 								// get service and put payload
-								const jwtService = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
+								const jwtService = new PathFinder(root).getNode<jwtNs.Service>("/http/route-jwt")
 								await jwtService.putPayload(user, res)
 
 								// other method witout get service
@@ -125,10 +127,9 @@ afterAll(async () => {
 })
 
 test("creation", async () => {
-	const rjwt = new PathFinder(root).getNode<HttpJWTUserService>("/http/route-jwt")
-	expect(rjwt).toBeInstanceOf(HttpJWTUserService)
+	const rjwt = new PathFinder(root).getNode<jwtNs.Service>("/http/route-jwt")
+	expect(rjwt).toBeInstanceOf(jwtNs.Service)
 })
-
 
 test("if I log in WITHOUT the token ... it should give me an error", async () => {
 	let err = null

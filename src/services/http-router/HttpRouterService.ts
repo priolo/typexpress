@@ -5,8 +5,8 @@ import { HttpRouterServiceBase } from "./HttpRouterServiceBase";
 
 
 /**
- * Mappa una richiesta http rest
- * con le funzioni appropriate della classe
+ * Mappa una richiesta http 
+ * con le funzioni della classe
  */
 export class HttpRouterService extends HttpRouterServiceBase {
 

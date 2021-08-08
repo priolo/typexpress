@@ -2,9 +2,9 @@
  * @jest-environment node
  */
 import axios from "axios"
-import { RootService } from "../../../core/RootService"
 import path from "path"
-import { ConfActions } from "../../../core/node/utils"
+
+import { RootService } from "../../../core/RootService"
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
 
@@ -14,35 +14,29 @@ let root, res
 const PORT = 5008
 
 beforeAll(async() => {
-	root = new RootService()
-	await root.dispatch({
-		type: ConfActions.START,
-		payload: {
+	root = await RootService.Start (
+		{
+			class: "http",
+			port: PORT,
 			children: [
 				{
-					class: "http",
-					port: PORT,
-					children: [
-						{
-							class: "http-static",
-							dir: path.join(__dirname, "../test"),	// directory locale che contiene i file
-							path: "/public",
-						},
-						{
-							class: "http-static",
-							dir: path.join(__dirname, "../test"),	// directory locale che contiene i file
-							path: "/spa",
-							spaFile: "text.js",
-						}
-					]
+					class: "http-static",
+					dir: path.join(__dirname, "../test"),	// directory locale che contiene i file
+					path: "/public",
+				},
+				{
+					class: "http-static",
+					dir: path.join(__dirname, "../test"),	// directory locale che contiene i file
+					path: "/spa",
+					spaFile: "text.js",
 				}
 			]
 		}
-	})
+	)
 })
 
 afterAll(async() => {
-	await root.dispatch({ type: ConfActions.STOP })
+	await RootService.Stop(root)
 })
 
 test("accesso a PUBLIC", async () => {

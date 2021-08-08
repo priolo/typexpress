@@ -2,7 +2,7 @@ import { Repository, Connection, Raw, Between } from "typeorm";
 
 import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder";
-import { RepoStructActions } from "../../core/repo/utils";
+import { IRepoStructActions, RepoStructActions } from "../../core/repo/utils";
 
 import { TypeormService } from "./TypeormService";
 import { Actions } from "./utils";
@@ -26,7 +26,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	}
 
 	get dispatchMap(): any {
-		return {
+		return <IRepoStructActions<any>>{
 			...super.dispatchMap,
 			[Actions.FIND]: async (state, query) => await this.find(query),
 			[RepoStructActions.SEED]: async (state, seeds) => await this.seed(seeds ?? state.seeds),

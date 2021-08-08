@@ -7,7 +7,7 @@ import { PathFinder } from "../../../core/path/PathFinder";
 import { ConfActions } from "../../../core/node/utils";
 import { RepoRestActions } from "../../../core/repo/utils";
 
-import * as orm from "../index"
+import * as typeormNs from "../index"
 
 
 
@@ -90,8 +90,8 @@ afterAll(async () => {
 
 test("USER", async () => {
 
-	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/user")
-	expect(rep instanceof orm.Service).toBeTruthy()
+	const rep = new PathFinder(root).getNode<typeormNs.repo>("/typeorm/user")
+	expect(rep).toBeInstanceOf(typeormNs.repo)
 
 	// crea due USER
 	await rep.dispatch({
@@ -113,7 +113,7 @@ test("USER", async () => {
 
 	// preleva uno specifico USER
 	let user = await rep.dispatch({
-		type: orm.Actions.FIND,
+		type: typeormNs.Actions.FIND,
 		payload: { where: { firstName: "Marina" } }
 	})
 	expect(user).toMatchObject([
@@ -152,8 +152,8 @@ test("USER", async () => {
 
 test("ACCOUNT", async () => {
 
-	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/account")
-	expect(rep instanceof orm.Service).toBeTruthy()
+	const rep = new PathFinder(root).getNode<typeormNs.repo>("/typeorm/account")
+	expect(rep).toBeInstanceOf(typeormNs.repo)
 
 	// crea due ACCOUNT
 	await rep.dispatch({
@@ -171,7 +171,7 @@ test("ACCOUNT", async () => {
 
 	// preleva uno specifico ACCOUNT
 	let [account2] = await rep.dispatch({
-		type: orm.Actions.FIND,
+		type: typeormNs.Actions.FIND,
 		payload: { where: { username: "huetotolin" } }
 	})
 	expect(account).toEqual(account2)
@@ -179,8 +179,8 @@ test("ACCOUNT", async () => {
 
 test("ITEMS", async () => {
 
-	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/item")
-	expect(rep).toBeInstanceOf(orm.Service)
+	const rep = new PathFinder(root).getNode<typeormNs.repo>("/typeorm/item")
+	expect(rep).toBeInstanceOf(typeormNs.repo)
 
 	// crea due ITEM
 	await rep.dispatch({
@@ -198,7 +198,7 @@ test("ITEMS", async () => {
 
 	// preleva uno specifico ITEM
 	let [item2] = await rep.dispatch({
-		type: orm.Actions.FIND,
+		type: typeormNs.Actions.FIND,
 		payload: { where: { name: "barattolo" } }
 	})
 	expect(item).toEqual(item2)

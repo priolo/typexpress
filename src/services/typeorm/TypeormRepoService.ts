@@ -1,4 +1,4 @@
-import { RepoRestActions } from "../../core/repo/utils";
+import { IRepoRestDispatch, RepoRestActions } from "../../core/repo/utils";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
 
 
@@ -20,7 +20,7 @@ export class TypeormRepoService extends TypeormRepoBaseService {
 	}
 
 	get dispatchMap(): any {
-		return {
+		return <IRepoRestDispatch<any>>{
 			...super.dispatchMap,
 			[RepoRestActions.SAVE]: async (state, entity) => {
 				const repo = this.getRepo()

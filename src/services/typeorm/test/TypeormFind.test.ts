@@ -1,13 +1,13 @@
 import fs from "fs"
 import path from "path"
+import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
+
 import { RootService } from "../../../core/RootService"
-import { PathFinder } from "../../../core/path/PathFinder";
-import { TypeormRepoService } from "../TypeormRepoService";
+import { PathFinder } from "../../../core/path/PathFinder"
 import { RepoStructActions } from "../../../core/repo/utils";
 import { Bus } from "../../../core/path/Bus";
 
-import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
-import * as orm from "../index"
+import * as typeormNs from "../index"
 
 
 
@@ -100,18 +100,18 @@ afterAll(async () => {
 })
 
 test("Find item with WHERE", async () => {
-	const rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/messages")
+	const rep = new PathFinder(root).getNode<typeormNs.repo>("/typeorm/messages")
 
 	let results
 
 	results = await rep.dispatch({
-		type: orm.Actions.FIND,
+		type: typeormNs.Actions.FIND,
 		payload: { where: { text: "message 3" } }
 	})
 	expect(results[0]).toMatchObject({ x: 100, y: 67 })
 
 	results = await rep.dispatch({
-		type: orm.Actions.FIND,
+		type: typeormNs.Actions.FIND,
 		payload: { where: { 
 			x: { type: "raw", sql:`{*} BETWEEN 0 AND 10` }, 
 			y: { type: "between", from: 0, to: 10 },
@@ -133,7 +133,7 @@ test("Find item with WHERE", async () => {
 	// 	payload: { where: { x: Raw(alias=>`${alias} BETWEEN 0 AND 10`), y: Raw(alias=>`${alias} BETWEEN 0 AND 10`) } }
 	// })
 
-	// rep = new PathFinder(root).getNode<TypeormRepoService>("/typeorm/doc")
+	// rep = new PathFinder(root).getNode<typeormNs.repo>("/typeorm/doc")
 	// let docs = await rep.dispatch({ type: RepoRestActions.ALL })
 	// expect(docs.length).toBe(1)
 

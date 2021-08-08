@@ -3,10 +3,14 @@ import serveIndex from "serve-index"
 import fs from "fs"
 import p from "path"
 import { log, LOG_TYPE } from "@priolo/jon-utils"
+
 import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServiceBase"
 
-
-export default class HttpStaticService extends HttpRouterServiceBase {
+/**
+ * Crea un ROUTE che punta ad una directory
+ * la directory è un entry-point STATICO per le richiete http
+ */
+export class HttpStaticService extends HttpRouterServiceBase {
 
 	get defaultConfig(): any {
 		return {

@@ -20,7 +20,7 @@ export class Item {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column()
+	@Column("varchar")
 	label: string;
 
 	@TreeChildren({cascade:true})

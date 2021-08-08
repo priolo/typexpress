@@ -15,7 +15,7 @@ import { SocketCommunicator } from "./SocketCommunicator"
 
 
 
-export default class SocketServerService extends SocketCommunicator {
+export class SocketServerService extends SocketCommunicator {
 
 	get defaultConfig(): any {
 		return {

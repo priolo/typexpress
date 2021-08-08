@@ -1,4 +1,4 @@
-import JWTRepoService from "./JWTRepoService";
+import { JWTRepoService } from "./JWTRepoService";
 
 export {
 	JWTRepoService as Service,

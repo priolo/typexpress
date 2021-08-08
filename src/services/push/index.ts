@@ -1,4 +1,4 @@
-import PushNotificationService from "./PushNotificationService"
+import { PushNotificationService } from "./PushNotificationService"
 
 
 export {

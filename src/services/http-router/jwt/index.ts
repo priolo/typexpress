@@ -4,9 +4,9 @@ import {
 	HeaderStrategy, JWTStrategy
 } from "./utils"
 
-export default HttpJWTUserService
 
 export {
+	HttpJWTUserService as default,
 	HttpJWTUserService as Service,
 	RouteJWTUserActions as Actions,
 

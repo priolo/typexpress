@@ -119,7 +119,7 @@ afterAll(async () => {
 test("Check seed create", async () => {
 
 	// creo gli user con un SEED
-	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/user")
+	const rep = new PathFinder(root).getNode<orm.repo>("/typeorm/user")
 	await rep.dispatch({
 		type: RepoStructActions.SEED,
 		payload: [
@@ -162,7 +162,7 @@ test("Check seed create", async () => {
 test("Check seed config", async () => {
 
 	// ESEGUO UN SEED DA CONFIG
-	const rep = new PathFinder(root).getNode<orm.Service>("/typeorm/item")
+	const rep = new PathFinder(root).getNode<orm.repo>("/typeorm/item")
 	let items = await rep.dispatch({ type: RepoRestActions.ALL })
 	expect(items[0].label).toBe("primo")
 	expect(items[1].label).toBe("secondo")
@@ -171,7 +171,7 @@ test("Check seed config", async () => {
 
 test("Check delete cascade", async () => {
 	// creo gli user con un SEED
-	let rep = new PathFinder(root).getNode<orm.Service>("/typeorm/user")
+	let rep = new PathFinder(root).getNode<orm.repo>("/typeorm/user")
 	await rep.dispatch({
 		type: RepoStructActions.SEED,
 		payload: [
@@ -196,7 +196,7 @@ test("Check delete cascade", async () => {
 	users = await rep.dispatch({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
 	expect(users.length).toBe(0)
 
-	rep = new PathFinder(root).getNode<orm.Service>("/typeorm/doc")
+	rep = new PathFinder(root).getNode<orm.repo>("/typeorm/doc")
 	let docs = await rep.dispatch({ type: RepoRestActions.ALL})
 	expect(docs.length).toBe(1)
 })
