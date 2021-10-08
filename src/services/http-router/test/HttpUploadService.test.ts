@@ -22,8 +22,7 @@ const dirDest = path.join(__dirname, "./dest")
 
 beforeAll(async () => {
 	// create node
-	root = new RootService()
-	await root.dispatch({
+	root = await RootService.Start({
 		type: ConfActions.START,
 		payload: {
 			children: [
@@ -51,8 +50,7 @@ beforeEach(async () => {
 })
 
 afterAll(async () => {
-	await root.dispatch({ type: ConfActions.STOP })
-
+	await RootService.Stop(root)
 })
 
 

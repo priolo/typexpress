@@ -27,16 +27,17 @@ export class HttpRouterService extends HttpRouterServiceBase {
 
 	protected onBuildRouter(): Router {
 		const router = super.onBuildRouter()
-		const { routers, headers, cors:corsOptions } = this.state
-
-		
+		const { routers } = this.state
 
 		// ciclo tutti i routers a disposizione e li inserisco nell'oggetto Router
 		routers.forEach((route: IRouteParam) => {
+
+			// prelevo il metodo da chiamare sulle request
 			let method:IRouteMethod = (typeof route.method === "string")? this[route.method] : route.method
 			if ( !method ) { log(`impossibile creare il nodo`, LOG_TYPE.ERROR, route);  return; }
-
+			// prelevo il "verb"
 			const verb = (route.verb ?? "get").toLocaleLowerCase()
+			
 			router[verb](route.path ?? "/", method.bind(this))
 		})
 		

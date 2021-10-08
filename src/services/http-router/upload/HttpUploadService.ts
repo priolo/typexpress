@@ -11,6 +11,7 @@ import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
 /**
  * middleware 
  * inserische un entry-point http per salvare un file sul server
+ * https://github.com/expressjs/multer
  */
 export class HttpUploadService extends HttpRouterServiceBase {
 
@@ -28,6 +29,9 @@ export class HttpUploadService extends HttpRouterServiceBase {
         const { baseDir, fields } = this.state
 
         var storage = multer.diskStorage({
+            /**
+             * deve restituisce (tramite callback cb) la path della directory dove salvare i files
+             */ 
             destination: function (req, file, cb) {
                 const { dest } = req.body
                 const dirDest = dest ? path.join(baseDir, path.parse(dest).dir) : baseDir
@@ -39,6 +43,9 @@ export class HttpUploadService extends HttpRouterServiceBase {
 
                 cb(null, dirDest)
             },
+            /**
+             * Deve restituire (tramite callback cb) il nome del file
+             */
             filename: function (req, file, cb) {
                 const { dest } = req.body
                 const fileDest = dest ?  path.parse(dest).base : file.originalname
@@ -50,6 +57,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
         var upload = multer({ storage })
 
         //router.post("/", upload.fields(fields), (req: Request, res: Response, next) => {
+        // devo poter settare il VERB
         router.post("/", upload.any(), (req: Request, res: Response, next) => {
             res.sendStatus(200)
         })

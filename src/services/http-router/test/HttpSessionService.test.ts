@@ -94,7 +94,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-	if (root) await root.dispatch({ type: ConfActions.STOP })
+	await RootService.Stop(root)
 })
 
 test("creazione", async () => {
