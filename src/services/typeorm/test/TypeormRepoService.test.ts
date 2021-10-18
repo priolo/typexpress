@@ -16,13 +16,13 @@ export class User {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@Column({ type: "varchar"})
+	@Column({ type: "varchar" })
 	firstName: string;
 
-	@Column({ type: "varchar"})
+	@Column({ type: "varchar" })
 	lastName: string;
 
-	@Column({ type: "int"})
+	@Column({ type: "int" })
 	age: number;
 }
 
@@ -30,62 +30,58 @@ const dbPath = path.join(__dirname, "/database.sqlite")
 let root: RootService = null
 
 beforeAll(async () => {
-	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } 
+	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) }
 	catch (e) { console.log(e) }
-	
-	root = new RootService()
-	await root.dispatch({
-		type: ConfActions.START,
-		payload: {
-			children: [
-				{
-					class: "typeorm",
-					options: {
-						"type": "sqlite",
-						"database": dbPath,
-						"synchronize": true,
-						"entities": [User]
-					},
-					schemas: [
-						{
-							name: "Account",
-							columns: {
-								id: { type: Number, primary: true, generated: true },
-								username: { type: String }
-							}
-						}
-					],
-					children: [
-						{
-							name: "user", 			// nome da usare nella "path" per trovare questo nodo (p.e. questo è "/typeorm/user") 
-							class: "typeorm/repo",
-							model: "User", 			// se è una stringa fa riferimento ad un "model" gia' inserito
-						},
-						{
-							name: "account", 
-							class: "typeorm/repo",
-							model: "Account",
-						},
-						{
-							name: "item", 
-							class: "typeorm/repo",
-							model: {				// se è un oggetto è uno "entity-definition" https://typeorm.io/#/separating-entity-definition 
-								name: "Item",
-								columns: {
-									id: { type: Number, primary: true, generated: true },
-									name: { type: String }
-								}
-							},
-						},
-					]
+
+	root = await RootService.Start({
+		class: "typeorm",
+		options: {
+			"type": "sqlite",
+			"database": dbPath,
+			"synchronize": true,
+			"entities": [User]
+		},
+		schemas: [
+			{
+				name: "Account",
+				columns: {
+					id: { type: Number, primary: true, generated: true },
+					username: { type: String }
 				}
-			]
-		}
+			}
+		],
+		children: [
+			{
+				name: "user", 			// nome da usare nella "path" per trovare questo nodo (p.e. questo è "/typeorm/user") 
+				class: "typeorm/repo",
+				model: "User", 			// se è una stringa fa riferimento ad un "model" gia' inserito
+			},
+			{
+				name: "account",
+				class: "typeorm/repo",
+				model: "Account",
+			},
+			{
+				name: "item",
+				class: "typeorm/repo",
+				model: {				// se è un oggetto è uno "entity-definition" https://typeorm.io/#/separating-entity-definition 
+					name: "Item",
+					columns: {
+						id: { type: Number, primary: true, generated: true },
+						name: { type: String }
+					}
+				},
+			},
+		]
 	})
 })
 afterAll(async () => {
-	if (root) await root.dispatch({ type: ConfActions.STOP })
-	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
+	await RootService.Stop(root)
+	try {
+		if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath)
+	} catch (e) {
+		console.log(e)
+	}
 })
 
 test("USER", async () => {
@@ -131,7 +127,7 @@ test("USER", async () => {
 	await rep.dispatch({
 		type: RepoRestActions.SAVE,
 		payload: <User>{
-			id: 2,
+			id: 2, // ATTENZIONE deve essere un id in questo caso!
 			firstName: "Marino",
 		}
 	})

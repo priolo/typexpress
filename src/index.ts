@@ -2,6 +2,8 @@ import { RootService } from "./core/RootService"
 import { Bus } from "./core/path/Bus"
 import { PathFinder } from "./core/path/PathFinder"
 import { RepoRestActions, RepoStructActions } from "./core/repo/utils";
+import { ServiceBase } from "./core/service"
+
 
 
 
@@ -22,7 +24,8 @@ export {
 	Bus,
 	PathFinder,
 	RepoRestActions,
-	RepoStructActions
+	RepoStructActions,
+	ServiceBase
 }
 
 // EXPORT 

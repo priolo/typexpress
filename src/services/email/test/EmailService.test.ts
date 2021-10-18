@@ -66,5 +66,5 @@ test("invio email", async () => {
 		type: emailNs.Actions.CHECK,
 		payload: "pippojksdfhlghsjkfsd@gmail.com"
 	})
-	expect(res).not.toBeTruthy()
+	expect(res).toBeFalsy()
 })

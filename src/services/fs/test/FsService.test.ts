@@ -1,32 +1,22 @@
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import { ConfActions } from "../../../core/node/utils"
 import path from "path"
-
 import * as fs from "../index"
+import { getDirInfo } from "../utils"
 
 
-
-let root = null
+let root: RootService = null
 
 beforeEach(async () => {
-	root = new RootService()
-	await root.dispatch({
-		type: ConfActions.START,
-		payload: {
-			children: [
-				{
-					class: "fs",
-					baseDir: path.join(__dirname, "./"),
-				},
-			]
-		}
+	root = await RootService.Start({
+		class: "fs",
+		baseDir: path.join(__dirname, "./"),
 	})
 })
-afterAll(async () => {
-	await root.dispatch({ type: ConfActions.STOP })
-})
 
+afterAll(async () => {
+	await RootService.Stop(root)
+})
 
 test("create dir and files", async () => {
 	const fss = new PathFinder(root).getNode<fs.Service>("/fs")
@@ -37,7 +27,14 @@ test("create dir and files", async () => {
 		payload: "./testDir",
 	})
 
-	expect(res).toEqual({name: "testDir", type: fs.FsType.DIR, parent: ""})
+	expect(res).toEqual({ name: "testDir", type: fs.FsType.DIR, parent: "" })
+})
+
+test("util getDirInfo", async () => {
+	const {fileOld, size} = await getDirInfo(path.join(__dirname, "./testDir"))
+	expect(fileOld).toBe("example1.txt")
+	expect(size).toBe(47679)
+
 })
 
 // test("get list file and dir", async () => {	
