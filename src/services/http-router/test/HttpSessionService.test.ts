@@ -109,7 +109,7 @@ test("creazione", async () => {
 })
 
 test("write and read in mem", async () => {
-	let res = await axiosIstance.post("/mem/write", { value: "pippo" })
+	let res = await axiosIstance.post<any>("/mem/write", { value: "pippo" })
 	res = await axiosIstance.get(
 		"/mem/read",
 		{
@@ -122,7 +122,7 @@ test("write and read in mem", async () => {
 })
 
 test("write and read in typeorm", async () => {
-	let res = await axiosIstance.post("/type/write", { value: "pippo" })
+	let res = await axiosIstance.post<any>("/type/write", { value: "pippo" })
 	res = await axiosIstance.get(
 		"/type/read",
 		{

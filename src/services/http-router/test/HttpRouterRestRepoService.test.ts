@@ -106,7 +106,7 @@ test("get: prelevo USER 2", async () => {
 })
 
 test("post: modifico USER 2", async () => {
-	let { data: user2_modify } = await axiosIstance.post(
+	let { data: user2_modify } = await axiosIstance.post<any>(
 		"/user",
 		{ id: 2, firstName: "Giovanni" }
 	)

@@ -137,9 +137,5 @@ test("Find item with WHERE", async () => {
 	// let docs = await rep.dispatch({ type: RepoRestActions.ALL })
 	// expect(docs.length).toBe(1)
 
-	debugger
-
-
-
-
+	
 })

@@ -17,7 +17,7 @@ const PORT = 5001
 const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
 const dbPath = `${__dirname}/database.sqlite`
 let root = null
-let user1, user2, token
+let user1, user2, token:string
 
 beforeAll(async () => {
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
@@ -123,7 +123,7 @@ test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
 })
 
 test("simulo il login e ricavo il token", async () => {
-	const { data } = await axiosIstance.get(`/user/login/${user2.id}`)
+	const { data } = await axiosIstance.get<any>(`/user/login/${user2.id}`)
 	token = data.token
 	expect(typeof token).toBe("string")
 })

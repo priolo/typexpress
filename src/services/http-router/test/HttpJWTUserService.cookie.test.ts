@@ -144,8 +144,8 @@ test("if I log in WITHOUT the token ... it should give me an error", async () =>
 test("if I log in with the token in the cookies it doesn't give me an error", async () => {
 	// login
 	const resp = await axiosIstance.get(`/user/login/2`)
-	const cookies = resp.headers["set-cookie"]
+	const [cookie] = resp.headers["set-cookie"]
 	// get auth data
-	const { data } = await axiosIstance.get(`/user`, { headers: { Cookie: cookies } })
+	const { data } = await axiosIstance.get(`/user`, { headers: { Cookie: cookie } })
 	expect(data).toMatchObject({ id: 2, username: "Marina" })
 })

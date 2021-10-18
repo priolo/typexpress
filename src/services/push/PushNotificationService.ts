@@ -72,7 +72,6 @@ export class PushNotificationService extends ServiceBase {
 		// return the message id
 		try {
 			const messageId = await admin.messaging().send(message)
-			debugger
 			return messageId
 		} catch (error) {
 			new Bus(this, "/error").dispatch({

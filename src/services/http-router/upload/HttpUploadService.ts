@@ -64,7 +64,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
             /**
              * deve restituisce (tramite callback cb) la path della directory dove salvare i files
              */
-            destination: async (req, file, cb) => {
+            destination: (req, file, cb) => {
                 // valorizzo la "dirDest"
                 const dirDest = path.join(baseDir, this.onGetDirName(req, file))
                 // se la "dirDest" non esiste allora la creo
@@ -157,7 +157,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
 
 const RemoveOldFileStrategy = async (state) => {
     const { maxBaseDirSize, baseDir } = state
-    if (maxBaseDirSize == Number.POSITIVE_INFINITY) return
+    if (isNaN(maxBaseDirSize) || maxBaseDirSize == Number.POSITIVE_INFINITY) return
 
     // controllo che la directory non sia troppo piena    
     const { size, fileOld } = await getDirInfo(baseDir)
