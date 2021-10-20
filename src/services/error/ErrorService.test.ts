@@ -64,6 +64,14 @@ afterAll(async () => {
 
 test("gestione errori", async () => {
 	let error
+
+
+	expect(() => {
+		drinkFlavor('octopus');
+	}).toThrow();
+
+
+
 	try {
 		await axiosIstance.get<any>(`/test/throw1`)
 	} catch (err) {
