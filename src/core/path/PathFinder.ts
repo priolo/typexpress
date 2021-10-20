@@ -10,11 +10,15 @@ export class PathFinder {
 		this.node = node
 	}
 
+	/**
+	 * Il node a cui punta il pathfinder
+	 */
 	readonly node: INode
 
 	/**
-	 * Restituisce un "PathFinder" che punta ad un "node"
+	 * Restituisce un "PathFinder" che punta ad un "node" 
 	 * ricavato seguendo la path del parametro
+	 * Se non lo trova restituisce null
 	 * @param path 
 	 */
 	path(path: string): PathFinder | null {
@@ -62,6 +66,14 @@ export class PathFinder {
 	 */
 	getNode<T>(path: string): T {
 		return this.path(path)?.node as unknown as T
+	}
+
+	/**
+	 * Restituisce se esiste o meno il nodo
+	 * @returns 
+	 */
+	exists(): boolean {
+		return this.node != null
 	}
 
 	/**

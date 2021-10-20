@@ -12,6 +12,7 @@ import * as errorNs from "../error"
 
 import { SocketServerActions, IClient, IMessage, clientIsEqual } from "./utils"
 import { SocketCommunicator } from "./SocketCommunicator"
+import { Errors } from "./utils"
 
 
 
@@ -46,8 +47,8 @@ export class SocketServerService extends SocketCommunicator {
 	 */
 	private server: WebSocket.Server = null
 
-	protected async onInit() {
-		super.onInit()
+	protected async onInit(conf:any) {
+		super.onInit(conf)
 		const { autostart } = this.state
 		if (!autostart) return
 		await this.startListener()
@@ -337,7 +338,7 @@ export class SocketServerService extends SocketCommunicator {
 			} catch (error) {
 				new Bus(this, "/error").dispatch({ 
 					type: errorNs.Actions.NOTIFY, 
-					payload: { code: "ws:broadcast", error } 
+					payload: { code: Errors.BROADCAST, error } 
 				})
 				return false
 			}

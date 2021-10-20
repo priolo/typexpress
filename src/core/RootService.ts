@@ -2,6 +2,7 @@ import { ServiceBase } from "./service/ServiceBase"
 import FarmService from "../services/farm"
 import { ConfActions } from "./node/utils"
 import ErrorService from "../services/error"
+import { PathFinder } from "./path/PathFinder"
 
 
 /**
@@ -33,12 +34,17 @@ export class RootService extends ServiceBase {
 	constructor(name: string = "root") {
 		super(name)
 
-		// services base
+		// add farm service
 		const farm = new FarmService()
 		this.addChild(farm)
-		const error = new ErrorService()
-		error.dispatch({ type: ConfActions.START })
-		this.addChild(error)
+
+		// se non c'e' gia' inserisco il gestore di errori di default
+		// if ( !new PathFinder(this).path("/error").exists() ) {
+		// 	const error = new ErrorService()
+		// 	error.dispatch({ type: ConfActions.START })
+		// 	this.addChild(error)
+		// }
+
 		// [II] TO DO logService
 
 		// nel caso in cui l'app venga chiusa
@@ -46,6 +52,16 @@ export class RootService extends ServiceBase {
 			console.debug('SIGTERM signal received: closing HTTP server')
 			await this.dispatch({ type: ConfActions.STOP })
 		})
+	}
+
+	protected override async onInit(conf: any): Promise<void> {
+		await super.onInit(conf)
+		// se non è definito creo il gestore degli errori di default
+		if (!conf.children.some(child => child.class == "error")) {
+			const errorSrv = new ErrorService()
+			errorSrv.dispatch({ type: ConfActions.START })
+			this.addChild(errorSrv)
+		}
 	}
 
 	get defaultConfig(): any {

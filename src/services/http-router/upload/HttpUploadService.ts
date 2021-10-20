@@ -92,8 +92,8 @@ export class HttpUploadService extends HttpRouterServiceBase {
         const upload = multer({ 
             storage,
             limits: {
-                fileSize: maxFileSize,
-                files: maxFileNumb,
+                fileSize: isNaN(maxFileSize) ? Number.POSITIVE_INFINITY : maxFileSize, 
+                files: isNaN(maxFileNumb) ? Number.POSITIVE_INFINITY : maxFileNumb,
             } 
         })
 

@@ -13,12 +13,12 @@ let root = null
 
 class PluginPing extends wsNs.Service {
 
-	protected async onInit(): Promise<void> {
-		await super.onInit()
+	protected async onInit(conf:any): Promise<void> {
+		await super.onInit(conf)
 		this.idTimer = setTimeout(this.check.bind(this), 1000)
 	}
 	protected async onDestroy(): Promise<void> {
-		await super.onInit()
+		await super.onDestroy()
 		clearTimeout(this.idTimer)
 	}
 	idTimer

@@ -47,6 +47,13 @@ export enum SocketRouteActions {
 	DISCONNECT = "ws:disconnect",
 }
 
+/**
+ * Gli errori gestiti da questo servizio
+ */
+export enum Errors {
+	BROADCAST = "ws:broadcast",
+}
+
 export function clientIsEqual(client: IClient, ws: IClient): boolean {
 	return client.remoteAddress == ws.remoteAddress && client.remotePort == ws.remotePort
 }

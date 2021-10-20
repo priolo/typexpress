@@ -7,3 +7,11 @@ export enum Actions {
 	 */
 	SEND = "pn:send",
 }
+
+/**
+ * Gli errori gestiti da questo servizio
+ */
+ export enum Errors {
+	INIT = "push:init",
+	SEND = "push:send"
+}

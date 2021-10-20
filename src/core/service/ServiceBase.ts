@@ -8,6 +8,7 @@ import { IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./util
 
 // bisogna importarlo direttamente da "utils" altrimenti c'e' un import-circolare
 import { Actions as ErrorActions } from "../../services/error/utils"
+import { Errors } from "."
 
 
 /**
@@ -77,13 +78,13 @@ export class ServiceBase extends NodeConf {
 		this.emit(ServiceBaseEvents.STATE_CHANGE, this._state)
 	}
 
-	protected async onInit(): Promise<void> {
+	protected async onInit(conf:any): Promise<void> {
 		try {
-			await super.onInit()
+			await super.onInit(conf)
 		} catch (error) {
 			new Bus(this, "/error").dispatch({ 
 				type: ErrorActions.NOTIFY, 
-				payload: { code: "on_init", error } 
+				payload: { code: Errors.INIT, error } 
 			})
 			return
 		}

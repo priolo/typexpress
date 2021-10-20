@@ -40,3 +40,10 @@ export enum ServiceBaseEvents {
 	DESTROY = "node:destroy",
 	DISPATCH = "node:dispatch"
 }
+
+/**
+ * Gli errori gestiti da questo servizio
+ */
+export enum Errors {
+	INIT = "base:init"
+}

@@ -36,13 +36,13 @@ export class HttpStaticService extends HttpRouterServiceBase {
 		}
 	}
 
-	protected async onInit(): Promise<void> {
+	protected async onInit(conf:any): Promise<void> {
 		const { dir, path } = this.state
 		if (!fs.existsSync(dir)) {
 			log(`Directory "${dir}" not found. I try to create it myself`, LOG_TYPE.INFO)
 			fs.mkdirSync(dir)
 		}
-		await super.onInit()
+		await super.onInit(conf)
 		log(`HttpStaticService:start:path:[${path}]>[${dir}]`, LOG_TYPE.INFO)
 	}
 

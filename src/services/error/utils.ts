@@ -7,9 +7,3 @@ export enum Actions {
 	 * */
 	NOTIFY = "notify"
 }
-
-/** messaggio di errore  */
-export interface Error {
-	code:string,
-	error?: any,
-}

@@ -1,19 +1,21 @@
 
-import express, { Router, Express } from "express"
+import express, { Router, Express, Request, Response } from "express"
 import fs from "fs"
-import { ServiceBase } from "../../core/service/ServiceBase"
 import http, { Server } from "http"
 import https from "https"
-import { log, LOG_TYPE } from "@priolo/jon-utils"
-import { IHttpRouter } from "./utils"
 import cookieParser from 'cookie-parser'
+import { log, LOG_TYPE } from "@priolo/jon-utils"
+
+import { ServiceBase } from "../../core/service/ServiceBase"
+import { IHttpRouter, Errors } from "./utils"
+import ErrorService from "../error"
 
 
 export default class HttpService extends ServiceBase implements IHttpRouter {
 
 	private app: Express | null = null
 	private _server: Server | null = null
-	get server():Server {
+	get server(): Server {
 		return this._server
 	}
 
@@ -38,7 +40,8 @@ export default class HttpService extends ServiceBase implements IHttpRouter {
 		}
 	}
 
-	protected async onInit(): Promise<void> {
+	protected override async onInit(conf:any): Promise<void> {
+		super.onInit(conf)
 		const { template } = this.state
 
 		this.app = express()
@@ -50,6 +53,15 @@ export default class HttpService extends ServiceBase implements IHttpRouter {
 		this.buildRender()
 		this._server = this.buildServer()
 		await this.listenServer()
+	}
+
+	protected override async onInitAfter() {
+		super.onInitAfter()
+		// il gestore degli errori va inserito per ultimo
+		this.app.use( (err: Error, req: Request, res: Response, next) => {
+			ErrorService.Send(this, Errors.HANDLE, err)
+			next(err)
+		})
 	}
 
 	protected async onDestroy(): Promise<void> {
@@ -91,7 +103,7 @@ export default class HttpService extends ServiceBase implements IHttpRouter {
 		return server
 	}
 
-	
+
 	private async listenServer(): Promise<http.Server> {
 		const { port } = this.state
 		return new Promise<http.Server>((res, rej) => {
@@ -126,7 +138,7 @@ export default class HttpService extends ServiceBase implements IHttpRouter {
 	private buildProperties(): void {
 		const { options } = this.state
 		if (!options) return
-		Object.keys(options).forEach( key => {
+		Object.keys(options).forEach(key => {
 			this.app.set(key, options[key]);
 		})
 	}

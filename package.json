@@ -1,6 +1,6 @@
 {
 	"name": "typexpress",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"private": false,
 	"keywords": [
 		"react",
@@ -32,10 +32,10 @@
 	},
 	"//dependencies": {
 		"@priolo/jon-utils#local": "file:C://Users//iorio//Documents//jon-utils",
-		"@priolo/jon-utils": "^0.2.2"
+		"@priolo/jon-utils": "0.3"
 	},
 	"dependencies": {
-		"@priolo/jon-utils": "file:C://Users//iorio//Documents//jon-utils",
+		"@priolo/jon-utils": "0.3",
 		"axios": "^0.23.0",
 		"connect-typeorm": "^1.1.4",
 		"cookie-parser": "^1.4.5",

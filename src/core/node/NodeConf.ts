@@ -38,15 +38,19 @@ export class NodeConf extends NodeState {
 	 * @param conf 
 	 */
 	private async nodeBuild(conf: any = {}): Promise<void> {
+
+		// tutti i children presenti nel config
 		const confChildren: any[] = (conf.children ?? []).filter(child => child != null)
+		// merge valori default e valori senza "children" e "class"
 		const config = { ...this.defaultConfig, ...conf }
 		delete config.children
 		delete config.class
+		// setto il config come stato iniziale
 		this.setState(config)
 		if (config.name) this.name = config.name
 
 		// inizializzo questo nodo prima di creare i child
-		await this.onInit()
+		await this.onInit(conf)
 
 		// se necessario creo e inserisco i children
 		await this.buildChildren(confChildren)
@@ -62,6 +66,7 @@ export class NodeConf extends NodeState {
 			})
 		}
 	}
+
 	/**
 	 * Dato un array di "conf" costruisce i nodi corrispondenti
 	 * e li AGGIUNGE ai children gia' esistenti
@@ -78,6 +83,7 @@ export class NodeConf extends NodeState {
 			})
 		}
 	}
+	
 	/**
 	 * Dato un "conf" costruisce il nodo corrispondente
 	 */
@@ -102,7 +108,7 @@ export class NodeConf extends NodeState {
 	/**
 	 * Chiamata PRIMA della creazione dei CHILDREN
 	 */
-	protected async onInit(): Promise<void> { }
+	protected async onInit(conf:any): Promise<void> { }
 
 	/**
 	 * Chiamata DOPO la creazione dei CHILDREN

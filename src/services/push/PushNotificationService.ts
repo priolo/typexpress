@@ -3,9 +3,7 @@ import { Bus } from "../../core/path/Bus"
 
 import * as errorNs from "../error"
 import * as admin from "firebase-admin"
-import { Actions } from "./utils"
-
-
+import { Actions, Errors } from "./utils"
 
 
 export class PushNotificationService extends ServiceBase {
@@ -35,8 +33,8 @@ export class PushNotificationService extends ServiceBase {
 	private app: admin.app.App = null
 
 
-	protected async onInit() {
-		super.onInit()
+	protected async onInit(conf:any) {
+		super.onInit(conf)
 
 		// JSON credential (from firebase console)
 		const { credential } = this.state
@@ -49,7 +47,7 @@ export class PushNotificationService extends ServiceBase {
 		} catch (error) {
 			new Bus(this, "/error").dispatch({
 				type: errorNs.Actions.NOTIFY,
-				payload: { code: "init", error }
+				payload: { code: Errors.INIT, error }
 			})
 			throw error
 		}
@@ -76,7 +74,7 @@ export class PushNotificationService extends ServiceBase {
 		} catch (error) {
 			new Bus(this, "/error").dispatch({
 				type: errorNs.Actions.NOTIFY,
-				payload: { code: "send", error }
+				payload: { code: Errors.SEND, error }
 			})
 			throw error
 		}

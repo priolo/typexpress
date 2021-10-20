@@ -20,8 +20,8 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 		}
 	}
 
-	protected async onInit(): Promise<void> {
-		await super.onInit()
+	protected async onInit(conf:any): Promise<void> {
+		await super.onInit(conf)
 		const parent = new PathFinder(this).getNode<IHttpRouter>("..")
 		this.router = this.onBuildRouter()
 		parent.use(this.router, this.state.path)
