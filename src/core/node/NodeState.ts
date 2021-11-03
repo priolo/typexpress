@@ -40,9 +40,18 @@ export abstract class NodeState extends Node {
 	 */
 	async dispatch(action: IAction): Promise<any> {
 		log(`${this.name}:${action.type}`, LOG_TYPE.DEBUG, action.payload)
+
+
+		// [II] GESTIONE LOG
+
+		
 		// [II] buffering
 		// [II] spostare gli arguments della funzione in: playload, state, sender
-		return this.dispatchMap[action.type](this.state, action.payload, action.sender)
+		try {
+			return this.dispatchMap[action.type](this.state, action.payload, action.sender)
+		} catch (error) {
+			// [II] GESTIONE ERRORI
+		}
 	}
 
 	/**

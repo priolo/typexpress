@@ -54,7 +54,7 @@ export class RootService extends ServiceBase {
 		})
 	}
 
-	protected override async onInit(conf: any): Promise<void> {
+	protected async onInit(conf: any): Promise<void> {
 		await super.onInit(conf)
 		// se non è definito creo il gestore degli errori di default
 		if (!conf.children.some(child => child.class == "error")) {

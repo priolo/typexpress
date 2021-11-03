@@ -36,20 +36,28 @@ export function nodeFind(nodes: INode | INode[], callback: (n: INode) => boolean
 }
 
 /**
- * Cicla tutti i parent del node
- * per ognuno chiama il "callback"
- * se e solo se il callback retituisce false il ciclo si interrompe
- * restituisce l'ultimo node analizzato
+ * Cicla tutti i parent del node e  per ognuno chiama il "callback"  
+ * se il callback è `false` il ciclo si interrompe e restituisce il nodo  
+ * se il callback non è mai `false` allora retituisce null  
+ * viene analizzato anche il `node` passato come paramentro  
  * @param node nodo sa vui cominciare la ricerca del PARENT
  * @param callback se questo CALLBACK restituisce (e solo se) "false" il ciclo termina e restituisce il corrente PARENT 
  */
-export function nodeParents(node: INode, callback?: (n: INode) => any): INode {
-	if (!node) return null
-	let current = node;
-	while (current.parent != null && (callback == null || callback(current) != false)) {
-		current = current.parent;
+export function nodeParents(node: INode, callback: (n: INode) => any): INode | null {
+	let current = node
+	while (current != null && callback(current) != false) {
+		current = current.parent
 	}
 	return current
+}
+
+export function nodeParents2(node: INode, callback: (n: INode) => INode | null): INode | null {
+	let current = node
+	let find = null
+	while (current != null && (find = callback(current)) == null ) {
+		current = current.parent
+	}
+	return find
 }
 
 /**
@@ -60,7 +68,7 @@ export function nodeParents(node: INode, callback?: (n: INode) => any): INode {
 export function nodePath(node: INode): string {
 	if (!node) return null
 	let nodes = []
-	nodeParents(node, (n) => { nodes.unshift(n.name) })
+	nodeParents(node, n => { nodes.unshift(n.name) })
 	return `/${nodes.join("/")}`
 }
 
@@ -114,12 +122,12 @@ export function fnNodePattern(pattern: string): CallbackFnPattern {
 		let id = pattern.slice(1)
 		return (n: INode) => n.id == id
 
-	// by classname
+		// by classname
 	} else if (pattern.startsWith("~")) {
 		let className = pattern.slice(1)
 		return (n: INode) => n.constructor && n.constructor.name == className
 
-	// preleva il nodo con le caratteristiche indicate
+		// preleva il nodo con le caratteristiche indicate
 	} else if (pattern.startsWith("{")) {
 		const substr = pattern.slice(0, pattern.indexOf("}") + 1)
 		const params = JSON.parse(substr)
@@ -128,7 +136,7 @@ export function fnNodePattern(pattern: string): CallbackFnPattern {
 			return node && obj.objectIsIn(params, node["state"])
 		}
 
-	// by name
+		// by name
 	} else {
 		return (n: INode) => n.name == pattern
 	}

@@ -7,11 +7,13 @@ import cookieParser from 'cookie-parser'
 import { log, LOG_TYPE } from "@priolo/jon-utils"
 
 import { ServiceBase } from "../../core/service/ServiceBase"
+import { PathFinder } from "../../core/path/PathFinder"
+
 import { IHttpRouter, Errors } from "./utils"
-import ErrorService from "../error"
+import ErrorService, { Actions as ActionsError } from "../error"
 
 
-export default class HttpService extends ServiceBase implements IHttpRouter {
+export class HttpService extends ServiceBase implements IHttpRouter {
 
 	private app: Express | null = null
 	private _server: Server | null = null
@@ -40,7 +42,7 @@ export default class HttpService extends ServiceBase implements IHttpRouter {
 		}
 	}
 
-	protected override async onInit(conf:any): Promise<void> {
+	protected async onInit(conf: any): Promise<void> {
 		super.onInit(conf)
 		const { template } = this.state
 
@@ -55,11 +57,30 @@ export default class HttpService extends ServiceBase implements IHttpRouter {
 		await this.listenServer()
 	}
 
-	protected override async onInitAfter() {
+	protected async onInitAfter() {
 		super.onInitAfter()
 		// il gestore degli errori va inserito per ultimo
-		this.app.use( (err: Error, req: Request, res: Response, next) => {
+		this.app.use((err: Error, req: Request, res: Response, next) => {
 			ErrorService.Send(this, Errors.HANDLE, err)
+
+
+
+			// [II] CAPIRE se è utile gestire gli errori come children
+			/*
+			cioe' l'error da utilizzare è nei propri children oppure nei children del parent a ricorsione
+			e non sempre e solo /error
+			a questo punto pensare ai log nella stessa maniera
+			*/
+			
+
+
+			const errorSrv = new PathFinder(this).getNode<ErrorService>("error")
+			if (errorSrv) {
+				errorSrv.dispatch({
+					type: ActionsError.NOTIFY,
+					payload: err
+				})
+			}
 			next(err)
 		})
 	}

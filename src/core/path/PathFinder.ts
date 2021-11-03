@@ -1,4 +1,4 @@
-import { fnNodePattern, nodeParents } from "../utils"
+import { fnNodePattern, nodeParents, nodeParents2 } from "../utils"
 import { INode } from "../node/utils"
 import { PathFinderList } from "./PathFinderList"
 
@@ -6,7 +6,7 @@ import { PathFinderList } from "./PathFinderList"
 
 export class PathFinder {
 	constructor(node: INode) {
-		if ( node==null || !node.children || !node.name ) throw new Error("PathFinder:constructor:argument:invalid:need-INode")
+		if (node == null || !node.children || !node.name) throw new Error("PathFinder:constructor:argument:invalid:need-INode")
 		this.node = node
 	}
 
@@ -32,29 +32,37 @@ export class PathFinder {
 			nextPathFinder = this.getRoot()
 			nextPath = path.slice(1)
 
-		// vai al parent
+			// vai al parent
 		} else if (path.startsWith("..")) {
 			nextPathFinder = new PathFinder(this.node.parent ?? this.node)
 			nextPath = path.slice(2)
 
-		// preleva un nodo tramite il nome / indice / class-type
+			// preleva un nodo tramite il nome / indice / class-type
 		} else {
 			let index = path.indexOf("/")
 			let pattern = index != -1 ? path.slice(0, index) : path
 
 			// se è una ricerca sul parent
-			if ( pattern.startsWith("<") ) {
+			if (pattern.startsWith("<")) {
 				pattern = path.slice(1)
-				const fn = fnNodePattern( pattern )
-				const nodeParent = nodeParents(this.node, (node)=>!fn(node) )
-				nextPathFinder = new PathFinder(nodeParent)
-			
-			// se è una ricerca sui children
+				const fn = fnNodePattern(pattern)
+				const nodeParent = nodeParents(this.node, n => !fn(n))
+				nextPathFinder = nodeParent!=null ? new PathFinder(nodeParent) : null
+
+			// ricerca su oggetto tra i miei children e ricorsivamente su quelli del parent
+			} else if (pattern.startsWith("^")) {
+				pattern = path.slice(1)
+				const nodeFind = nodeParents2(this.node, n => {
+					return new PathFinderList(n.children).getBy(pattern)?.node
+				})
+				nextPathFinder = nodeFind!=null ? new PathFinder(nodeFind) : null
+
+			// se è una ricerca sui children (diretti)
 			} else {
 				nextPathFinder = this.getChildren().getBy(pattern)
 			}
 
-			nextPath = index != -1 ? path.slice(index+1) : ""
+			nextPath = index != -1 ? path.slice(index + 1) : ""
 		}
 
 		return nextPathFinder ? nextPathFinder.path(nextPath) : null
@@ -85,10 +93,10 @@ export class PathFinder {
 
 	/**
 	 * restituisce la root del nodo corrente (dentro PathFinder)
-	 */ 
+	 */
 	private getRoot(): PathFinder {
-		const root = nodeParents(this.node)
+		const root = nodeParents(this.node, n => n.parent != null)
 		return new PathFinder(root)
 	}
-	
+
 }

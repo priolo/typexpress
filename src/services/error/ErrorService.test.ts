@@ -8,14 +8,12 @@ import { ErrorNotify } from "./ErrorNotify"
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
 
-
-
-
 axios.defaults.adapter = require('axios/lib/adapters/http')
 const PORT = 5009
 const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
 let root = null
 const results = []
+
 
 beforeEach(async () => {
 	root = await RootService.Start([
@@ -50,7 +48,6 @@ beforeEach(async () => {
 								throw "test:error3"
 							}
 						}
-
 					]
 				},
 			]
@@ -64,13 +61,6 @@ afterAll(async () => {
 
 test("gestione errori", async () => {
 	let error
-
-
-	expect(() => {
-		drinkFlavor('octopus');
-	}).toThrow();
-
-
 
 	try {
 		await axiosIstance.get<any>(`/test/throw1`)
@@ -93,6 +83,5 @@ test("gestione errori", async () => {
 	}
 	expect(error.response.status).toBe(500)
 
-	console.log( results) 
-
+	console.log(results)
 })

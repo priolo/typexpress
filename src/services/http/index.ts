@@ -1,5 +1,5 @@
 
-import HttpService from "./HttpService"
+import {HttpService} from "./HttpService"
 
 export {
 	HttpService as Service,

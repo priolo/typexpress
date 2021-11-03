@@ -35,7 +35,7 @@ beforeAll(async () => {
 							name: "child1.3",
 							value: "pippo",
 							children: [
-								{ name: "child1.3.1" },
+								{ name: "child1.3.1", value: "sigma" },
 								{ name: "child1.3.2" }
 							]
 						}
@@ -90,8 +90,22 @@ test("find by class", async () => {
 })
 
 test("find parent", async () => {
+
 	const node = new PathFinder(root).getNode<any>("/>child1.3.1")
 	expect(node.name).toBe("child1.3.1")
-	const nodeRes = new PathFinder(node).getNode<any>('<{"value":55}')
+
+	// trova il parent in base ad un pattern di ricerca
+	let nodeRes = new PathFinder(node).getNode<any>('<{"value":55}')
 	expect(nodeRes.name).toBe("child1")
+	// se non lo trova restituisce udefined
+	nodeRes = new PathFinder(node).getNode<any>('<{"value":123}')
+	expect(nodeRes).toBeUndefined()
+	// puo' essere anche il nodo stesso 
+	nodeRes = new PathFinder(node).getNode<any>('<{"value":"sigma"}')
+	expect(nodeRes).toBe(node)
+
+	// cerco un parent che abbia il nodo cercato tra i children
+	nodeRes = new PathFinder(node).getNode<any>('^child1.2')
+	//expect(nodeRes).toBe(node)
+
 })

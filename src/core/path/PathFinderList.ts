@@ -78,19 +78,19 @@ export class PathFinderList {
 	// 	}
 	// }
 
-	forEach(callback: (T) => void, options?: { deep: boolean, clazz: any }): void {
-		if (callback == null) throw new Error("invalid parameter 'callback'")
-		const { deep, clazz } = options ?? { deep: true, clazz: null }
-		const className: string = clazz instanceof String ? clazz
-			: clazz != null ? new clazz().constructor.name : null
+	// forEach(callback: (T) => void, options?: { deep: boolean, clazz: any }): void {
+	// 	if (callback == null) throw new Error("invalid parameter 'callback'")
+	// 	const { deep, clazz } = options ?? { deep: true, clazz: null }
+	// 	const className: string = clazz instanceof String ? clazz
+	// 		: clazz != null ? new clazz().constructor.name : null
 
-		for (let child of this.nodes) {
-			if (className != null && child.constructor.name == className) continue
-			callback(child)
-			if (deep) {
-				const pNode = new PathFinderList(child.children)
-				pNode.forEach(callback, options)
-			}
-		}
-	}
+	// 	for (let child of this.nodes) {
+	// 		if (className != null && child.constructor.name == className) continue
+	// 		callback(child)
+	// 		if (deep) {
+	// 			const pNode = new PathFinderList(child.children)
+	// 			pNode.forEach(callback, options)
+	// 		}
+	// 	}
+	// }
 }
