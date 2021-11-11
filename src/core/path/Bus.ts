@@ -25,25 +25,48 @@ export class Bus {
 	 * Consegna un "Action" al suo destinatario partendo dal nodo "this.sender"
 	 * @param action 
 	 */
-	async dispatch(action: IAction|string): Promise<any> {
-		if ( typeof action=="string" ) action = { type: action } as IAction
+	async dispatch(action: IAction | string): Promise<any> {
+		if (!action) throw "errore parametro action"
+		if (typeof action == "string") action = { type: action } as IAction
 		const dest = new PathFinder(this.sender).getNode<NodeState>(this.path)
 		let res = null
 
 		if (!action.sender) action.sender = nodePath(this.sender)
 		action.sendTime = Date.now()
 
-		// [II] da implementare:
-		// [await:millisec] se presente un opzione il messaggio viene bufferizzato quindi c'e' un controllo se esiste il nodo per tot tempo
 		if (dest) {
-			res = await dest.dispatch(action)
-		// se il nodo destinazione non c'e' allora metto la action nel buffer
+			res = this.tryDispatch(dest, action, action.error?.reattempt)
+
+			// se il nodeo destinazione non c'e'
+			// ed è presente l'opzione [await:millisec] 
+			// il messaggio viene bufferizzato e riproposto fino a che non scade il tempo massimo wait
 		} else {
 			this.bufferWaitPush(action)
 		}
 
 		this.bufferWaitDebounce()
 		return res
+	}
+
+	/**
+	 * try to send an action
+	 * if it fails, try again
+	 * @param dest 
+	 * @param action 
+	 * @param attempt 
+	 * @returns 
+	 */
+	private async tryDispatch(dest: NodeState, action: IAction, attempt: number = 0): Promise<any> {
+		try {
+			return await dest.dispatch(action)
+		} catch (err) {
+			if (action?.error && attempt > 0) {
+				await new Promise(resolve => setTimeout(resolve, action.error.wait))
+				return await this.tryDispatch(dest, action, --attempt)
+			} else {
+				throw err
+			}
+		}
 	}
 
 
@@ -82,7 +105,7 @@ export class Bus {
 	 * non lo faccio subito altrimenti poi le performance che dicono he?
 	 */
 	private bufferWaitDebounce(): void {
-		if ( this.bufferWait.length == 0 ) return
+		if (this.bufferWait.length == 0) return
 		time.debounce("bus:buffer:wait", this.bufferWaitResolve.bind(this), 500)
 	}
 
