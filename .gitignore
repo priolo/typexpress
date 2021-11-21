@@ -5,3 +5,4 @@ node_modules/
 dist/
 examples/
 src/examples/
+src/services/typeorm/test/database.sqlite

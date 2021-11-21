@@ -32,6 +32,9 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 			[RepoStructActions.SEED]: async (state, seeds) => await this.seed(seeds ?? state.seeds),
 			[RepoStructActions.TRUNCATE]: async (state) => await this.truncate(),
 			[RepoStructActions.CLEAR]: async (state) => await this.clear(),
+
+			[Actions.TRANSACTION_START]: async (state) => await this.transactionStart(),
+			[Actions.TRANSACTION_END]: async (state) => await this.transactionEnd(),
 		}
 	}
 
@@ -51,6 +54,8 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 		return typeof model == "object" ? model?.name : model
 	}
 
+	//private repo:Repository<unknown> = null
+
 	/**
 	 * Restituiesce il "Repository" nativo typeorm di questo nodo
 	 * @param model 
@@ -59,16 +64,27 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	protected getRepo(model?: string): Repository<unknown> {
 		const repo = this.connection.getRepository(model ?? this.model)
 		return repo
+		// if ( this.repo == null) {
+		// 	this.repo = this.connection.getRepository(model ?? this.model)
+		// }
+		// return this.repo
 	}
 
+	// [II] da implementare
+	private transactionStart() {
+		const repo = this.getRepo()
+		return repo.queryRunner.startTransaction()
+	}
+	private transactionEnd() {
+		const repo = this.getRepo()
+		return repo.queryRunner.commitTransaction()
+	}
 
-
-	// protected async onInitFinish(): Promise<void> {
-	// 	await super.onInitFinish()
-	// 	const { seeds } = this.state
-	// 	await this.seed(seeds)
-	// }
-
+	/**
+	 * Effettua una ricerca su questo REPO
+	 * @param query 
+	 * @returns 
+	 */
 	private async find(query: any): Promise<any[]> {
 		const repo = this.getRepo()
 		if (query.where) {
@@ -91,7 +107,11 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 		return await repo.find(query)
 	}
 
-
+	/**
+	 * Inserisce dei record in questo REPO
+	 * @param seeds 
+	 * @returns 
+	 */
 	private async seed(seeds: Array<any>): Promise<void> {
 		if (!Array.isArray(seeds)) return
 		const repo = this.getRepo()
