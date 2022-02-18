@@ -108,4 +108,7 @@ test("find parent", async () => {
 	nodeRes = new PathFinder(node).getNode<any>('^child1.2')
 	//expect(nodeRes).toBe(node)
 
+	// prendo la root
+	nodeRes = new PathFinder(node).getNode<any>('/')
+	expect(nodeRes).toBe(root)
 })

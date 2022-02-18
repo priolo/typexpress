@@ -25,8 +25,11 @@ export interface IEvent {
  * ACTIONS che si possono fare ad un oggetto "ServiceBase"
  */
 export enum ServiceBaseActions {
+	/** mi registro ad un evento */
 	REGISTER = "event:register",
+	/** mi cancello da un evento */
 	UNREGISTER = "event:unregister",
+	/** l'arrivo di un evento */
 	EVENT = "event:arrived",
 }
 
@@ -34,7 +37,9 @@ export enum ServiceBaseActions {
  * EVENT-NAME che si possono ascoltare di un oggetto "ServiceBase"
  */
 export enum ServiceBaseEvents {
+	/** quando lo STATE del NODE cambia */
 	STATE_CHANGE = "state:change",
+	/** quando il NODE è inizializzato */
 	INIT = "node:init",
 	INIT_AFTER = "node:init-after",
 	DESTROY = "node:destroy",

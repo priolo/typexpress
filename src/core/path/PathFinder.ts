@@ -1,4 +1,4 @@
-import { fnNodePattern, nodeParents, nodeParents2 } from "../utils"
+import { fnNodePattern, nodeParents, nodeParentsFind } from "../utils"
 import { INode } from "../node/utils"
 import { PathFinderList } from "./PathFinderList"
 
@@ -52,7 +52,7 @@ export class PathFinder {
 			// ricerca su oggetto tra i miei children e ricorsivamente su quelli del parent
 			} else if (pattern.startsWith("^")) {
 				pattern = path.slice(1)
-				const nodeFind = nodeParents2(this.node, n => {
+				const nodeFind = nodeParentsFind(this.node, n => {
 					return new PathFinderList(n.children).getBy(pattern)?.node
 				})
 				nextPathFinder = nodeFind!=null ? new PathFinder(nodeFind) : null

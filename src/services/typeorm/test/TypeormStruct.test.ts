@@ -112,7 +112,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-	if (root) await root.dispatch({ type: ConfActions.STOP })
+	await RootService.Stop(root)
 	//try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 })
 

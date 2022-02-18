@@ -36,10 +36,11 @@ export function nodeFind(nodes: INode | INode[], callback: (n: INode) => boolean
 }
 
 /**
- * Cicla tutti i parent del node e  per ognuno chiama il "callback"  
+ * Cicla tutti i parent del node e per ognuno chiama il "callback"  
  * se il callback è `false` il ciclo si interrompe e restituisce il nodo  
  * se il callback non è mai `false` allora retituisce null  
- * viene analizzato anche il `node` passato come paramentro  
+ * viene analizzato anche il `node` passato come paramentro 
+ * viene analizzato anche il nodo "root" 
  * @param node nodo sa vui cominciare la ricerca del PARENT
  * @param callback se questo CALLBACK restituisce (e solo se) "false" il ciclo termina e restituisce il corrente PARENT 
  */
@@ -50,8 +51,24 @@ export function nodeParents(node: INode, callback: (n: INode) => any): INode | n
 	}
 	return current
 }
+// export function nodeParents(node: INode, callback?: (n: INode) => any): INode {
+// 	if (!node) return null
+// 	let current = node;
+// 	while (current.parent != null && (callback == null || callback(current) != false)) {
+// 		current = current.parent;
+// 	}
+// 	return current
+// }
 
-export function nodeParents2(node: INode, callback: (n: INode) => INode | null): INode | null {
+/**
+ * cicla tutti i parent di "node"
+ * se "callback" return un risultato allora termina con il risultato
+ * se "callback" è sempre "null" termina con "null"
+ * @param node 
+ * @param callback 
+ * @returns 
+ */
+export function nodeParentsFind(node: INode, callback: (n: INode) => INode | null): INode | null {
 	let current = node
 	let find = null
 	while (current != null && (find = callback(current)) == null ) {
@@ -63,12 +80,15 @@ export function nodeParents2(node: INode, callback: (n: INode) => INode | null):
 /**
  * Dato un node
  * restituisce la path (assoluta) della sua posizione
+ * ATTENZIONE: non è presente il nome del nodo "root"
  * @param node 
  */
 export function nodePath(node: INode): string {
 	if (!node) return null
 	let nodes = []
-	nodeParents(node, n => { nodes.unshift(n.name) })
+	nodeParents(node, n => { 
+		if ( n.parent!=null ) nodes.unshift(n.name) 
+	})
 	return `/${nodes.join("/")}`
 }
 

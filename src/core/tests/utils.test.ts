@@ -11,6 +11,7 @@ beforeAll(async () => {
 	await root.dispatch({
 		type: ConfActions.START,
 		payload: {
+			// sovrascrivo "root" con "root2"
 			name: "root2",
 			value: 23,
 			children: [
@@ -107,5 +108,4 @@ test("nodePath", async () => {
 	const path = nodePath(node)
 	expect(path).toBe(pathFind)
 })
-
 

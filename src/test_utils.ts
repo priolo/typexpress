@@ -1,9 +1,12 @@
 import WebSocket from "ws"
 
 
-
-export async function wait(time) {
-	await new Promise<void>((res) => setTimeout(_ => res(), time))
+/**
+ * Attende per un po'
+ * @param time in millisecondi
+ */
+export async function wait(time:number): Promise<void> {
+	return new Promise<void>((res) => setTimeout(_ => res(), time))
 }
 
 export function distancePoints(p1, p2) {

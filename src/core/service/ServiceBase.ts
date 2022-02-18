@@ -40,19 +40,35 @@ export class ServiceBase extends NodeConf {
 
 	private listeners: IListener[] = []
 
+	/**
+	 * Registro il "listener" agli eventi del Node
+	 * @param listener 
+	 */
 	protected register(listener: IListener): void {
 		const index = this.listeners.findIndex(l => listenersIsEqual(l, listener))
 		if (index != -1) return
 		this.listeners.push(listener)
 	}
 
+	/**
+	 * Elimino il "listener" della ricezione degli eventi del Node
+	 */
 	private unregister(listener: IListener): void {
 		const newListeners = this.listeners.filter(l => !listenersIsEqual(l, listener))
 		this.listeners = newListeners
 	}
 
+	/**
+	 * Quando arriva un evento di un altro Node
+	 * @param event 
+	 */
 	protected onEvent(event: IEvent): void { }
 
+	/**
+	 * emette un evento a tutti i "listeners"
+	 * @param event 
+	 * @param arg 
+	 */
 	private emit(event: string, arg?: any) {
 		for (const listener of this.listeners) {
 			if (listener.event != event) continue
@@ -67,17 +83,33 @@ export class ServiceBase extends NodeConf {
 		}
 	}
 
+	/**
+	 * emette un ACTION a tutti i "listeners"
+	 * @param action 
+	 * @returns 
+	 */
 	async dispatch(action: IAction): Promise<any> {
 		const res = await super.dispatch(action)
 		this._emitter.emit(ServiceBaseEvents.DISPATCH, action)
 		return res
 	}
 
+	/**
+	 * Chiamato quando cambia lo stato del NODE ed emette l'evento "STATE_CHANGE"
+	 * @override
+	 * @param old 
+	 */
 	protected onChangeState(old: any): void {
 		super.onChangeState(old)
 		this.emit(ServiceBaseEvents.STATE_CHANGE, this._state)
 	}
 
+	/**
+	 * Chiamto quando il NODE viene inizializzato e emette l'evento "INIT"
+	 * @override
+	 * @param conf 
+	 * @returns 
+	 */
 	protected async onInit(conf:any): Promise<void> {
 		try {
 			await super.onInit(conf)

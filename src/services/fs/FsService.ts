@@ -2,6 +2,7 @@ import { ServiceBase } from "../../core/service/ServiceBase"
 import fs from "fs"
 import path from "path"
 import { Actions, FsItem, FsType } from "./utils"
+import { createDirIfNotExist, deleteIfExist } from "."
 
 
 export default class FsService extends ServiceBase {
@@ -30,10 +31,10 @@ export default class FsService extends ServiceBase {
 			[Actions.RENAME]: async (state, { dirOld, dirNew }) => this.rename(dirOld, dirNew),
 
 			[Actions.DELETE]: async (state, dir: string) => this.makeDelete(dir),
-			
-			[Actions.NEW_TEXT]: async (state, { dir, data }) => {},
-			
-			[Actions.GET_TEXT]: async (state, dir: string) => {},
+
+			[Actions.NEW_TEXT]: async (state, { dir, data }) => { },
+
+			[Actions.GET_TEXT]: async (state, dir: string) => { },
 		}
 	}
 
@@ -63,14 +64,14 @@ export default class FsService extends ServiceBase {
 	protected async makeNewDir(dir: string): Promise<FsItem> {
 		if (!dir) throw "Parameter error"
 		const { baseDir } = this.state
-		const d = path.join(baseDir, dir)
+		const dirComplete = path.join(baseDir, dir)
 
-		await fs.promises.mkdir(d, { recursive: true })
-		const newDP = path.parse(d)
+		await createDirIfNotExist(dirComplete)
+		const dirParsed = path.parse(dirComplete)
 		return {
-			name: newDP.base,
+			name: dirParsed.base,
 			type: FsType.DIR,
-			parent: path.relative(baseDir, newDP.dir),
+			parent: path.relative(baseDir, dirParsed.dir),
 		}
 	}
 
@@ -96,9 +97,9 @@ export default class FsService extends ServiceBase {
 	protected async makeDelete(dir: string) {
 		if (!dir) throw "Parameter error"
 		const { baseDir } = this.state
-		const d = path.join(baseDir, dir)
+		const dirComplete = path.join(baseDir, dir)
 
-		await fs.promises.unlink(d)
+		await deleteIfExist(dirComplete)
 	}
 
 }

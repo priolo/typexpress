@@ -53,6 +53,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
              */
             maxBaseDirSize: Number.POSITIVE_INFINITY,
 
+            // Comportamento da usare per gestire l'accumulo dei file nella directory
             onMenageSizeStrategy: RemoveOldFileStrategy,
         }
     }
@@ -60,10 +61,11 @@ export class HttpUploadService extends HttpRouterServiceBase {
     protected onBuildRouter(): Router {
         const router = super.onBuildRouter()
         const { baseDir, verb, maxFileSize, maxFileNumb } = this.state
+
+        // creo lo "storage" di "multer"
         const storage = multer.diskStorage({
-            /**
-             * deve restituisce (tramite callback cb) la path della directory dove salvare i files
-             */
+
+            // restituisce (tramite il callback "cb") la path della directory dove salvare i files
             destination: (req, file, cb) => {
                 // valorizzo la "dirDest"
                 const dirDest = path.join(baseDir, this.onGetDirName(req, file))
@@ -77,9 +79,8 @@ export class HttpUploadService extends HttpRouterServiceBase {
                 // restituisco la "dirDest"
                 cb(null, dirDest)
             },
-            /**
-             * Deve restituire (tramite callback cb) il nome del file
-             */
+
+            // restituisce (tramite callback "cb") il nome del file
             filename: (req, file, cb) => {
                 // if (maxFileSize > 0 && file.size > maxFileSize) {
                 //     cb(new Error("è tropppo pesante"), file.originalname)
@@ -89,6 +90,8 @@ export class HttpUploadService extends HttpRouterServiceBase {
                 cb(null, fileDest)
             }
         })
+
+        // istanza di "multer"
         const upload = multer({ 
             storage,
             limits: {
@@ -97,6 +100,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
             } 
         })
 
+        // creo il "router" e lo restituisco al server
         //router.post("/", upload.fields(fields), (req: Request, res: Response, next) => {
         router[verb]("/", upload.any(), async (req: Request, res: Response, next) => {
             await this.state.onMenageSizeStrategy(this.state)
@@ -154,8 +158,12 @@ export class HttpUploadService extends HttpRouterServiceBase {
     }
 }
 
-
-const RemoveOldFileStrategy = async (state) => {
+/**
+ * se la somma di tutti i file della dir è superiore al consentito
+ * elimina i file piu' vecchi
+ * @param state 
+ */
+ async function RemoveOldFileStrategy (state) {
     const { maxBaseDirSize, baseDir } = state
     if (isNaN(maxBaseDirSize) || maxBaseDirSize == Number.POSITIVE_INFINITY) return
 

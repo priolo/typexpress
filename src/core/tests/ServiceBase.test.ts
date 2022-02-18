@@ -7,37 +7,34 @@ import { Bus } from "../../core/path/Bus"
 let root = null
 
 beforeAll(async () => {
-	root = await RootService.Start({
-		name: "root",
-		children: [
-			{
-				name: "child1",
-				children: [
-					{ name: "child1.1" },
-					{
-						name: "receiver",
-						class: class extends ServiceBase {
-							protected onEvent(payload: IEvent): void {
-								if (payload.name != ServiceBaseEvents.STATE_CHANGE ) return
-								const { value } = payload.arg
-								this.setState({ value })
-							}
+	root = await RootService.Start([
+		{
+			name: "child1",
+			children: [
+				{ name: "child1.1" },
+				{
+					name: "receiver",
+					class: class extends ServiceBase {
+						protected onEvent(payload: IEvent): void {
+							if (payload.name != ServiceBaseEvents.STATE_CHANGE) return
+							const { value } = payload.arg
+							this.setState({ value })
 						}
 					}
-				]
-			},
-			{
-				name: "child2",
-				children: [
-					{
-						value: "uno",
-						name: "emitter",
-						class: ServiceBase,
-					}
-				]
-			}
-		]
-	})
+				}
+			]
+		},
+		{
+			name: "child2",
+			children: [
+				{
+					value: "uno",
+					name: "emitter",
+					class: ServiceBase,
+				}
+			]
+		}
+	])
 })
 
 afterAll(async () => {
@@ -45,15 +42,14 @@ afterAll(async () => {
 })
 
 test("register", async () => {
-	const emitter = new PathFinder(root).getNode<ServiceBase>("/root/child2/emitter")
-	const receiver = new PathFinder(root).getNode<ServiceBase>("/root/child1/receiver")
+	const emitter = new PathFinder(root).getNode<ServiceBase>("/child2/emitter")
+	const receiver = new PathFinder(root).getNode<ServiceBase>("/child1/receiver")
 
-	new Bus(receiver, "/root/child2/emitter").dispatch({
+	await new Bus(receiver, "/child2/emitter").dispatch({
 		type: ServiceBaseActions.REGISTER,
 		payload: ServiceBaseEvents.STATE_CHANGE,
 	})
 
 	emitter.setState({ value: "pippo" })
 	expect(receiver.state.value).toBe("pippo")
-
 })

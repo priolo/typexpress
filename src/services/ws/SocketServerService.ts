@@ -184,8 +184,8 @@ export class SocketServerService extends SocketCommunicator {
 			this.onConnect(client)
 		})
 
-		this.server.on("error", (error) => { console.log("server:error:"); debugger })
-		this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); debugger })
+		this.server.on("error", (error) => { console.log("server:error:"); /*debugger*/ })
+		this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); /*debugger*/ })
 	}
 
 	/**

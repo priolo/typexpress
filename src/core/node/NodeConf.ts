@@ -73,7 +73,7 @@ export class NodeConf extends NodeState {
 	 */
 	private async buildChildren(confChildren: Array<any>): Promise<void> {
 		if (confChildren == null) return
-		for (let confChild of confChildren) {
+		for (const confChild of confChildren) {
 			const child = await this.buildChild(confChild)
 			if (child == null) continue
 			this.addChild(child);
@@ -96,7 +96,8 @@ export class NodeConf extends NodeState {
 	 * Quando questo NODE deve essere distrutto
 	 */
 	private async nodeDestroy(): Promise<void> {
-		for (let child of this.children) {
+		const children = [...this.children]
+		for (const child of children) {
 			if (child instanceof NodeConf) await child.dispatch({
 				type: ConfActions.STOP
 			})

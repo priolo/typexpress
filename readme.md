@@ -4,15 +4,10 @@
 
 ## DESCRIPTION
 
-Allow the creation of a NodeJs server  
-Simply with a basic JSON configuration
-
-
-## WHY?
-
-Non ne posso piu' di dovermi andare a studiare una marea di blog    
-solo per mettere su un server!  
-Voglio usare un solo JSON che mi permetta di configurare tutto
+Inizialmente dovevo creare un semplice microservizio in Express
+Durante lo sviluppo mi sono reso conto che per ogni opzione aggiunta (JWT, DB, Render engine...)
+dovevo studiare diversi approcci.
+Alla fine ho sviluppato un livello che nasconde tutta la complessità
 
 
 ## INSTALLATION
