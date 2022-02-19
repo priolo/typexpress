@@ -21,7 +21,7 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "npx tsc",
 		"build-watch": "tsc -w",
 		"test": "jest dist --no-cache --runInBand",
 		"test-watch": "jest dist --watch --runInBand",
