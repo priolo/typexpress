@@ -5,13 +5,14 @@ import { RootService } from "../../../core/RootService"
 import { distancePoints, getRandom, wsFarm, wait } from "../../../test_utils"
 
 import * as wsNs from "../index"
+import { getFreePort } from "../utils"
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
-class RouteCustom extends wsNs.Service {
+class RouteCustom extends wsNs.route {
 	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
 		if (message.action == "position") {
 			client["position"] = message.payload
@@ -25,6 +26,7 @@ class RouteCustom extends wsNs.Service {
 }
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "ws",

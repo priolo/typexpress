@@ -6,14 +6,16 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 
 import * as wsNs from "../index"
+import { getFreePort } from "../utils"
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "http",
@@ -22,7 +24,7 @@ beforeAll(async () => {
 				{
 					class: "ws",
 					name: "ws1",
-					path: "/server1",
+					path: "server1",
 					onMessage: async function (client, message) {
 						this.sendToClient(client, "from ws1")
 						this.disconnectClient(client)

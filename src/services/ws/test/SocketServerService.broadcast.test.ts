@@ -1,14 +1,16 @@
 /**
  * @jest-environment node
  */
+import { getFreePort } from ".."
 import { RootService } from "../../../core/RootService"
 import { wsFarm } from "../../../test_utils"
 
 
-const PORT = 5004
+let PORT
 let root = null
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "ws",

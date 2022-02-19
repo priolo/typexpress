@@ -2,25 +2,28 @@
  * @jest-environment node
  */
 import path from "path"
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
 
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder"
-import { ConfActions } from "../../../core/node/utils"
 import { HttpSessionService } from "../session/HttpSessionService"
 
 import * as typeormNs  from "../../typeorm";
 import { SessionEntity } from "../session/SessionEntity"
+import { getFreePort } from "../../ws"
 
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const PORT = 5005
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let PORT
+let axiosIstance: AxiosInstance
 const dbPath = path.join(__dirname, "/database.sqlite")
 let root = null
 
 beforeAll(async () => {
+	PORT = await getFreePort()
+	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+
 	root = await RootService.Start([
 		{
 			class: "http",

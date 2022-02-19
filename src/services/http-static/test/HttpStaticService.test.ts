@@ -3,6 +3,7 @@
  */
 import axios from "axios"
 import path from "path"
+import { getFreePort } from "../../ws"
 
 import { RootService } from "../../../core/RootService"
 
@@ -11,9 +12,10 @@ axios.defaults.adapter = require('axios/lib/adapters/http')
 
 
 let root, res
-const PORT = 5008
+let PORT
 
 beforeAll(async() => {
+	PORT = await getFreePort()
 	root = await RootService.Start (
 		{
 			class: "http",

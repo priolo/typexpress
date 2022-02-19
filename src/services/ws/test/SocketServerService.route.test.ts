@@ -6,26 +6,28 @@ import { RootService } from "../../../core/RootService"
 import WebSocket from "ws"
 
 import * as wsNs from "../index"
+import { getFreePort } from "../utils"
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "ws",
 			port: PORT,
 			onMessage: async function (client, data) {
-				this.sendToClient(client, `root::receive:${data}`)
+				this.sendToClient(client, `root::receive:${JSON.stringify(data)}`)
 			},
 			children: [
 				{
 					class: "ws/route",
 					path: "command",
 					onMessage: async function (client, data) {
-						this.sendToClient(client, `command::receive:${data.payload.message}`)
+						this.sendToClient(client, `command::receive:${JSON.stringify(data)}`)
 					},
 				},
 				{
@@ -35,7 +37,7 @@ beforeAll(async () => {
 						class: "ws/route",
 						path: "pos2",
 						onMessage: async function (client, message) {
-							this.sendToClient(client, `room1/pos2::receive:${message.payload.message}`)
+							this.sendToClient(client, `room1/pos2::receive:${JSON.stringify(message)}`)
 						},
 					}],
 				},
@@ -49,16 +51,18 @@ afterAll(async () => {
 })
 
 test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"command"}')
-	expect(srs).toBeInstanceOf(wsNs.Service)
-	srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"room1"}')
-	expect(srs).toBeInstanceOf(wsNs.Service)
+	let srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"command"}')
+	expect(srs).toBeInstanceOf(wsNs.route)
+	srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"room1"}')
+	expect(srs).toBeInstanceOf(wsNs.route)
 })
 
 test("message on subpath", async () => {
 	let result = []
+
+	// creo il client ws e sull'apertura mando dei dati
 	const ws = new WebSocket(`ws://localhost:${PORT}/`)
-	
+
 	ws.on('open', () => {
 		ws.send("only string")
 		ws.send(JSON.stringify({
@@ -71,16 +75,23 @@ test("message on subpath", async () => {
 		}))
 	})
 
+	// se ricevo una risposta la memorizzo
 	ws.on('message', message => {
 		result.push(message)
-		if (result.length == 3) ws.close()
+		if (result.length == 5) ws.close()
 	})
 
+	// aspetto che il socket si chiuda
 	await new Promise<void>((res, rej) => ws.on('close', res))
 
 	expect(result).toEqual([
-		"root::receive:only string",
-		"room1/pos2::receive:<room1-pos2>",
-		"command::receive:<command>",
+		`root::receive:\"only string\"`,
+		`command::receive:\"only string\"`,
+		`room1/pos2::receive:\"only string\"`,
+		`room1/pos2::receive:{\"path\":\"room1/pos2\",\"action\":\"message\",\"payload\":{\"message\":\"<room1-pos2>\"}}`,
+		`command::receive:{\"path\":\"command\",\"action\":\"message\",\"payload\":{\"message\":\"<command>\"}}`,
 	])
+
+
+
 })

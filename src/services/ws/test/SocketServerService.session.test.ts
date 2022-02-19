@@ -5,16 +5,16 @@ import { RootService } from "../../../core/RootService"
 import { wsFarm, wait, getRandom } from "../../../test_utils"
 
 import * as wsNs from "../index"
+import { getFreePort } from "../utils"
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
-class PluginSession extends wsNs.Service {
+class PluginSession extends wsNs.route {
 
 	clientsCache: wsNs.IClient[] = []
-
 
 	onConnect(client: wsNs.IClient) {
 		super.onConnect(client)
@@ -58,6 +58,7 @@ class PluginSession extends wsNs.Service {
 }
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "ws",

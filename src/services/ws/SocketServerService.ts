@@ -6,7 +6,6 @@ import url, { URLSearchParams } from 'url'
 import * as jwtNs from "../jwt"
 import { Bus } from "../../core/path/Bus"
 
-
 import * as http from "../http"
 import * as errorNs from "../error"
 
@@ -47,7 +46,7 @@ export class SocketServerService extends SocketCommunicator {
 	 */
 	private server: WebSocket.Server = null
 
-	protected async onInit(conf:any) {
+	protected async onInit(conf: any) {
 		super.onInit(conf)
 		const { autostart } = this.state
 		if (!autostart) return
@@ -57,7 +56,7 @@ export class SocketServerService extends SocketCommunicator {
 
 	protected async onDestroy() {
 		super.onDestroy()
-		this.stopListener()
+		await this.stopListener()
 	}
 
 
@@ -108,12 +107,14 @@ export class SocketServerService extends SocketCommunicator {
 		parentHttp.off('upgrade', this.onUpgrade)
 	}
 	private onUpgrade = async (request, socket, head) => {
-		const { path, jwt, onAuth } = this.state
+		let { path, jwt, onAuth } = this.state
 		const params = this.getUrlParams(request)
 
 		// controllo che il path sia giusto
 		const wsUrl = url.parse(request.url)
-		if (path && wsUrl.pathname != path) return
+		if (!path) path = ""
+		if (!path.startsWith("/")) path = `/${path}`
+		if (wsUrl.pathname != path) return
 
 		// controllo se c'e' un autentificazione da fare
 		let jwtPayload
@@ -150,9 +151,9 @@ export class SocketServerService extends SocketCommunicator {
 	private async getJwtPayload(token: string) {
 		const { jwt } = this.state
 		if (!token) return null
-		const payload = await new Bus(this, jwt).dispatch({ 
-			type: jwtNs.Actions.DECODE, 
-			payload: token 
+		const payload = await new Bus(this, jwt).dispatch({
+			type: jwtNs.Actions.DECODE,
+			payload: token
 		})
 		return payload
 	}
@@ -160,9 +161,13 @@ export class SocketServerService extends SocketCommunicator {
 	/** Fine della storia */
 	private async stopListener() {
 		if (!this.server) return
-		this.server.close()
-		this.detachToServerHttp()
-		this.server = null
+		return new Promise<void>((res, rej) => {
+			this.server.close((err) => {
+				if (err) rej(err); else res()
+			})
+			this.detachToServerHttp()
+			this.server = null
+		})
 	}
 
 	/**
@@ -185,7 +190,7 @@ export class SocketServerService extends SocketCommunicator {
 		})
 
 		this.server.on("error", (error) => { console.log("server:error:"); /*debugger*/ })
-		this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); /*debugger*/ })
+		//this.server.on("close", (cws: WebSocket) => { console.log("server:close:"); /*debugger*/ })
 	}
 
 	/**
@@ -244,13 +249,14 @@ export class SocketServerService extends SocketCommunicator {
 	}
 
 	private updateClients() {
-		const clients: Array<IClient> = [...this.server.clients].map((cws: WebSocket) => {
-			const socket = (cws as any)._socket
-			return {
-				remoteAddress: socket.remoteAddress,
-				remotePort: socket.remotePort
-			}
-		})
+		const clients: Array<IClient> = !this.server ? []
+			: [...this.server.clients].map((cws: WebSocket) => {
+				const socket = (cws as any)._socket
+				return {
+					remoteAddress: socket.remoteAddress,
+					remotePort: socket.remotePort
+				}
+			})
 		this.setState({ clients })
 	}
 
@@ -276,13 +282,21 @@ export class SocketServerService extends SocketCommunicator {
 	onProcessMessage(client: IClient, message: string | IMessage) {
 	}
 
+	/**
+	 * Quando arriva un messaggio dal client
+	 * @param client 
+	 * @param message 
+	 * @override
+	 */
 	onMessage(client: IClient, message: string | IMessage) {
+		if (!message) return
 		if (typeof message == "string" && message.length > 0) {
 			try {
 				message = JSON.parse(message)
 			} catch (error) { }
 		}
-		super.onMessage(client, message)
+		const paths = message["path"]?.split("/").filter(path => path && path.length > 0)
+		super.onMessage(client, message, paths)
 	}
 
 	sendToClient(client: IClient, message: any) {
@@ -336,9 +350,9 @@ export class SocketServerService extends SocketCommunicator {
 			try {
 				cws.send(message)
 			} catch (error) {
-				new Bus(this, "/error").dispatch({ 
-					type: errorNs.Actions.NOTIFY, 
-					payload: { code: Errors.BROADCAST, error } 
+				new Bus(this, "/error").dispatch({
+					type: errorNs.Actions.NOTIFY,
+					payload: { code: Errors.BROADCAST, error }
 				})
 				return false
 			}

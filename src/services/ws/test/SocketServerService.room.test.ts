@@ -6,13 +6,14 @@ import { RootService } from "../../../core/RootService"
 import { wsFarm } from "../../../test_utils"
 
 import * as wsNs from "../index"
+import { getFreePort } from "../utils"
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
-class RouteCustom extends wsNs.Service {
+class RouteCustom extends wsNs.route {
 
 	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
 		const { path } = this.state
@@ -51,6 +52,7 @@ class RouteCustom extends wsNs.Service {
 }
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "ws",
@@ -77,10 +79,10 @@ afterAll(async () => {
 })
 
 test("su creazione", async () => {
-	let srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"room1"}')
-	expect(srs).toBeInstanceOf(wsNs.Service)
-	srs = new PathFinder(root).getNode<wsNs.Service>('/ws-server/{"path":"room2"}')
-	expect(srs).toBeInstanceOf(wsNs.Service)
+	let srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"room1"}')
+	expect(srs).toBeInstanceOf(wsNs.route)
+	srs = new PathFinder(root).getNode<wsNs.route>('/ws-server/{"path":"room2"}')
+	expect(srs).toBeInstanceOf(wsNs.route)
 })
 
 test("verifica rioute custom con gestione delle ROOM", async () => {

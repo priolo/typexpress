@@ -1,14 +1,13 @@
-import fs from "fs"
 import path from "path"
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 import { RootService } from "../../../core/RootService"
 import { PathFinder } from "../../../core/path/PathFinder";
-import { ConfActions } from "../../../core/node/utils";
 import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils";
 import { Bus } from "../../../core/path/Bus";
 
 import * as orm from "../index"
+import { deleteIfExist } from "../../fs";
 
 
 
@@ -27,10 +26,9 @@ export class Item {
 
 
 
-
 beforeAll(async () => {
-	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) }
-	catch (e) { console.log(e) }
+
+	await deleteIfExist(dbPath)
 
 	root = await RootService.Start(
 		[

@@ -5,16 +5,16 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 import WebSocket from "ws"
 
-import { SocketRouteActions } from "../utils"
+import { getFreePort, SocketRouteActions } from "../utils"
 import * as wsNs from "../index"
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
-
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "ws",
@@ -54,7 +54,7 @@ test("client connetc/send/close", async () => {
 
 	const ws = new WebSocket(`ws://localhost:${PORT}/`);
 
-	const result = await new Promise<string>( (res, rej) =>{
+	const result = await new Promise<string>((res, rej) => {
 		let result
 		ws.on('open', function open() {
 			ws.send(dateNow)

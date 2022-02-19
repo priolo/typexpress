@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
 import fs from "fs"
 
 import { RootService } from "../../../core/RootService"
@@ -6,12 +6,13 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder"
 
 import { HttpRouterRestRepoService } from "../rest/HttpRouterRestRepoService";
+import { getFreePort } from "../../ws";
 
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const PORT = 5002
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let PORT
+let axiosIstance: AxiosInstance
 const dbPath = `${__dirname}/database.sqlite`
 let root, user1, user2, users
 
@@ -30,10 +31,10 @@ export class User {
 	age: number;
 }
 
-
-
-
 beforeAll(async () => {
+	PORT = await getFreePort()
+	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 
 	root = await RootService.Start([

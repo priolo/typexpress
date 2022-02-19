@@ -8,6 +8,7 @@ import { RepoStructActions, RepoTreeActions } from "../../../core/repo/utils";
 import { Bus } from "../../../core/path/Bus";
 
 import * as orm from "../index";
+import { deleteIfExist } from "../../fs";
 
 
 
@@ -32,8 +33,8 @@ export class Item {
 
 
 beforeAll(async () => {
-	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) }
-	catch (e) { console.log(e) }
+	
+	await deleteIfExist(dbPath)
 
 	root = await RootService.Start([
 		{

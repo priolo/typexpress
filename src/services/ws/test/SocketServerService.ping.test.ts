@@ -5,13 +5,14 @@ import { RootService } from "../../../core/RootService"
 import { wsFarm, wait } from "../../../test_utils"
 
 import * as wsNs from "../index"
+import { getFreePort } from "../utils"
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
-class PluginPing extends wsNs.Service {
+class PluginPing extends wsNs.route {
 
 	protected async onInit(conf:any): Promise<void> {
 		await super.onInit(conf)
@@ -52,6 +53,7 @@ class PluginPing extends wsNs.Service {
 }
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start(
 		{
 			class: "ws",

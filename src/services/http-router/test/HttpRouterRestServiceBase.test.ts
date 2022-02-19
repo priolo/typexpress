@@ -1,7 +1,8 @@
 /**
  * @jest-environment node
  */
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
+import { getFreePort } from "../../ws"
 
 import { ConfActions } from "../../../core/node/utils"
 import { PathFinder } from "../../../core/path/PathFinder"
@@ -12,8 +13,8 @@ import { HttpRouterRestServiceBase } from "../rest/HttpRouterRestServiceBase"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const PORT = 5003
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let PORT
+let axiosIstance: AxiosInstance
 let root = null
 
 const users = [
@@ -50,6 +51,8 @@ class TestRoute extends HttpRouterRestServiceBase {
 }
 
 beforeAll(async()=>{
+	PORT = await getFreePort()
+	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
 	root = new RootService()
 	await root.dispatch({
 		type: ConfActions.START,

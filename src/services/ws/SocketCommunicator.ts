@@ -1,11 +1,16 @@
 import { IMessage, SocketRouteActions, IClient } from "./utils"
 import { ServiceBase } from "../../core/service/ServiceBase"
+//import ju, { isObject } from "@priolo/jon-utils"
 
+type SocketCommunicatorConf = {
+	path: string,
+	onConnection: () => void,
 
+}
 
 export abstract class SocketCommunicator extends ServiceBase {
 
-	get defaultConfig(): any {
+	get defaultConfig(): SocketCommunicatorConf {
 		return {
 			...super.defaultConfig,
 			path: null,
@@ -61,43 +66,40 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 * @param message Dovrebbe essere sempre una stringa
 	 * @returns 
 	 */
-	// NON VA BENE! la path nel message non deve cambiare... utilizzare un paroprietà di appoggio
-	onMessage(client: IClient, message: string | IMessage) {
-		const { onMessage, path } = this.state
+	onMessage(client: IClient, message: string | IMessage, paths: string[] = null) {
+		let { onMessage, path } = this.state
 
-		// si tratta di un messaggio con "path" <IMessage>
-		if (path && message && typeof message != "string") {
+		if (!message) return
+		if (!path) path = ""
+		if (path.startsWith("/")) path = path.slice(1)
 
-			const msg: IMessage = message
-			const paths = msg.path?.split("/")
 
-			// c'e' corrispondenza richiamo l'evento
-			if (!paths || paths.length == 0 || (paths.length == 1 && paths[0] == path)) {
-				onMessage?.bind(this)(client, message)
-				return
-
-				// non c'e' corrispondenza ma il primo path corrisponde... devo andare in profondità!
-			} else if (paths[0] == path) {
-				message = { ...message, path: paths.slice(1).join("/") }
-
-			} else {
-				return
-			}
-			// è una semplice stringa non la mando nei ROUTE
-			// } else if (typeof message=="string") {
-			// 	onMessage?.bind(this)(client, message)
-			// 	return
-			// }
-
-		// è un altro tipo di messaggio...
-		} else {
+		// se il messaggio non ha paths allora manda a tutti
+		if (paths == null) {
 			onMessage?.bind(this)(client, message)
+
+			// se c'e' la corrispondenza con questo NODO 
+			// mandalo a questo e finisci
+		} else if ((paths.length == 1 && paths[0] == path) || (paths.length == 0 && path.length == 0)) {
+			onMessage?.bind(this)(client, message)
+			return
+
+			// non c'e' corrispondenza ma il primo path corrisponde... mando ai child
+		} else if ( paths[0] == path) {
+			paths.splice(0, 1)
+
+		} else if ( path.length==0 ) {
+
+			// non c'e' corrispondenza quindi fuori dal ramo
+		} else {
+			return
 		}
+
 
 		// mando il messaggio nei CHILDREN
 		const routes = this.children as SocketCommunicator[]
 		for (const route of routes) {
-			route.onMessage(client, message)
+			route.onMessage(client, message, paths)
 		}
 	}
 

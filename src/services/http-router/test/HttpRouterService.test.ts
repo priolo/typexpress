@@ -1,9 +1,10 @@
 /**
  * @jest-environment node
  */
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
 
 import { Request, Response } from "express"
+import { getFreePort } from "../../ws"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 
@@ -12,8 +13,8 @@ import { HttpRouterService } from "../HttpRouterService"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const PORT = 5004
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let PORT
+let axiosIstance: AxiosInstance
 let root = null
 
 class TestRoute extends HttpRouterService {
@@ -33,6 +34,9 @@ class TestRoute extends HttpRouterService {
 
 
 beforeAll(async () => {
+	PORT = await getFreePort()
+	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+
 	root = await RootService.Start(
 		{
 			class: "http",

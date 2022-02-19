@@ -1,3 +1,5 @@
+import net from "net"
+
 
 export interface IClient {
 	remoteAddress: string,
@@ -13,9 +15,12 @@ export interface IClient {
 }
 
 export interface IMessage {
+	/** la path dove è stato intercettato il messagio oppure a quale route è diretto */
 	path: string,
-	action?: string, 	// non serve
-	payload?: any,		// non serve
+	/** [non usato] campo libero del client*/
+	action?: string,
+	/** dati inviati dal client */
+	payload?: any,
 }
 
 export enum SocketServerActions {
@@ -56,4 +61,17 @@ export enum Errors {
 
 export function clientIsEqual(client: IClient, ws: IClient): boolean {
 	return client.remoteAddress == ws.remoteAddress && client.remotePort == ws.remotePort
+}
+
+/**
+ * Restituisce una porta random libera
+ */
+export async function getFreePort(): Promise<number> {
+	return new Promise( res => {
+		const srv = net.createServer();
+		srv.listen(0, () => {
+			const port = (<net.AddressInfo>srv.address()).port
+			srv.close((err) => res(port))
+		});
+	})
 }

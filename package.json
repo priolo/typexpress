@@ -23,11 +23,8 @@
 	"scripts": {
 		"build": "tsc",
 		"build-watch": "tsc -w",
-		"build-test": "tsc && jest dist",
-		"test": "jest dist",
-		"test-watch": "jest dist --watch",
-		"example": "tsc && node dist/example.js",
-		"admin": "node dist/services/http-admin/start.js",
+		"test": "jest dist --no-cache --runInBand",
+		"test-watch": "jest dist --watch --runInBand",
 		"pub": "tsc && npm publish"
 	},
 	"//dependencies": {

@@ -20,6 +20,13 @@ export function getRandom(min, max) {
 	return Math.round(Math.random() * (max - min) + min)
 }
 
+/**
+ * Permette di creare un array di websocket
+ * @param address 
+ * @param length 
+ * @param onConnection 
+ * @returns 
+ */
 export async function wsFarm(
 	address: ((index?: number) => string) | string,
 	length: number,

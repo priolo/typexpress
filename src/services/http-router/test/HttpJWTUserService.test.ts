@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
 import fs from "fs"
 
 import { RootService } from "../../../core/RootService"
@@ -10,16 +10,19 @@ import { Bus } from "../../../core/path/Bus";
 import { RepoRestActions } from "../../../core/repo/utils"
 
 import * as jwt from "../jwt"
+import { getFreePort } from "../../ws";
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const PORT = 5001
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let PORT
+let axiosIstance: AxiosInstance
 const dbPath = `${__dirname}/database.sqlite`
 let root = null
 let user1, user2, token:string
 
 beforeAll(async () => {
+	PORT = await getFreePort()
+	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true })
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 
 	root = await RootService.Start([

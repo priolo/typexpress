@@ -9,14 +9,16 @@ import { Bus } from "../../../core/path/Bus"
 
 import * as jwtNs from "../../jwt"
 import * as wsNs from "../index"
+import { getFreePort } from "../utils"
 
 
 
 
-const PORT = 5004
+let PORT
 let root = null
 
 beforeAll(async () => {
+	PORT = await getFreePort()
 	root = await RootService.Start([
 		{
 			class: "http",
@@ -67,11 +69,7 @@ test("connessione con TOKEN JWT", async () => {
 	client.on('message', (message) => {
 		result = JSON.parse(message.toString())
 	})
-	await new Promise<void>((res, rej) => {
-		client.on('close', () => {
-			res()
-		})
-	})
+	await new Promise<void>((res, rej) => client.on('close', res))
 
 	expect(result).toMatchObject(user)
 })

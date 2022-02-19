@@ -1,11 +1,11 @@
+import { getFreePort } from "../ws"
 import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
 import HttpService from "./index"
 
-const PORT = 5010
-
 
 test("su creazione", async () => {
+	const PORT = await getFreePort()
 	const root = await RootService.Start(
 		{ class: "http", port: PORT }
 	)

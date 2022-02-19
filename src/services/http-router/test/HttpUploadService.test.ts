@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
 import fs from "fs"
 import path from "path"
 import FormData from "form-data"
@@ -10,16 +10,20 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 
 import { HttpUploadService } from "../upload/HttpUploadService"
+import { getFreePort } from "../../ws"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const PORT = 5006
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let PORT
+let axiosIstance: AxiosInstance
 const dirDest = path.join(__dirname, "./dest")
 let root = null
 
 
 beforeAll(async () => {
+	PORT = await getFreePort()
+	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+
 	root = await RootService.Start({
 		class: "http",
 		port: PORT,
@@ -78,9 +82,9 @@ test("su creazione", async () => {
 
 test("upload multiple files (no limit)", async () => {
 
-	const fileSurce1 = path.join(__dirname, './file1.json')
+	const fileSurce1 = 'test_res/file1.json'
 	const fileDest1 = path.join(dirDest, "./file1.json")
-	const fileSurce2 = path.join(__dirname, './file2.json')
+	const fileSurce2 = 'test_res/file2.json'
 	const fileDest2 = path.join(dirDest, "./file2.json")
 
 	const form = new FormData();
@@ -94,7 +98,7 @@ test("upload multiple files (no limit)", async () => {
 
 test("upload file with path", async () => {
 
-	const fileSource = path.join(__dirname, "./file1.json")
+	const fileSource = "test_res/file1.json"
 	const fileDestRelative = path.join("./subdir", "./file1.json")
 	const fileDestAbsolute = path.join(__dirname, "./dest", fileDestRelative)
 	expect(fs.existsSync(fileDestAbsolute)).toBeFalsy()
@@ -110,7 +114,7 @@ test("upload file with path", async () => {
 
 test("upload file in sub-router", async () => {
 
-	const fileSource = path.join(__dirname, "./file1.json")
+	const fileSource = "test_res/file1.json"
 	const fileDestAbsolute = path.join(__dirname, "./dest", "./subroute/file.txt")
 	expect(fs.existsSync(fileDestAbsolute)).toBeFalsy()
 
@@ -124,9 +128,9 @@ test("upload file in sub-router", async () => {
 
 test("upload multiple files with limit", async () => {
 
-	const fileSurce1 = path.join(__dirname, './file1.json')
+	const fileSurce1 = 'test_res/file1.json'
 	const fileDest1 = path.join(dirDest, "./file1.json")
-	const fileSurce2 = path.join(__dirname, './file2.json')
+	const fileSurce2 = 'test_res/file2.json'
 	const fileDest2 = path.join(dirDest, "./file2.json")
 
 	const form = new FormData();

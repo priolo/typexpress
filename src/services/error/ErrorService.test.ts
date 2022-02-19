@@ -1,21 +1,23 @@
 /**
  * @jest-environment node
  */
-import axios from "axios"
-
-import { Request, Response } from "express"
+import axios, { AxiosInstance } from "axios"
 import { ErrorNotify } from "./ErrorNotify"
-import { PathFinder } from "../../core/path/PathFinder"
 import { RootService } from "../../core/RootService"
+import { getFreePort } from "../ws"
+
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-const PORT = 5009
-const axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+let PORT
+let axiosIstance: AxiosInstance
 let root = null
 const results = []
 
 
 beforeEach(async () => {
+	PORT = await getFreePort()
+	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
+
 	root = await RootService.Start([
 		{
 			class: "error",
