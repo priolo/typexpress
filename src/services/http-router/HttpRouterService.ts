@@ -34,7 +34,7 @@ export class HttpRouterService extends HttpRouterServiceBase {
 
 			// prelevo il metodo da chiamare sulle request
 			let method:IRouteMethod = (typeof route.method === "string")? this[route.method] : route.method
-			if ( !method ) { log(`impossibile creare il nodo`, LOG_TYPE.ERROR, route);  return; }
+			if ( !method ) { log(`impossibile creare il nodo`, LOG_TYPE.ERROR, route.path);  return; }
 			// prelevo il "verb"
 			const verb = (route.verb ?? "get").toLocaleLowerCase()
 			
