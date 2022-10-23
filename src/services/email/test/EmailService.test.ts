@@ -16,8 +16,8 @@ beforeEach(async () => {
 			host: 'smtp.ethereal.email',
 			port: 587,
 			auth: {
-				user: 'robin.cummerata65@ethereal.email',
-				pass: 'EBnZ54KhH68uUKawGf'
+				user: 'kariane.ortiz@ethereal.email',
+				pass: 'uSpxTR8bb3Egha5jk7'
 			}
 		},
 	})
@@ -35,7 +35,7 @@ test("invio email", async () => {
 
 
 	// intanto intercetto l'EVENT
-	email.emitter.once(ServiceBaseEvents.DISPATCH, (action)=>{
+	email.emitter.once(ServiceBaseEvents.DISPATCH, (action) => {
 		res = true
 	})
 	// invio l'email
@@ -52,7 +52,7 @@ test("invio email", async () => {
 	// https://ethereal.email/messages
 	expect(res).toBeTruthy()
 
-	
+
 	// controllo esista un email
 	res = await email.dispatch({
 		type: emailNs.Actions.CHECK,

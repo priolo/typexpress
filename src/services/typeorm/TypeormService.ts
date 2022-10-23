@@ -1,14 +1,18 @@
-import { createConnection, Connection, EntitySchema } from "typeorm";
+import { createConnection, DataSource, EntitySchema } from "typeorm";
 import path from "path"
 import { ServiceBase } from "../../core/service/ServiceBase";
 import { TypeormRepoService } from "./TypeormRepoService";
 import { Bus } from "../../core/path/Bus";
 import * as errorNs from "../error";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
+
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
 
-
+/**
+ * Crea e utilizza un DataSource Typeorm. 
+ * E' il "node" padre di tutti i repo
+ */
 export class TypeormService extends ServiceBase {
 
 	get defaultConfig(): any {
@@ -41,10 +45,10 @@ export class TypeormService extends ServiceBase {
 		}
 	}
 
-	public get connection(): Connection | null {
+	public get connection(): DataSource | null {
 		return this._connection
 	};
-	private _connection: Connection | null = null
+	private _connection: DataSource | null = null
 
 	/**
 	 * Dopo aver creato tutti i "children" li raccolgo per creare i "repo" in typeorm e connettermi al db
@@ -69,9 +73,6 @@ export class TypeormService extends ServiceBase {
 				.map(c => (<TypeormRepoService>c).state.model)
 		]
 
-		// raccolgo tutti le entity presenti nei CHILDREN
-		//entities = 
-
 		// creo gli oggetti EntitySchema che dovro' passare a typeorm
 		if (schemas.length > 0) {
 			options.entities = [
@@ -84,7 +85,8 @@ export class TypeormService extends ServiceBase {
 		this.setState({ options })
 
 		try {
-			this._connection = await createConnection(options)
+			const ds = new DataSource(options)
+			this._connection = await ds.initialize()
 		} catch (e) {
 			new Bus(this, "/error").dispatch({ 
 				type: errorNs.Actions.NOTIFY, 
@@ -95,6 +97,9 @@ export class TypeormService extends ServiceBase {
 		await super.onInitAfter()
 	}
 
+	/**
+	 * Quando il nodo viene distrutto chiudo la connesione
+	 */
 	protected async onDestroy(): Promise<void> {
 		await this._connection?.close()
 		this._connection = null

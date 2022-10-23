@@ -459,6 +459,13 @@ un nodo puo' rimanere in ascolto su un altro nodo sugli eventi che genera quest'
 
 ## roadmap
 
+### gestione errori
+gli errori devono essere mandati tutti ad un nodo centralizzato e loggati correttamente
+IMPORTANTE: gli errori dei router devono essere gestiti e bisogna restituire un errore 500! ora invece si blocca
+
+### tipizzare
+funzioni come dispatch e getNode devono essere parametrizzabili con i generic per restituire il tipo giusto
+
 ### auto-npm install
 se un service ha necessità di un  pacchetto npm deve essere possibile istallarlo in automatico
 // installare npm

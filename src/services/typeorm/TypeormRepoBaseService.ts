@@ -1,4 +1,4 @@
-import { Repository, Connection, Raw, Between } from "typeorm";
+import { Repository, Raw, Between, DataSource } from "typeorm";
 
 import { ServiceBase } from "../../core/service/ServiceBase"
 import { PathFinder } from "../../core/path/PathFinder";
@@ -28,20 +28,20 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	get dispatchMap(): any {
 		return <IRepoStructActions<any>>{
 			...super.dispatchMap,
-			[Actions.FIND]: async (state, query) => await this.find(query),
+			[Actions.FIND]: async (_, query) => await this.find(query),
 			[RepoStructActions.SEED]: async (state, seeds) => await this.seed(seeds ?? state.seeds),
-			[RepoStructActions.TRUNCATE]: async (state) => await this.truncate(),
-			[RepoStructActions.CLEAR]: async (state) => await this.clear(),
+			[RepoStructActions.TRUNCATE]: async _ => await this.truncate(),
+			[RepoStructActions.CLEAR]: async _ => await this.clear(),
 
-			[Actions.TRANSACTION_START]: async (state) => await this.transactionStart(),
-			[Actions.TRANSACTION_END]: async (state) => await this.transactionEnd(),
+			[Actions.TRANSACTION_START]: async _ => await this.transactionStart(),
+			[Actions.TRANSACTION_END]: async _ => await this.transactionEnd(),
 		}
 	}
 
 	/**
 	 * Restituisce la "Connection" nativa typeorm prelevandola dal parent
 	 */
-	protected get connection(): Connection {
+	protected get connection(): DataSource {
 		const ts = new PathFinder(this).getNode<TypeormService>("..")
 		return ts.connection
 	}
@@ -88,6 +88,8 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	private async find(query: any): Promise<any[]> {
 		const repo = this.getRepo()
 		if (query.where) {
+			// permette di poter utilizzare le "Advanced Options"
+			// https://typeorm.io/find-options#advanced-options
 			Object.keys(query.where).forEach(key => {
 				const value = query.where[key]
 				const { type } = value
