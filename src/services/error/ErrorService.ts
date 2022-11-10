@@ -18,7 +18,7 @@ export default class ErrorService extends ServiceBase {
 	 * @param code 
 	 * @param error 
 	 */
-	static Send(node:INode, code:string, error:Error) {
+	static Send(node:INode, error:Error, code?:string) {
 		new Bus(node, "/error").dispatch({ 
 			type: Actions.NOTIFY, 
 			payload: { code, error } 

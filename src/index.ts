@@ -34,7 +34,7 @@ export {
 export {
 	service,
 	email,
-	// error,	
+	error,	
 	// farm,
 	// fs,
 	// http,

@@ -57,13 +57,14 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		await this.listenServer()
 	}
 
+	/**
+	 * Alla fine di tutto metto il gestore degli errori
+	 */
 	protected async onInitAfter() {
 		super.onInitAfter()
 		// il gestore degli errori va inserito per ultimo
 		this.app.use((err: Error, req: Request, res: Response, next) => {
-			ErrorService.Send(this, Errors.HANDLE, err)
-
-
+			ErrorService.Send(this, err, Errors.HANDLE)
 
 			// [II] CAPIRE se è utile gestire gli errori come children
 			/*
@@ -71,8 +72,6 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			e non sempre e solo /error
 			a questo punto pensare ai log nella stessa maniera
 			*/
-			
-
 
 			const errorSrv = new PathFinder(this).getNode<ErrorService>("error")
 			if (errorSrv) {

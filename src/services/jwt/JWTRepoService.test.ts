@@ -15,9 +15,16 @@ test("su creazione", async () => {
 
 	const str = "test"
 
+	// praticamente esegue questo:
+	// https://github.com/auth0/node-jsonwebtoken#jwtsignpayload-secretorprivatekey-options-callback
+	// notare che BISOGNA usare un oggetto: { payload: ..., options: ... }
 	const token = await jwt.dispatch({
 		type: jwtNs.Actions.ENCODE,
-		payload: { payload: str }
+		// oggetto con "payload" e "options"
+		payload: { 
+			payload: str,
+			//options: ...
+		}
 	})
 
 	const str2 = await jwt.dispatch({

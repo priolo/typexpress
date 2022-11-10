@@ -34,7 +34,7 @@ export abstract class HttpRouterRestServiceBase extends HttpRouterService {
 	}
 	protected abstract save(entity: any): Promise<any>
 
-	protected async _delete(req: Request, res: Response): Promise<void> {
+	protected async _delete(req: Request, res: Response, next): Promise<void> {
 		const id = req.params["id"]
 		res.json(await this.delete(id))
 	}

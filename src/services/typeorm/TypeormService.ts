@@ -1,4 +1,4 @@
-import { createConnection, DataSource, EntitySchema } from "typeorm";
+import { DataSource, EntitySchema } from "typeorm";
 import path from "path"
 import { ServiceBase } from "../../core/service/ServiceBase";
 import { TypeormRepoService } from "./TypeormRepoService";

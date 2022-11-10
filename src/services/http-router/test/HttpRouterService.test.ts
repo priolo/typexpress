@@ -9,6 +9,7 @@ import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
 
 import { HttpRouterService } from "../HttpRouterService"
+import { error } from "../../../index"
 
 
 
@@ -95,7 +96,29 @@ beforeAll(async () => {
 							]
 						},
 					]
-				}
+				},
+				{
+					name: "testError",
+					class: "http-router",
+					path: "/error",
+					routers: [
+						{
+							path: "/throw1", verb: "get", method: (req, res, next) => {
+								throw new Error("test:error1")
+							}
+						},
+						{
+							path: "/throw2", verb: "get", method: (req, res, next) => {
+								next(new error.ErrorNotify("test:error2"))
+							}
+						},
+						{
+							path: "/throw3", verb: "get", method: (req, res, next) => {
+								throw "test:error3"
+							}
+						},
+					]
+				},
 			]
 		}
 	)
@@ -137,4 +160,39 @@ test("request on subroute with header", async () => {
 test("request async", async () => {
 	const { data: d2 } = await axiosIstance.get(`/async`)
 	expect(d2).toEqual({ response: "async" })
+})
+
+/**
+### handleErrors:bool = true
+Se true gestisce automaticamente gli errori all'interno del "router"
+Cioe' se c'e' il lancio di un errore questo viene spedito a "ErrorService" piu' vicino. 
+> Notare che il server, in questa maniera, non si ferma su un eccezione 
+cosa che accadrebbe con `handleErrors = false`
+perche' gli errori dovrebbero essere gestiti interamente all'interno del router.
+> NOTA: con Express5 questa gestione è automatica quindi sarebbe SEMPRE gestita automaticamente cnhe con "false"
+ */
+test("gestione degli errori", async () => {
+	let error
+
+	try {
+		await axiosIstance.get<any>(`/error/throw1`)
+	} catch (err) {
+		error = err
+	}
+	expect(error.response.status).toBe(500)
+
+	try {
+		await axiosIstance.get<any>(`/error/throw2`)
+	} catch (err) {
+		error = err
+	}
+	expect(error.response.status).toBe(500)
+
+	try {
+		await axiosIstance.get<any>(`/error/throw3`)
+	} catch (err) {
+		error = err
+	}
+	expect(error.response.status).toBe(500)
+	//console.log(results)
 })
