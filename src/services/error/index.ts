@@ -1,10 +1,11 @@
 import ErrorService from "./ErrorService"
-import {ErrorNotify} from "./ErrorNotify"
+import { ErrorNotify, ErrorLevel } from "./ErrorNotify"
 
 export {
 	ErrorService as default,
 	ErrorService as Service,
-	ErrorNotify
+	ErrorNotify,
+	ErrorLevel,
 }
 
 export * from "./utils"

@@ -1,11 +1,16 @@
 
+
+/**
+ * Errore custom.
+ * Permette di memorizzare anche il PATH del node sender e ErrorLevel
+ */
 export class ErrorNotify extends Error {
-	constructor ( code: string | Error, path?:string, level:string=ErrorLevel.ERROR ) {
-		super(code instanceof Error ? code.message : code)
-		this.sender = path
+	constructor(error: Error | string, code?: string, level: string = ErrorLevel.ERROR) {
+		super(error instanceof Error ? error.message : error)
+		this.code = code ?? this.message
 		this.level = level
 	}
-	sender: string
+	code: string
 	level: string
 }
 

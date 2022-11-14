@@ -105,7 +105,8 @@ export class ServiceBase extends NodeConf {
 	}
 
 	/**
-	 * Chiamto quando il NODE viene inizializzato e emette l'evento "INIT"
+	 * Chiamto quando il NODE viene inizializzato  
+	 * Emette l'evento "INIT"
 	 * @override
 	 * @param conf 
 	 * @returns 
@@ -123,6 +124,10 @@ export class ServiceBase extends NodeConf {
 		this.emit(ServiceBaseEvents.INIT)
 	}
 
+	/**
+	 * Chiamata DOPO la creazione dei CHILDREN  
+	 * Emette l'evento "INIT_AFTER"
+	 */
 	protected async onInitAfter(): Promise<void> {
 		await super.onInitAfter()
 		this.emit(ServiceBaseEvents.INIT_AFTER)

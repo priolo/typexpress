@@ -53,7 +53,8 @@
 		"serve-index": "^1.9.1",
 		"sqlite3": "^5.0.2",
 		"typeorm": "^0.3",
-		"ws": "^7.4.5"
+		"ws": "^7.4.5",
+		"winston": "^3.8.2"
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-class-properties": "^7.14.5",

@@ -2,7 +2,7 @@ import { RootService } from "./core/RootService"
 import { Bus } from "./core/path/Bus"
 import { PathFinder } from "./core/path/PathFinder"
 import { RepoRestActions, RepoStructActions } from "./core/repo/utils";
-//import { ServiceBase } from "./core/service"
+import { ServiceBase } from "./core/service"
 
 import * as service from "./core/service"
 
@@ -27,7 +27,7 @@ export {
 	PathFinder,
 	RepoRestActions,
 	RepoStructActions,
-//	ServiceBase
+	ServiceBase
 }
 
 // SERVICEs 
@@ -41,7 +41,7 @@ export {
 	httpRouter,
 	// httpStatic,
 	jwt,
-	// log,
+	log,
 	// push,
 	typeorm,
 	ws,

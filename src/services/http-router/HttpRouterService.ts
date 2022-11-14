@@ -43,9 +43,9 @@ export class HttpRouterService extends HttpRouterServiceBase {
 			const _method = method.bind(this)
 			let methodThis = null
 			if (handleErrors) {
-				methodThis = (req: Request, res: Response, next: any) => {
+				methodThis = async (req: Request, res: Response, next: any) => {
 					try {
-						_method(req, res, next)
+						await _method(req, res, next)
 					} catch (e) {
 						next(e)
 					}

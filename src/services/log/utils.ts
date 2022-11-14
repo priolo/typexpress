@@ -3,6 +3,17 @@ export enum Actions {
 	LOG = "log"
 }
 
-export interface LogMessage {
-	
+export enum LogLevel {
+	ERROR = "error",
+	WARN = "warn",
+	INFO = "info",
+	HTTP = "http",
+	VERBOSE = "verbose",
+	DEBUG = "debug",
+	SILLY = "silly",
+}
+
+export interface LogNotify {
+	message: string,
+	level: LogLevel,
 }

@@ -4,7 +4,7 @@ import { Bus } from "../../core/path/Bus"
 import { Actions } from "./utils"
 
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { ErrorNotify } from "./ErrorNotify";
+import { ErrorLevel, ErrorNotify } from "./ErrorNotify";
 
 
 /**
@@ -18,10 +18,11 @@ export default class ErrorService extends ServiceBase {
 	 * @param code 
 	 * @param error 
 	 */
-	static Send(node:INode, error:Error, code?:string) {
-		new Bus(node, "/error").dispatch({ 
-			type: Actions.NOTIFY, 
-			payload: { code, error } 
+	static Send(node: INode, error: Error | string, code?: string, level?:ErrorLevel) {
+		const e = new ErrorNotify(error, code, level)
+		new Bus(node, "/error").dispatch({
+			type: Actions.NOTIFY,
+			payload: e
 		})
 	}
 
@@ -36,8 +37,8 @@ export default class ErrorService extends ServiceBase {
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[Actions.NOTIFY]: async (state:any, error:ErrorNotify | string, sender:string) => {
-				this.onNotify(sender, error)
+			[Actions.NOTIFY]: async (state: any, error: ErrorNotify, sender: string) => {
+				this.onNotify(error, sender)
 			},
 		}
 	}
@@ -45,15 +46,12 @@ export default class ErrorService extends ServiceBase {
 	/**
 	 * Richiamato quando c'e' la segnalazione di un errore
 	 * Gestione di default
-	 * @param sender 	path del nodo che ha mandato l'errore
 	 * @param error 	l'errore
+	 * @param sender 	path del nodo che ha mandato l'errore
 	 */
-	protected onNotify(sender: string, error: ErrorNotify | string): void {
+	protected onNotify(error: ErrorNotify, sender: string): void {
 		const { onError } = this.state
-		if (typeof error == "string") error = new ErrorNotify(error)
-		error.sender = sender
-		//log(`${sender}::${error.code}`, LOG_TYPE.ERROR)
-		onError?.bind(this)(error)
+		onError?.bind(this)(error, sender)
 	}
 
 }

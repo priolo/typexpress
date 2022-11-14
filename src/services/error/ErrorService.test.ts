@@ -22,8 +22,11 @@ beforeEach(async () => {
 	root = await RootService.Start([
 		{
 			class: "error",
-			onError: (error) => {
-				results.push(error)
+			onError: ({ message, code, level }, sender) => {
+				results.push({
+					message, code, level,
+					sender
+				})
 			}
 		},
 		{
@@ -57,14 +60,16 @@ Eventualmente si puo' sovrascrivere (in questo caso non verra' instanziato)
 Tutti gli errori gestiti in Typexpress vengono notificati a questo service
 
 > NOTA: in futuro si vuole gestire gli error in maniera differente
-cioe' notificando l'errore al piu' vicino ErrorService rispetto a dove è stato generato
-
+> cioe' notificando l'errore al piu' vicino ErrorService rispetto a dove è stato generato
  */
 test("gestione errori", async () => {
-	
-	let error
-	errorNs.Service.Send(root, "error1" )
 
+	// lancio due errori direttamente nel ErrorService
+	let error
+	errorNs.Service.Send(root, "description of error", "code:2", errorNs.ErrorLevel.ALARM)
+	errorNs.Service.Send(root, "code:2")
+
+	// lancio un errore chiamando il routing
 	try {
 		await axiosIstance.get<any>(`/test/throw_error`)
 	} catch (err) {
@@ -72,6 +77,25 @@ test("gestione errori", async () => {
 	}
 	expect(error.response.status).toBe(500)
 
-
-	console.log(results)
+	// gli errori intercettati in "onError" dovrebbero essere i seguenti:
+	expect(results).toEqual([
+		{
+			message: "description of error",
+			code: "code:2",
+			level: "alarm",
+			sender: "/",
+		},
+		{
+			message: "code:2",
+			code: "code:2",
+			level: "error",
+			sender: "/",
+		},
+		{
+			message: "test:error3",
+			code: "http:handle",
+			level: "error",
+			sender: "/http",
+		},
+	])
 })

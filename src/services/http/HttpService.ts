@@ -12,8 +12,13 @@ import { PathFinder } from "../../core/path/PathFinder"
 import { IHttpRouter, Errors } from "./utils"
 import ErrorService, { Actions as ActionsError } from "../error"
 
-
+/**
+ * Praticamente mantiene un instanza di un server "express"
+ * raccoglie il meglio del meglio di EXPRESS!!!
+ */
 export class HttpService extends ServiceBase implements IHttpRouter {
+
+	//#region SERVICE
 
 	private app: Express | null = null
 	private _server: Server | null = null
@@ -42,6 +47,10 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		}
 	}
 
+	/**
+	 * Creo l'instanza del server EXPRESS collegandola ai plugin
+	 * @param conf 
+	 */
 	protected async onInit(conf: any): Promise<void> {
 		super.onInit(conf)
 		const { template } = this.state
@@ -84,6 +93,10 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		})
 	}
 
+	/**
+	 * Sulla distruzione del nodo fermo il server
+	 * @returns 
+	 */
 	protected async onDestroy(): Promise<void> {
 		return new Promise<void>((res, rej) => {
 			this._server.close((err) => {
@@ -98,10 +111,22 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		})
 	}
 
+	//#endregion
+
+
+	/**
+	 * Questa funzione è utilizzata dai CHILD quando devono agganciarsi a questo servizio PARENT
+	 * @param router 
+	 * @param path 
+	 */
 	use(router: Router, path: string = "/"): void {
 		this.app.use(path, router)
 	}
 
+	/**
+	 * Costruisce il server EXPRESS
+	 * @returns 
+	 */
 	private buildServer(): Server {
 		const { https: httpsConf } = this.state
 		let server: Server = null
@@ -111,7 +136,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 				.createServer(
 					{
 						key: fs.readFileSync(httpsConf.privkey), // 'privkey.pem'
-						cert: fs.readFileSync(httpsConf.privkey) // 'pubcert.pem'
+						cert: fs.readFileSync(httpsConf.pubcert) // 'pubcert.pem'
 					},
 					this.app
 				);
@@ -123,7 +148,10 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		return server
 	}
 
-
+	/**
+	 * Mette in ascolto il server EXPRESS
+	 * @returns 
+	 */
 	private async listenServer(): Promise<http.Server> {
 		const { port } = this.state
 		return new Promise<http.Server>((res, rej) => {

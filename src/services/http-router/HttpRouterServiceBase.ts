@@ -1,8 +1,11 @@
-import { ServiceBase } from "../../core/service/ServiceBase";
-import { PathFinder } from "../../core/path/PathFinder";
+//import { ServiceBase } from "../../core/service/ServiceBase";
+//import { PathFinder } from "../../core/path/PathFinder";
+import { PathFinder, ServiceBase } from "../../index"
+
 import express, { Router } from "express";
 import { IHttpRouter } from "../http/utils";
 import cors from "cors"
+
 
 /**
  * Si attacca al PARENT (deve implementare IHttpRouter) come ROUTER

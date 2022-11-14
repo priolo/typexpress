@@ -5,11 +5,10 @@ import axios, { AxiosInstance } from "axios"
 
 import { Request, Response } from "express"
 import { getFreePort } from "../../ws"
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
 
-import { HttpRouterService } from "../HttpRouterService"
-import { error } from "../../../index"
+import { PathFinder, RootService, error, httpRouter } from "../../../index"
+const { Service:HttpRouterService } = httpRouter
+
 
 
 
@@ -18,6 +17,9 @@ let PORT
 let axiosIstance: AxiosInstance
 let root = null
 
+/**
+ * Implementazione di un SERVICE `HttpRouterService`
+ */
 class TestRoute extends HttpRouterService {
 	get defaultConfig(): any {
 		return {
@@ -32,8 +34,9 @@ class TestRoute extends HttpRouterService {
 	}
 }
 
-
-
+/**
+ * Creazione dei NODES per il test
+ */
 beforeAll(async () => {
 	PORT = await getFreePort()
 	axiosIstance = axios.create({ baseURL: `http://localhost:${PORT}`, withCredentials: true });
@@ -130,13 +133,27 @@ afterAll(async () => {
 
 
 test("su creazione", async () => {
+	/**
+	 * Quindi come CHILD di un `HttpService` (o qualunque SERVICE che implementa `IHttpRouter`)
+	 * posso implementare e inserire `HttpRouterService` 
+	 */
 	const test = new PathFinder(root).getNode<TestRoute>("/http/test")
 	expect(test instanceof TestRoute).toBeTruthy()
 })
+
 test("request on route", async () => {
+	/**
+	 * Una volta inserita la classe derivata da `HttpRouterService` nel `HttpService`
+	 * posso chiamare la sua rotta (la proprietà `path` concatenata seguendo l'albero dei NODES)
+	 * e ottenere una risposta.
+	 * Nella classe `TestRoute` verrà chiamata la funzione opportunamente mappata in `defaultConfig`
+	 * notare che se non si specifica `path` viene usato il valore "/"
+	 * e se non si specifica `verb` viene usato il valore "get"
+	 */
 	const { data } = await axiosIstance.get(`/admin/user`)
 	expect(data).toEqual({ response: "user-ok" })
 })
+
 test("request on subroute", async () => {
 	const { data: d2 } = await axiosIstance.get(`/sub/route2/test`)
 	expect(d2).toEqual({ response: "test-ok" })
