@@ -1,5 +1,5 @@
 import { nodeId } from "../utils";
-import { INode } from "./utils";
+import { INode } from "./INode";
 
 /**
  * Classe responsabile di mantenere la struttura ad albero

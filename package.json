@@ -1,12 +1,11 @@
 {
 	"name": "typexpress",
-	"version": "0.3.5",
+	"version": "0.3.8",
 	"private": false,
 	"keywords": [
-		"react",
-		"store",
-		"hooks",
-		"reducer"
+		"express",
+		"typescript",
+		"typexpress"
 	],
 	"description": "Project Typexpress",
 	"author": "Iorio Ivano <iorioivano@gmail.com>",

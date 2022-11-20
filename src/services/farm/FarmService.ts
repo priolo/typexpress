@@ -1,4 +1,4 @@
-import { INode } from "../../core/node/utils"
+import { INode } from "../../core/node/INode"
 import { Node } from "../../core/node/Node"
 import { NodeConf } from "../../core/node/NodeConf"
 

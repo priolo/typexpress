@@ -128,21 +128,22 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	 * @returns 
 	 */
 	private buildServer(): Server {
-		const { https: httpsConf } = this.state
+		let { https: httpsConf } = this.state
 		let server: Server = null
 
 		if (httpsConf) {
-			server = https
-				.createServer(
-					{
-						key: fs.readFileSync(httpsConf.privkey), // 'privkey.pem'
-						cert: fs.readFileSync(httpsConf.pubcert) // 'pubcert.pem'
-					},
-					this.app
-				);
+			if ( httpsConf.privkey ) {
+				httpsConf.key = fs.readFileSync(httpsConf.privkey)
+				delete httpsConf.privkey
+			}
+			if ( httpsConf.pubcert ) {
+				httpsConf.cert = fs.readFileSync(httpsConf.pubcert)
+				delete httpsConf.pubcert
+			}
+			server = https.createServer(httpsConf, this.app)
 		} else {
 			server = http
-				.createServer(this.app);
+				.createServer(this.app)
 		}
 
 		return server

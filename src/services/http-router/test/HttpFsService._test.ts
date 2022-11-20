@@ -32,7 +32,7 @@ let root = null
 beforeEach(async () => {
 	root = new RootService()
 	await root.dispatch({
-		type: ConfActions.START,
+		type: ConfActions.CREATE,
 		payload: {
 			children: [
 				{
@@ -52,7 +52,7 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-	await root.dispatch({ type: ConfActions.STOP })
+	await root.dispatch({ type: ConfActions.DESTROY })
 })
 
 

@@ -1,7 +1,8 @@
 import { RootService } from "../RootService"
 import { nodeToJson, nodeMap, nodePath } from "../utils"
 import { PathFinder } from "../path/PathFinder";
-import { ConfActions, INode } from "../node/utils";
+import { ConfActions } from "../node/utils";
+import { INode } from "../node/INode"
 
 
 let root;
@@ -9,7 +10,7 @@ let root;
 beforeAll(async () => {
 	root = new RootService("root")
 	await root.dispatch({
-		type: ConfActions.START,
+		type: ConfActions.CREATE,
 		payload: {
 			// sovrascrivo "root" con "root2"
 			name: "root2",

@@ -18,7 +18,7 @@ export class RootService extends ServiceBase {
 		if (!Array.isArray(config)) config = [config]
 		const root = new RootService()
 		await root.dispatch({
-			type: ConfActions.START,
+			type: ConfActions.CREATE,
 			payload: {
 				children: config
 			}
@@ -28,7 +28,7 @@ export class RootService extends ServiceBase {
 
 	// [facility] ferma un servizio
 	static async Stop(service: ServiceBase) {
-		if (service) await service.dispatch({ type: ConfActions.STOP })
+		if (service) await service.dispatch({ type: ConfActions.DESTROY })
 	}
 
 	constructor(name: string = "root") {
@@ -50,7 +50,7 @@ export class RootService extends ServiceBase {
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {
 			console.debug('SIGTERM signal received: closing HTTP server')
-			await this.dispatch({ type: ConfActions.STOP })
+			await this.dispatch({ type: ConfActions.DESTROY })
 		})
 	}
 
@@ -59,7 +59,7 @@ export class RootService extends ServiceBase {
 		// se non è definito creo il gestore degli errori di default
 		if (!conf.children.some(child => child.class == "error")) {
 			const errorSrv = new ErrorService()
-			errorSrv.dispatch({ type: ConfActions.START })
+			errorSrv.dispatch({ type: ConfActions.CREATE })
 			this.addChild(errorSrv)
 		}
 	}

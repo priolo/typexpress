@@ -3,7 +3,7 @@ import { EventEmitter } from "events"
 import { NodeConf } from "../node/NodeConf"
 import { Bus } from "../path/Bus"
 import { nodePath } from "../utils"
-import { IAction } from "../node/utils"
+import { IAction } from "../node/IAction"
 import { IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./utils"
 
 // bisogna importarlo direttamente da "utils" altrimenti c'e' un import-circolare
@@ -70,6 +70,7 @@ export class ServiceBase extends NodeConf {
 	 * @param arg 
 	 */
 	private emit(event: string, arg?: any) {
+		if ( !this.listeners ) return
 		for (const listener of this.listeners) {
 			if (listener.event != event) continue
 			new Bus(this, listener.path).dispatch({

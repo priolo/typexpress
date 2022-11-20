@@ -11,7 +11,7 @@ class TestService extends ServiceBase {
 test("su creazione", async () => {
 	const root = new RootService()
 	await root.dispatch( {
-		type: ConfActions.START,
+		type: ConfActions.CREATE,
 		payload: {
 			children: [
 				// string: internal name
@@ -34,5 +34,5 @@ test("su creazione", async () => {
 	const test3 = new PathFinder(root).getNode<TestService>("/test3")
 	expect(test3.prop).toBe(66)
 
-	await root.dispatch( { type: ConfActions.STOP })
+	await root.dispatch( { type: ConfActions.DESTROY })
 })

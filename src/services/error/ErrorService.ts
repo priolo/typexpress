@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/service/ServiceBase"
-import { INode } from "../../core/node/utils";
+import { INode } from "../../core/node/INode";
 import { Bus } from "../../core/path/Bus"
 import { Actions } from "./utils"
 

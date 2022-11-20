@@ -1,4 +1,5 @@
-import { IAction, INode } from "../node/utils";
+import { IAction } from "../node/IAction";
+import { INode } from "../node/INode";
 import { NodeState } from "../node/NodeState";
 import { nodePath } from "../utils";
 import { log, LOG_TYPE } from "@priolo/jon-utils";

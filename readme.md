@@ -51,7 +51,6 @@ method: function (req, res, next) {
 }
 ```
 
-
 https://z203w.sse.codesandbox.io/myroute
 
 ---

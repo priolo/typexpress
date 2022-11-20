@@ -1,7 +1,8 @@
 import { NodeState } from "./NodeState";
 import FarmService from "../../services/farm";
 import { PathFinder } from "../path/PathFinder";
-import { INode, ConfActions } from "./utils";
+import { ConfActions } from "./utils";
+import { INode } from "./INode"
 import { nodeForeach } from "../utils";
 
 
@@ -15,14 +16,14 @@ export class NodeConf extends NodeState {
 
 	constructor(name?: string, conf?: any) {
 		super(name)
-		if (conf) this.dispatch({ type: ConfActions.START, payload: conf })
+		if (conf) this.dispatch({ type: ConfActions.CREATE, payload: conf })
 	}
 
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[ConfActions.START]: async (state, payload) => await this.nodeBuild(payload),
-			[ConfActions.STOP]: async (state) => await this.nodeDestroy(),
+			[ConfActions.CREATE]: async (state, payload) => await this.nodeBuild(payload),
+			[ConfActions.DESTROY]: async (state) => await this.nodeDestroy(),
 		}
 	}
 
@@ -41,12 +42,14 @@ export class NodeConf extends NodeState {
 
 		// tutti i children presenti nel config
 		const confChildren: any[] = (conf.children ?? []).filter(child => child != null)
-		// merge valori default e valori senza "children" e "class"
+		// merge valori di default del nodo (this.defaultConfig) e quelli passati come parametro (conf) 
+		// pero' togliendo "children" e "class"
 		const config = { ...this.defaultConfig, ...conf }
 		delete config.children
 		delete config.class
 		// setto il config come stato iniziale
 		this.setState(config)
+		// se il config ha pure un "name" lo setto come identificativo del NODE
 		if (config.name) this.name = config.name
 
 		// inizializzo questo nodo prima di creare i child
@@ -78,7 +81,7 @@ export class NodeConf extends NodeState {
 			if (child == null) continue
 			this.addChild(child);
 			if (child instanceof NodeConf) await child.dispatch({
-				type: ConfActions.START,
+				type: ConfActions.CREATE,
 				payload: confChild,
 			})
 		}
@@ -99,7 +102,7 @@ export class NodeConf extends NodeState {
 		const children = [...this.children]
 		for (const child of children) {
 			if (child instanceof NodeConf) await child.dispatch({
-				type: ConfActions.STOP
+				type: ConfActions.DESTROY
 			})
 		}
 		await this.onDestroy()

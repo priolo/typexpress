@@ -4,6 +4,8 @@ import { PathFinder } from "./core/path/PathFinder"
 import { RepoRestActions, RepoStructActions } from "./core/repo/utils";
 import { ServiceBase } from "./core/service"
 
+import * as utils from "./core/utils"
+
 import * as service from "./core/service"
 
 import * as email from "./services/email"
@@ -20,6 +22,7 @@ import * as typeorm from "./services/typeorm"
 import * as ws from "./services/ws"
 
 
+
 // CORE
 export {
 	RootService,
@@ -27,7 +30,8 @@ export {
 	PathFinder,
 	RepoRestActions,
 	RepoStructActions,
-	ServiceBase
+	ServiceBase,
+	utils,
 }
 
 // SERVICEs 
@@ -37,7 +41,7 @@ export {
 	error,	
 	// farm,
 	// fs,
-	// http,
+	http,
 	httpRouter,
 	// httpStatic,
 	jwt,

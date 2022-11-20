@@ -1,6 +1,7 @@
-import { INode } from "./node/utils"
+import { INode } from "./node/INode"
 //import { NodeState } from "./node/NodeState"
 import { obj } from "@priolo/jon-utils"
+import { NodeState } from "./node/NodeState"
 
 
 
@@ -71,7 +72,7 @@ export function nodeParents(node: INode, callback: (n: INode) => any): INode | n
 export function nodeParentsFind(node: INode, callback: (n: INode) => INode | null): INode | null {
 	let current = node
 	let find = null
-	while (current != null && (find = callback(current)) == null ) {
+	while (current != null && (find = callback(current)) == null) {
 		current = current.parent
 	}
 	return find
@@ -86,8 +87,8 @@ export function nodeParentsFind(node: INode, callback: (n: INode) => INode | nul
 export function nodePath(node: INode): string {
 	if (!node) return null
 	let nodes = []
-	nodeParents(node, n => { 
-		if ( n.parent!=null ) nodes.unshift(n.name) 
+	nodeParents(node, n => {
+		if (n.parent != null) nodes.unshift(n.name)
 	})
 	return `/${nodes.join("/")}`
 }
@@ -100,9 +101,11 @@ export function nodePath(node: INode): string {
 export function nodeToJson(node: INode): object {
 	if (!node) return {}
 	return {
-		//id: node.id,
 		name: node.name,
-		children: node.children.map(c => nodeToJson(c))
+		...(node instanceof NodeState ? node.state : {}),
+		...(node.children?.length > 0 ? {
+			children: node.children.map(c => nodeToJson(c))
+		} : {})
 	}
 }
 
@@ -142,12 +145,12 @@ export function fnNodePattern(pattern: string): CallbackFnPattern {
 		let id = pattern.slice(1)
 		return (n: INode) => n.id == id
 
-		// by classname
+	// by classname
 	} else if (pattern.startsWith("~")) {
 		let className = pattern.slice(1)
 		return (n: INode) => n.constructor && n.constructor.name == className
 
-		// preleva il nodo con le caratteristiche indicate
+	// preleva il nodo con le caratteristiche indicate
 	} else if (pattern.startsWith("{")) {
 		const substr = pattern.slice(0, pattern.indexOf("}") + 1)
 		const params = JSON.parse(substr)
@@ -156,7 +159,7 @@ export function fnNodePattern(pattern: string): CallbackFnPattern {
 			return node && obj.objectIsIn(params, node["state"])
 		}
 
-		// by name
+	// by name
 	} else {
 		return (n: INode) => n.name == pattern
 	}

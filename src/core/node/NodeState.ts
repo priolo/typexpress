@@ -1,5 +1,5 @@
 import { Node } from "./Node";
-import { IAction } from "./utils";
+import { IAction } from "./IAction";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
 
 
@@ -38,27 +38,44 @@ export abstract class NodeState extends Node {
 	 * permette di eseguire una Action
 	 * @param action 
 	 */
-	async dispatch(action: IAction): Promise<any> {
+	dispatch(action: IAction): any {
 		log(`${this.name}:${action.type}`, LOG_TYPE.DEBUG, action.payload)
-
 
 		// [II] GESTIONE LOG
 
-		
 		// [II] buffering
 		// [II] spostare gli arguments della funzione in: playload, state, sender
+
+		const fnc = this.dispatchMap[action.type]
 		try {
-			return this.dispatchMap[action.type](this.state, action.payload, action.sender)
+			if (fnc.constructor.name === "AsyncFunction") {
+				return new Promise(async (res, rej) => {
+					try {
+						const ret = await this.dispatchMap[action.type](this.state, action.payload, action.sender)
+						res(ret)
+					} catch (e) {
+						rej(e)
+					}
+				})
+			} else {
+				return this.dispatchMap[action.type](this.state, action.payload, action.sender)
+			}
 		} catch (error) {
 			// [II] GESTIONE ERRORI
 		}
+
+
 	}
 
 	/**
 	 * una mappa di possibili Actions 
 	 * che si possono eseguire in questo nodo
 	 */
-	protected get dispatchMap(): any {
+	protected get dispatchMap(): DispatchMap {
 		return {}
 	}
 }
+
+type DispatchMap = { [key: string]: Dispatch }
+
+type Dispatch = (state: any, payload: any, sender: string) => any

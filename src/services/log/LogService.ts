@@ -1,7 +1,7 @@
 import winston from "winston";
 import { Bus, ServiceBase } from "../../index"
 import { Actions, LogLevel, LogNotify } from "./utils"
-import { INode } from "core/node/utils";
+import { INode } from "core/node/INode";
 import LogTransportService from "./LogTransportService";
 
 

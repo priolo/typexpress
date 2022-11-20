@@ -34,7 +34,7 @@ beforeAll(async () => {
 	root = new NodeConf("root")
 	root.addChild(new FarmService())
 	await root.dispatch({
-		type: ConfActions.START,
+		type: ConfActions.CREATE,
 		payload: {
 			name: "root2",
 			value: 23,
@@ -62,7 +62,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-	root.dispatch( { type: ConfActions.STOP })
+	root.dispatch( { type: ConfActions.DESTROY })
 })
 
 

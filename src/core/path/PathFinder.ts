@@ -1,5 +1,5 @@
 import { fnNodePattern, nodeParents, nodeParentsFind } from "../utils"
-import { INode } from "../node/utils"
+import { INode } from "../node/INode"
 import { PathFinderList } from "./PathFinderList"
 
 
