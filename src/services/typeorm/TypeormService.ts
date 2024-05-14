@@ -15,9 +15,9 @@ import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
  */
 export class TypeormService extends ServiceBase {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "typeorm",
 			// [II] sostituire con "options"
 			// https://typeorm.io/#/connection-options

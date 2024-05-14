@@ -8,9 +8,9 @@ import { Actions, Errors } from "./utils"
 
 export class PushNotificationService extends ServiceBase {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "push",
 			// le credenziali per SDK FIREBASE. 
 			// Per i test l'ho generata qui:
@@ -33,8 +33,8 @@ export class PushNotificationService extends ServiceBase {
 	private app: admin.app.App = null
 
 
-	protected async onInit(conf:any) {
-		super.onInit(conf)
+	protected async onInit() {
+		super.onInit()
 
 		// JSON credential (from firebase console)
 		const { credential } = this.state

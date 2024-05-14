@@ -14,17 +14,17 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 
 	private router: Router = null
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			//headers: {"accept":"json"}				// https://expressjs.com/en/4x/api.html#req.accepts
 			cors: null,									// http://expressjs.com/en/resources/middleware/cors.html#configuration-options
 			path: "/",
 		}
 	}
 
-	protected async onInit(conf:any): Promise<void> {
-		await super.onInit(conf)
+	protected async onInit(): Promise<void> {
+		await super.onInit()
 		const parent = new PathFinder(this).getNode<IHttpRouter>("..")
 		this.router = this.onBuildRouter()
 		parent.use(this.router, this.state.path)

@@ -11,7 +11,7 @@ class TestService extends ServiceBase {
 test("su creazione", async () => {
 	const root = new RootService()
 	await root.dispatch( {
-		type: ConfActions.CREATE,
+		type: ConfActions.INIT,
 		payload: {
 			children: [
 				// string: internal name

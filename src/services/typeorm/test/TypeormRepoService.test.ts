@@ -144,6 +144,16 @@ test("USER", async () => {
 	expect(users).toEqual([
 		{ id: 1, firstName: 'Ivano', lastName: 'Iorio', age: 45 },
 	])
+
+	// elimina lo USER con "firstName" uguale a "XXX" (che non c'e')
+	await rep.dispatch({ type: RepoRestActions.DELETE, payload: { firstName: "XXX" } })
+	users = await rep.dispatch({ type: RepoRestActions.ALL })
+	expect(users).toHaveLength(1)
+
+	// elimina lo USER con "firstName" uguale a "Ivano"
+	await rep.dispatch({ type: RepoRestActions.DELETE, payload: { firstName: "Ivano" } })
+	users = await rep.dispatch({ type: RepoRestActions.ALL })
+	expect(users).toHaveLength(0)
 })
 
 test("ACCOUNT", async () => {

@@ -17,12 +17,8 @@ export class RootService extends ServiceBase {
 	static async Start(config: any): Promise<RootService> {
 		if (!Array.isArray(config)) config = [config]
 		const root = new RootService()
-		await root.dispatch({
-			type: ConfActions.CREATE,
-			payload: {
-				children: config
-			}
-		})
+		await root.buildByJson({ children: config })
+		await root.dispatch({ type: ConfActions.INIT })
 		return root
 	}
 
@@ -54,19 +50,19 @@ export class RootService extends ServiceBase {
 		})
 	}
 
-	protected async onInit(conf: any): Promise<void> {
-		await super.onInit(conf)
+	protected async onInit(): Promise<void> {
+		await super.onInit()
 		// se non è definito creo il gestore degli errori di default
-		if (!conf.children.some(child => child.class == "error")) {
-			const errorSrv = new ErrorService()
-			errorSrv.dispatch({ type: ConfActions.CREATE })
+		if (!this.children.some(child => child instanceof ErrorService)) {
+			const errorSrv = new ErrorService("error")
 			this.addChild(errorSrv)
+			errorSrv.dispatch({ type: ConfActions.INIT })
 		}
 	}
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "root",
 		}
 	}

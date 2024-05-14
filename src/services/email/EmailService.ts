@@ -11,9 +11,9 @@ export default class EmailService extends ServiceBase {
 
 	private transporter:Transporter = null
 
-	get defaultConfig():any {
+	get stateDefault():any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "email",
 			account: null,
 		}

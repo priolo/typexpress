@@ -17,9 +17,9 @@ https://typeorm.delightful.studio/interfaces/_entity_schema_entityschemarelation
  */
 export abstract class TypeormRepoBaseService extends ServiceBase {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			model: null, // string:mandatory:MODEL di riferimento per questo REPO
 			seeds: null, // indica le action da fare su questo REPO,
 		}

@@ -16,9 +16,9 @@ import { SessionEntity } from "./SessionEntity"
  */
 export class HttpSessionService extends HttpRouterServiceBase {
 
-    get defaultConfig(): any {
+    get stateDefault(): any {
         return {
-            ...super.defaultConfig,
+            ...super.stateDefault,
             name: "route-session",  // string
             // https://github.com/expressjs/session#options
             options: {

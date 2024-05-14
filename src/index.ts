@@ -3,6 +3,7 @@ import { Bus } from "./core/path/Bus"
 import { PathFinder } from "./core/path/PathFinder"
 import { RepoRestActions, RepoStructActions } from "./core/repo/utils";
 import { ServiceBase } from "./core/service"
+import { ConfActions } from "./core/node/utils"
 
 import * as utils from "./core/utils"
 
@@ -31,6 +32,7 @@ export {
 	RepoRestActions,
 	RepoStructActions,
 	ServiceBase,
+	ConfActions,
 	utils,
 }
 

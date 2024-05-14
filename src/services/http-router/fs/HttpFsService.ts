@@ -11,9 +11,9 @@ import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
  */
 export class HttpFsService extends HttpRouterServiceBase {
 
-    get defaultConfig(): any {
+    get stateDefault(): any {
         return {
-            ...super.defaultConfig,
+            ...super.stateDefault,
             name: "route-fs",   // string
             fs: "",             // path-fs:request
             baseDir: "/",        // directory base

@@ -6,7 +6,7 @@ import axios, { AxiosInstance } from "axios"
 import { Request, Response } from "express"
 import { getFreePort } from "../../ws"
 
-import { PathFinder, RootService, error, httpRouter, http } from "../../../index"
+import { PathFinder, RootService, error, httpRouter, http, ConfActions } from "../../../index"
 
 const { Service: HttpRouterService } = httpRouter
 const { Service: HttpService } = http
@@ -23,9 +23,9 @@ describe("Server HTTP e i suoi ROUTER", () => {
 	 * Implementazione di un SERVICE `HttpRouterService`
 	 */
 	class TestRoute extends HttpRouterService {
-		get defaultConfig(): any {
+		get stateDefault(): any {
 			return {
-				...super.defaultConfig,
+				...super.stateDefault,
 				routers: [
 					{ path: "/test", verb: "get", method: "test" },
 				]
@@ -47,25 +47,27 @@ describe("Server HTTP e i suoi ROUTER", () => {
 		});
 	})
 
-	// describe("senza NodeRoot", () => {
+	describe("senza NodeRoot", () => {
 
-	// 	test("evvai", async () => {
-	// 		const http = new HttpService("http", {
-	// 			port: PORT
-	// 		})
-	// 		const route = new HttpRouterService("route", {
-	// 			routers: [{ 
-	// 				path: "/test", 
-	// 				verb: "get", 
-	// 				method: (req, res, next) => res.json({ response: "test-ok" }) 
-	// 			}]
-	// 		})
-	// 		//http.addChild(route)
+		test("evvai", async () => {
 
-	// 		//const { data } = await axiosIstance.get(`/test`)
-	// 		//expect(data).toEqual({ response: "user-ok" })
-	// 	})
-	// })
+			const http = new HttpService("http", {
+				port: PORT,
+			})
+			const route = new HttpRouterService("route", {
+				routers: [{ 
+					path: "/test", 
+					verb: "get", 
+					method: (req, res, next) => res.json({ response: "test-ok" }) 
+				}]
+			})
+			http.addChild(route)
+			await http.dispatch({ type: ConfActions.INIT })
+
+			const { data } = await axiosIstance.get(`/test`)
+			expect(data).toEqual({ response: "test-ok" })
+		})
+	})
 
 	describe("creazione routing su server http", () => {
 

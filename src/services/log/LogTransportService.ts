@@ -11,16 +11,16 @@ export default abstract class LogTransportService extends ServiceBase {
 
 	//#region SERVICE
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "transport",
 			level: LogLevel.INFO,
 		}
 	}
 
-	protected async onInit(conf:any): Promise<void> {
-		await super.onInit(conf)
+	protected async onInit(): Promise<void> {
+		await super.onInit()
 		this.buildTransport()
 	}
 

@@ -34,7 +34,7 @@ beforeAll(async () => {
 	root = new NodeConf("root")
 	root.addChild(new FarmService())
 	await root.dispatch({
-		type: ConfActions.CREATE,
+		type: ConfActions.INIT,
 		payload: {
 			name: "root2",
 			value: 23,

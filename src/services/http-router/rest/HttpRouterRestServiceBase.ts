@@ -7,7 +7,7 @@ import { HttpRouterService } from "../HttpRouterService";
  */
 export abstract class HttpRouterRestServiceBase extends HttpRouterService {
 
-	get defaultConfig():any { return { ...super.defaultConfig,
+	get stateDefault():any { return { ...super.stateDefault,
 		name: "route-rest",
 		routers: [
 			{ path: "/", verb: "get", method: "_getAll" },

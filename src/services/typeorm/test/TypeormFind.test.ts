@@ -19,6 +19,7 @@ beforeAll(async () => {
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 
 	root = await RootService.Start({
+		//name: "typeorm",
 		class: "typeorm",
 		options: {
 			type: "sqlite",

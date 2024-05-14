@@ -12,9 +12,9 @@ import { CookieStrategy, JWT_PAYLOAD_PROP, RouteJWTUserActions } from "./utils"
  */
 export class HttpJWTUserService extends HttpRouterServiceBase {
 
-    get defaultConfig(): any {
+    get stateDefault(): any {
         return {
-            ...super.defaultConfig,
+            ...super.stateDefault,
             name: "route-jwt",  // string
             // la path del jwt che si occupa di codificare/decodificare
             jwt: "",            // path-jwt:request

@@ -28,9 +28,9 @@ export default class LogService extends ServiceBase {
 
 	//#region SERVICE
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "log",
 			onLog: null,
 		}

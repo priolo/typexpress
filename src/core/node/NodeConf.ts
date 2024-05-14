@@ -14,51 +14,29 @@ import { nodeForeach } from "../utils";
  */
 export class NodeConf extends NodeState {
 
-	constructor(name?: string, conf?: any) {
-		super(name)
-		if (conf) this.dispatch({ type: ConfActions.CREATE, payload: conf })
-	}
-
+	/**
+	 * Contiene le ACTIONs
+	 */
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[ConfActions.CREATE]: async (state, payload) => await this.nodeBuild(payload),
+			[ConfActions.INIT]: async (state) => await this.init(),
 			[ConfActions.DESTROY]: async (state) => await this.nodeDestroy(),
 		}
 	}
 
-	/**
-	 * il config di default che viene mergiato con il config di istanza
-	 */
-	get defaultConfig(): any {
-		return {}
-	}
 
-	/**
-	 * Quando questo NODE deve essere costruito 
-	 * @param conf 
-	 */
-	private async nodeBuild(conf: any = {}): Promise<void> {
 
-		// tutti i children presenti nel config
-		const confChildren: any[] = (conf.children ?? []).filter(child => child != null)
-		// merge valori di default del nodo (this.defaultConfig) e quelli passati come parametro (conf) 
-		// pero' togliendo "children" e "class"
-		const config = { ...this.defaultConfig, ...conf }
-		delete config.children
-		delete config.class
-		// setto il config come stato iniziale
-		this.setState(config)
-		// se il config ha pure un "name" lo setto come identificativo del NODE
-		if (config.name) this.name = config.name
-
+	private async init(): Promise<void> {
 		// inizializzo questo nodo prima di creare i child
-		await this.onInit(conf)
+		await this.onInit()
 
-		// se necessario creo e inserisco i children
-		await this.buildChildren(confChildren)
+		for (const child of this.children) {
+			if (child instanceof NodeConf) await child.dispatch({
+				type: ConfActions.INIT,
+			})
+		}
 
-		// inizializzo questo nodo dopo la creazione dei child
 		await this.onInitAfter()
 
 		// se questo nodo è il nodo "root" allora richiama ricorsivamente tutti i nodi
@@ -71,29 +49,63 @@ export class NodeConf extends NodeState {
 	}
 
 	/**
-	 * Dato un array di "conf" costruisce i nodi corrispondenti
-	 * e li AGGIUNGE ai children gia' esistenti
+	 * Chiamata dopo la creazione dei CHILDREN per inzializzare il nodo
 	 */
-	private async buildChildren(confChildren: Array<any>): Promise<void> {
-		if (confChildren == null) return
-		for (const confChild of confChildren) {
-			const child = await this.buildChild(confChild)
+	protected async onInit(): Promise<void> { }
+
+	/**
+	 * Chiamata dopo l'inizializzazione di tutti i children
+	 */
+	protected async onInitAfter(): Promise<void> { }
+
+	/**
+	 * Chiamata dopo l'inizializzazione di tutto l'albero
+	 */
+	protected async onInitFinish(): Promise<void> { }
+
+
+
+	/**
+	 * Valorizza questo NODE e costruisce tutti i children tramite il parametro JSON
+	 * @param json 
+	 */
+	protected async buildByJson(json: any = {}): Promise<void> {
+
+		// faccio una copia e tolgo "children" e "class"
+		const config = { ...json }
+		delete config.children
+		delete config.class
+		// setto il config come stato iniziale
+		this.setState(config)
+		// se il config ha pure un "name" lo setto come identificativo del NODE
+		if (config.name) this.name = config.name
+
+		// prendo tutti i children presenti nel json e li creo
+		const confChildren: any[] = (json.children ?? []).filter(child => child != null)
+		await this.buildChildrenByJson(confChildren)
+	}
+
+	/**
+	 * Creo i children e ricorsivamente chiamo "buildByJson"
+	 */
+	private async buildChildrenByJson(jsonChildren: Array<any>): Promise<void> {
+		for (const confChild of jsonChildren) {
+			const child = await this.buildChildByJson(confChild)
 			if (child == null) continue
 			this.addChild(child);
-			if (child instanceof NodeConf) await child.dispatch({
-				type: ConfActions.CREATE,
-				payload: confChild,
-			})
+			if (child instanceof NodeConf) await child.buildByJson(confChild)
 		}
 	}
-	
+
 	/**
-	 * Dato un "conf" costruisce il nodo corrispondente
+	 * Dato un JSON costruisce il nodo corrispondente
 	 */
-	private async buildChild(conf: any): Promise<INode | null> {
+	private async buildChildByJson(json: any): Promise<INode | null> {
 		const farm = new PathFinder(this).getNode<FarmService>("/farm")
-		return await farm.build(conf)
+		return await farm.build(json)
 	}
+
+
 
 	/**
 	 * Quando questo NODE deve essere distrutto
@@ -108,21 +120,6 @@ export class NodeConf extends NodeState {
 		await this.onDestroy()
 		this.parent?.removeChild(this)
 	}
-
-	/**
-	 * Chiamata PRIMA della creazione dei CHILDREN
-	 */
-	protected async onInit(conf:any): Promise<void> { }
-
-	/**
-	 * Chiamata DOPO la creazione dei CHILDREN
-	 */
-	protected async onInitAfter(): Promise<void> { }
-
-	/**
-	 * Chiamata DOPO la creazione di tutti i children della ROOT
-	 */
-	protected async onInitFinish(): Promise<void> { }
 
 	/**
 	 * chiamato DOPO aver distrutto i CHILDREN

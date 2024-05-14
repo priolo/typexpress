@@ -17,12 +17,14 @@ import { Errors } from "."
  */
 export class ServiceBase extends NodeConf {
 
-	constructor(name?: string, conf?: any) {
-		super(name, conf)
+	constructor(name?: string, state?: any) {
+		super(name, state)
 		this._emitter = new EventEmitter()
 	}
 
-
+	/**
+	 * Permette di emettere un evento
+	 */
 	get emitter(): EventEmitter {
 		return this._emitter
 	}
@@ -109,12 +111,11 @@ export class ServiceBase extends NodeConf {
 	 * Chiamto quando il NODE viene inizializzato  
 	 * Emette l'evento "INIT"
 	 * @override
-	 * @param conf 
 	 * @returns 
 	 */
-	protected async onInit(conf:any): Promise<void> {
+	protected async onInit(): Promise<void> {
 		try {
-			await super.onInit(conf)
+			await super.onInit()
 		} catch (error) {
 			new Bus(this, "/error").dispatch({ 
 				type: ErrorActions.NOTIFY, 

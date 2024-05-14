@@ -13,9 +13,9 @@ axios.defaults.adapter = require('axios/lib/adapters/http')
 
 
 class TestRoute extends HttpRouterService {
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			routers: [
 				{ path: "/test", verb: "get", method: "test" },
 			]
@@ -32,7 +32,7 @@ let root = null
 beforeEach(async () => {
 	root = new RootService()
 	await root.dispatch({
-		type: ConfActions.CREATE,
+		type: ConfActions.INIT,
 		payload: {
 			children: [
 				{

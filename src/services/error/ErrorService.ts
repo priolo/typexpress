@@ -26,9 +26,9 @@ export default class ErrorService extends ServiceBase {
 		})
 	}
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "error",
 			onError: null,
 		}

@@ -9,6 +9,24 @@ import { log, LOG_TYPE } from "@priolo/jon-utils";
  */
 export abstract class NodeState extends Node {
 
+	constructor(name?: string, state?: any) {
+		super(name)
+		this.setState({
+			...this.stateDefault,
+			...state
+		})
+		if (!name && this.state.name?.length > 0) {
+			this.name = this.state.name
+		}
+	}
+
+	/**
+	 * lo STATE di default di questo NODE che viene "mergiato" con lo STATE di istanza
+	 */
+	get stateDefault(): any {
+		return {}
+	}
+
 	/**
 	 * Stato attuale del nodo
 	 */
@@ -63,8 +81,6 @@ export abstract class NodeState extends Node {
 		} catch (error) {
 			// [II] GESTIONE ERRORI
 		}
-
-
 	}
 
 	/**

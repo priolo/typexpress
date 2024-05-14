@@ -10,9 +10,9 @@ type SocketCommunicatorConf = {
 
 export abstract class SocketCommunicator extends ServiceBase {
 
-	get defaultConfig(): SocketCommunicatorConf {
+	get stateDefault(): SocketCommunicatorConf {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			path: null,
 			onConnect: null,
 			onDisconnect: null,

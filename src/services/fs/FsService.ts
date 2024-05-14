@@ -7,9 +7,9 @@ import { createDirIfNotExist, deleteIfExist } from "."
 
 export default class FsService extends ServiceBase {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "fs",
 			// directory che si vuole "gestire"
 			baseDir: "/",

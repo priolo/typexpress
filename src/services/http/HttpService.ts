@@ -26,9 +26,9 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		return this._server
 	}
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "http",
 			port: 5000,					// porta di ascolto del server
 
@@ -51,9 +51,9 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	 * Creo l'instanza del server EXPRESS collegandola ai plugin
 	 * @param conf 
 	 */
-	protected async onInit(conf: any): Promise<void> {
-		super.onInit(conf)
-		const { template } = this.state
+	protected async onInit(): Promise<void> {
+		super.onInit()
+		//const { template } = this.state
 
 		this.app = express()
 		this.buildProperties()

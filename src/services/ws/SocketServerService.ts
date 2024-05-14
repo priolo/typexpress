@@ -17,9 +17,9 @@ import { Errors } from "./utils"
 
 export class SocketServerService extends SocketCommunicator {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "ws-server",
 			autostart: true,
 			port: null,
@@ -46,8 +46,8 @@ export class SocketServerService extends SocketCommunicator {
 	 */
 	private server: WebSocket.Server = null
 
-	protected async onInit(conf: any) {
-		super.onInit(conf)
+	protected async onInit() {
+		super.onInit()
 		const { autostart } = this.state
 		if (!autostart) return
 		await this.startListener()

@@ -10,9 +10,9 @@ import { HttpRouterServiceBase } from "./HttpRouterServiceBase";
  */
 export class HttpRouterService extends HttpRouterServiceBase {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "route",
 			handleErrors: true,
 			routers: [ /*

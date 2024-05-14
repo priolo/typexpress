@@ -1,6 +1,7 @@
+import { utils, ConfActions } from "../../index"
 import FarmService from "../../services/farm"
 import { NodeConf } from "../node/NodeConf"
-import { ConfActions } from "../node/utils"
+
 
 /**
 L'implementazione `NodeState` è un NODE che ha l'`action` CREATE.
@@ -22,7 +23,7 @@ describe("NODE CONF", () => {
 
 		// eseguo l'ACTION CREATE per la generazione dei nodi tramite il PAYLOAD 
 		await root.dispatch({
-			type: ConfActions.CREATE,
+			type: ConfActions.INIT,
 			payload: {
 				name: "root2",
 				value: 23,
@@ -56,25 +57,27 @@ describe("NODE CONF", () => {
 
 	test("inheritance of config", async () => {
 		class NodeA extends NodeConf {
-			get defaultConfig(): any {
+			get stateDefault(): any {
 				return {
-					...super.defaultConfig,
+					...super.stateDefault,
 					propA: "A", propOver: "A", propOver2: "A"
 				}
 			}
 		}
+
 		class NodeB extends NodeA {
-			get defaultConfig(): any {
+			get stateDefault(): any {
 				return {
-					...super.defaultConfig,
+					...super.stateDefault,
 					propB: "B", propOver: "B", propOver2: "B"
 				}
 			}
 		}
+
 		const root = new NodeConf("root")
 		root.addChild(new FarmService())
 		await root.dispatch({
-			type: ConfActions.CREATE,
+			type: ConfActions.INIT,
 			payload: {
 				prop: "X",
 				children: [
@@ -92,6 +95,23 @@ describe("NODE CONF", () => {
 		expect(node.state.propB).toBe("B")
 		expect(node.state.propOver).toBe("B")
 		expect(node.state.propOver2).toBe("B2")
+	})
+
+	test("call init", async () => {
+
+		const root = new NodeConf("root")
+		const node1 = new NodeConf("node1")
+		const node1_1 = new NodeConf("node1.1")
+		const node2 = new NodeConf("node2")
+
+		root.addChild(node1)
+		node1.addChild(node1_1)
+		root.addChild(node2)
+
+
+
+
+
 	})
 
 })

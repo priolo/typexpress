@@ -12,9 +12,9 @@ describe("PathFinder", () => {
 	beforeAll(async () => {
 
 		class Test extends NodeConf {
-			get defaultConfig(): any {
+			get stateDefault(): any {
 				return {
-					...super.defaultConfig,
+					...super.stateDefault,
 					name: "test",
 					value: "custom"
 				}

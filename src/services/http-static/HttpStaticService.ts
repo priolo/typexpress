@@ -12,9 +12,9 @@ import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServ
  */
 export class HttpStaticService extends HttpRouterServiceBase {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "http-static",
 			path: "/public",
 			dir: p.join(__dirname, "../static"),	// directory locale che contiene i file
@@ -36,13 +36,13 @@ export class HttpStaticService extends HttpRouterServiceBase {
 		}
 	}
 
-	protected async onInit(conf:any): Promise<void> {
+	protected async onInit(): Promise<void> {
 		const { dir, path } = this.state
 		if (!fs.existsSync(dir)) {
 			log(`Directory "${dir}" not found. I try to create it myself`, LOG_TYPE.INFO)
 			fs.mkdirSync(dir)
 		}
-		await super.onInit(conf)
+		await super.onInit()
 		log(`HttpStaticService:start:path:[${path}]>[${dir}]`, LOG_TYPE.INFO)
 	}
 

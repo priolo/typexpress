@@ -9,9 +9,9 @@ import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
  */
 export class TypeormRepoService extends TypeormRepoBaseService {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			// https://typeorm.io/#/find-options
 			// opzione da usare in "ALL", Per esempio se il risultato deve comprendere anche delle relazioni:
 			// findOptions: { relations: ["documents"] },

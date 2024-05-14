@@ -8,9 +8,9 @@ import { Actions } from "./utils";
 
 export class JWTRepoService extends ServiceBase {
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "jwt",
 			secret: "secret_word"
 		}

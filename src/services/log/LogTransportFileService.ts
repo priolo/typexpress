@@ -9,9 +9,9 @@ export default class LogTransportFileService extends LogTransportService {
 
 	//#region SERVICE
 
-	get defaultConfig(): any {
+	get stateDefault(): any {
 		return {
-			...super.defaultConfig,
+			...super.stateDefault,
 			name: "transport-file",
 			filename: "",
 		}

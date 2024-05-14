@@ -15,9 +15,9 @@ import { createDirIfNotExist, getDirInfo } from "../../fs"
  */
 export class HttpUploadService extends HttpRouterServiceBase {
 
-    get defaultConfig(): any {
+    get stateDefault(): any {
         return {
-            ...super.defaultConfig,
+            ...super.stateDefault,
             // <string> nome del service
             name: "route-upload",
             // path dove inserire i files

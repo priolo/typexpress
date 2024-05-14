@@ -8,9 +8,9 @@ import { RepoRestActions } from "../../../core/repo/utils"
  */
 export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
 
-    get defaultConfig(): any {
+    get stateDefault(): any {
         return {
-            ...super.defaultConfig,
+            ...super.stateDefault,
             name: "route-rest-repo",
             repository: "",
         }

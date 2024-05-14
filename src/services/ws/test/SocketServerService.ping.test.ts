@@ -14,8 +14,8 @@ let root = null
 
 class PluginPing extends wsNs.route {
 
-	protected async onInit(conf:any): Promise<void> {
-		await super.onInit(conf)
+	protected async onInit(): Promise<void> {
+		await super.onInit()
 		this.idTimer = setTimeout(this.check.bind(this), 1000)
 	}
 	protected async onDestroy(): Promise<void> {

@@ -10,7 +10,7 @@ let root;
 beforeAll(async () => {
 	root = new RootService("root")
 	await root.dispatch({
-		type: ConfActions.CREATE,
+		type: ConfActions.INIT,
 		payload: {
 			// sovrascrivo "root" con "root2"
 			name: "root2",
