@@ -60,7 +60,7 @@ export class RootService extends ServiceBase {
 		}
 	}
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "root",

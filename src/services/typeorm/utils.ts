@@ -5,6 +5,7 @@ export enum Actions {
 	 * https://typeorm.io/#/find-options
 	 */
 	FIND = "find",
+	FIND_ONE = "find-one",
 
 	/**
 	 * https://orkhan.gitbook.io/typeorm/docs/transactions#using-queryrunner-to-create-and-control-state-of-single-database-connection

@@ -1,29 +1,30 @@
 {
-    "extends": "@tsconfig/node16/tsconfig.json",
+    "extends": "@tsconfig/node18/tsconfig.json",
     "compilerOptions": {
         "preserveConstEnums": true,
         "sourceMap": true,
-        //"watch": true,
         "allowJs": true,
         "outDir": "dist",
         "baseUrl": "./src",
-        //"rootDir": "./src",
+        "paths": {
+            "@/*": [
+                "*"
+            ]
+        },
         "declaration": true,
         "declarationMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        // "typeRoots": [
-        //     //"./typings",
-        //     "./node_modules/@types/**/*"
-        // ],
         "strict": false,
+        "strictNullChecks": false,
     },
     "include": [
         "src/**/*"
-     ],
-    // "exclude": [
-    //     "node_modules",
-    //     "dist",
-    //     "**/*.spec.ts"
-    // ]
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "dist",
+    ],
 }

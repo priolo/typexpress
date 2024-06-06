@@ -56,9 +56,9 @@ export class TypeormService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		let { options, schemas } = this.state
 
-		if (!options) new Bus(this, "/error").dispatch({ 
-			type: errorNs.Actions.NOTIFY, 
-			payload: "typeorm:options:obbligatory" 
+		if (!options) new Bus(this, "/error").dispatch({
+			type: errorNs.Actions.NOTIFY,
+			payload: "typeorm:options:obbligatory"
 		})
 
 		// // raccolgo tutti i children che derivano da typeorm-repo e che hanno un "model" cioe' una schema definition
@@ -66,18 +66,21 @@ export class TypeormService extends ServiceBase {
 		// 	.filter(c => c instanceof TypeormRepoBaseService && c?.state?.model && typeof c.state.model == "object")
 
 		// raccolgo tutti gli SCHEMA presenti in STATE e nei CHILDREN
-		schemas = [
-			...schemas ?? [],
+		const entities = [
+			...schemas?.map(s => new EntitySchema(s)) ?? [],
 			...this.children
-				.filter(c => c instanceof TypeormRepoBaseService && c?.state?.model && typeof c.state.model == "object")
-				.map(c => (<TypeormRepoService>c).state.model)
+				?.map(c => {
+					if (!(c instanceof TypeormRepoBaseService) || !(c?.state?.model)) return null
+					return typeof c.state.model == "object" ? new EntitySchema(c.state.model) : c.state.model
+				})
+				?.filter(c => !!c) ?? []
 		]
 
 		// creo gli oggetti EntitySchema che dovro' passare a typeorm
-		if (schemas.length > 0) {
+		if (entities.length > 0) {
 			options.entities = [
 				...options.entities ?? [],
-				...schemas.map(s => new EntitySchema(s))
+				...entities
 			]
 		}
 
@@ -88,9 +91,9 @@ export class TypeormService extends ServiceBase {
 			const ds = new DataSource(options)
 			this._connection = await ds.initialize()
 		} catch (e) {
-			new Bus(this, "/error").dispatch({ 
-				type: errorNs.Actions.NOTIFY, 
-				payload: e 
+			new Bus(this, "/error").dispatch({
+				type: errorNs.Actions.NOTIFY,
+				payload: e
 			})
 		}
 

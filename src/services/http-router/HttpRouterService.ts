@@ -1,37 +1,41 @@
 
-import express, { Request, Response, Router } from "express";
-import { log, LOG_TYPE } from "@priolo/jon-utils"
-import { HttpRouterServiceBase } from "./HttpRouterServiceBase";
+import { LOG_TYPE, log } from "@priolo/jon-utils";
+import { Request, Response, Router } from "express";
+import { HttpRouterServiceBase, HttpRouterServiceBaseConf } from "./HttpRouterServiceBase";
 
+
+
+export interface HttpRouterServiceConf extends HttpRouterServiceBaseConf {
+	/** 
+	 * @example
+	{ path: "/hi", verb: "get", method: (req, res, next) => "HELLO WORLD" },
+	{ path: "/test", verb: "post", method: "myFunction" },
+	*/
+	routers: IRouteParam[]
+	/** wrap try--catch intorno al metodo */
+	handleErrors?: boolean
+}
 
 /**
- * Mappa una richiesta http 
- * con le funzioni della classe
+ * Mappa una richiesta http con le funzioni della classe
  */
 export class HttpRouterService extends HttpRouterServiceBase {
 
-	get stateDefault(): any {
+	get stateDefault(): HttpRouterServiceConf {
 		return {
 			...super.stateDefault,
 			name: "route",
 			handleErrors: true,
-			routers: [ /*
-				{
-					path: "/test", 						// string:default:"/"
-					verb: "get|post|put|delete|...", 	// string:default:"get"
-					method: "test"						// string|(req,res,next)=>any
-				}
-			*/]
+			routers: []
 		}
 	}
 
 
 	protected onBuildRouter(): Router {
 		const router = super.onBuildRouter()
-		const { routers, handleErrors } = this.state
 
 		// ciclo tutti i routers a disposizione e li inserisco nell'oggetto Router
-		routers.forEach((route: IRouteParam) => {
+		this.state.routers.forEach((route: IRouteParam) => {
 
 			// prelevo il metodo da chiamare sulle request
 			let method: IRouteMethod = (typeof route.method === "string") ? this[route.method] : route.method
@@ -42,7 +46,7 @@ export class HttpRouterService extends HttpRouterServiceBase {
 			// creo il method
 			const _method = method.bind(this)
 			let methodThis = null
-			if (handleErrors) {
+			if (this.state.handleErrors) {
 				methodThis = async (req: Request, res: Response, next: any) => {
 					try {
 						await _method(req, res, next)

@@ -10,8 +10,8 @@ import * as wsNs from "../index"
 
 
 
-let PORT
-let root = null
+let PORT: number = null
+let root: RootService  = null
 
 beforeAll(async () => {
 	PORT = await getFreePort()

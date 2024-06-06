@@ -1,11 +1,19 @@
 import { Node } from "./Node";
 import { IAction } from "./IAction";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
+import { INode } from "./INode";
 
+
+
+export interface NodeStateConf {
+	name?: string
+	children: INode[]
+}
 
 /**
- * Classe responsabile di mantenere uno stato in "state"
- * e cambiare lo stato tramite "dispatch"
+ * - Classe responsabile di mantenere uno STATE
+ * - cambiare e notificare lo STATE
+ * - eseguire un ACTION
  */
 export abstract class NodeState extends Node {
 
@@ -21,16 +29,19 @@ export abstract class NodeState extends Node {
 	}
 
 	/**
-	 * lo STATE di default di questo NODE che viene "mergiato" con lo STATE di istanza
+	 * in "constructor" viene mergiato con lo STATE di istanza
+	 * determina il valore iniziale dello STATE
 	 */
-	get stateDefault(): any {
-		return {}
+	get stateDefault(): NodeStateConf {
+		return {
+			children: null,
+		}
 	}
 
 	/**
 	 * Stato attuale del nodo
 	 */
-	get state(): any {
+	get state() {
 		return this._state
 	}
 	protected _state: any = {}
@@ -69,14 +80,16 @@ export abstract class NodeState extends Node {
 			if (fnc.constructor.name === "AsyncFunction") {
 				return new Promise(async (res, rej) => {
 					try {
-						const ret = await this.dispatchMap[action.type](this.state, action.payload, action.sender)
+						//const ret = await this.dispatchMap[action.type](this.state, action.payload, action.sender)
+						const ret = await fnc(this.state, action.payload, action.sender)
 						res(ret)
 					} catch (e) {
 						rej(e)
 					}
 				})
 			} else {
-				return this.dispatchMap[action.type](this.state, action.payload, action.sender)
+				//return this.dispatchMap[action.type](this.state, action.payload, action.sender)
+				return fnc(this.state, action.payload, action.sender)
 			}
 		} catch (error) {
 			// [II] GESTIONE ERRORI

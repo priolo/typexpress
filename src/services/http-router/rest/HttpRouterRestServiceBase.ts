@@ -1,5 +1,7 @@
-import { Express, Response, Request } from "express";
-import { HttpRouterService } from "../HttpRouterService";
+import { Request, Response } from "express";
+import { HttpRouterService, HttpRouterServiceConf } from "../HttpRouterService";
+
+
 
 /**
  * [ABSTRACT] DA IMPLEMENTARE
@@ -7,15 +9,18 @@ import { HttpRouterService } from "../HttpRouterService";
  */
 export abstract class HttpRouterRestServiceBase extends HttpRouterService {
 
-	get stateDefault():any { return { ...super.stateDefault,
-		name: "route-rest",
-		routers: [
-			{ path: "/", verb: "get", method: "_getAll" },
-			{ path: "/:id", verb: "get", method: "_getById" },
-			{ path: "/", verb: "post", method: "_save" },
-			{ path: "/:id", verb: "delete", method: "_delete" },
-		]
-	}}
+	get stateDefault(): HttpRouterServiceConf {
+		return {
+			...super.stateDefault,
+			name: "route-rest",
+			routers: [
+				{ path: "/", verb: "get", method: "_getAll" },
+				{ path: "/:id", verb: "get", method: "_getById" },
+				{ path: "/", verb: "post", method: "_save" },
+				{ path: "/:id", verb: "delete", method: "_delete" },
+			]
+		}
+	}
 
 	protected async _getAll(req: Request, res: Response): Promise<void> {
 		res.json(await this.getAll())
@@ -26,7 +31,7 @@ export abstract class HttpRouterRestServiceBase extends HttpRouterService {
 		const id = req.params["id"]
 		res.json(await this.getById(id))
 	}
-	protected abstract getById(id: string ): Promise<any>
+	protected abstract getById(id: string): Promise<any>
 
 	protected async _save(req: Request, res: Response): Promise<void> {
 		const entity = req.body
@@ -38,5 +43,5 @@ export abstract class HttpRouterRestServiceBase extends HttpRouterService {
 		const id = req.params["id"]
 		res.json(await this.delete(id))
 	}
-	protected abstract delete(id:string): Promise<any>
+	protected abstract delete(id: string): Promise<any>
 }

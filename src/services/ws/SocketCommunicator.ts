@@ -1,11 +1,14 @@
 import { IMessage, SocketRouteActions, IClient } from "./utils"
 import { ServiceBase } from "../../core/service/ServiceBase"
-//import ju, { isObject } from "@priolo/jon-utils"
+import { NodeStateConf } from "../../core/node/NodeState"
 
-type SocketCommunicatorConf = {
-	path: string,
-	onConnection: () => void,
 
+
+export interface SocketCommunicatorConf extends NodeStateConf {
+	path: string
+	onConnect: (client: IClient) => void
+	onDisconnect: (client: IClient) => void
+	onMessage: (client: IClient, message: string | IMessage) => void
 }
 
 export abstract class SocketCommunicator extends ServiceBase {
@@ -20,7 +23,7 @@ export abstract class SocketCommunicator extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get dispatchMap() {
 		return {
 			...super.dispatchMap,
 
@@ -43,18 +46,14 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 * @param jwtPayload 
 	 */
 	onConnect(client: IClient): void {
-		const { onConnect } = this.state
-		if (onConnect) onConnect.bind(this)(client)
-
+		this.state?.onConnect.bind(this)(client)
 		this.children.forEach(node => {
 			if (node instanceof SocketCommunicator) node.onConnect(client)
 		})
 	}
 
 	onDisconnect(client: IClient) {
-		const { onDisconnect } = this.state
-		if (onDisconnect) onDisconnect.bind(this)(client)
-
+		this.state?.onDisconnect.bind(this)(client)
 		this.children.forEach(node => {
 			if (node instanceof SocketCommunicator) node.onDisconnect(client)
 		})
@@ -67,7 +66,7 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 * @returns 
 	 */
 	onMessage(client: IClient, message: string | IMessage, paths: string[] = null) {
-		let { onMessage, path } = this.state
+		let { path } = this.state
 
 		if (!message) return
 		if (!path) path = ""
@@ -76,12 +75,12 @@ export abstract class SocketCommunicator extends ServiceBase {
 
 		// se il messaggio non ha paths allora manda a tutti
 		if (paths == null) {
-			onMessage?.bind(this)(client, message)
+			this.state.onMessage?.bind(this)(client, message)
 
 			// se c'e' la corrispondenza con questo NODO 
 			// mandalo a questo e finisci
 		} else if ((paths.length == 1 && paths[0] == path) || (paths.length == 0 && path.length == 0)) {
-			onMessage?.bind(this)(client, message)
+			this.state.onMessage?.bind(this)(client, message)
 			return
 
 			// non c'e' corrispondenza ma il primo path corrisponde... mando ai child
@@ -94,7 +93,6 @@ export abstract class SocketCommunicator extends ServiceBase {
 		} else {
 			return
 		}
-
 
 		// mando il messaggio nei CHILDREN
 		const routes = this.children as SocketCommunicator[]

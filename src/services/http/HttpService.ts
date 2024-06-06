@@ -1,16 +1,36 @@
 
-import express, { Router, Express, Request, Response } from "express"
+import { LOG_TYPE, log } from "@priolo/jon-utils"
+import cookieParser from 'cookie-parser'
+import express, { Express, Request, Response, Router } from "express"
 import fs from "fs"
 import http, { Server } from "http"
-import https from "https"
-import cookieParser from 'cookie-parser'
-import { log, LOG_TYPE } from "@priolo/jon-utils"
-
-import { ServiceBase } from "../../core/service/ServiceBase"
+import https, { ServerOptions } from "https"
+import { NodeStateConf } from "../../core/node/NodeState"
 import { PathFinder } from "../../core/path/PathFinder"
-
-import { IHttpRouter, Errors } from "./utils"
+import { ServiceBase } from "../../core/service/ServiceBase"
 import ErrorService, { Actions as ActionsError } from "../error"
+import { Errors, IHttpRouter } from "./utils"
+
+
+
+export interface HttpServiceConf extends NodeStateConf {
+	/** porta di ascolto del server */
+	port: number
+	/** il render da utilizzare per il momento c'e' solo "handlebars"  */
+	render?: any
+	/** opzioni di express
+	 * https://expressjs.com/en/4x/api.html#app.set
+	 */
+	options?: { [key: string]: any }
+	/** se valorizzato creo un server https
+	 * @example
+	https: {
+		privkey: "privkey.pem", // file path
+		pubcert: "pubcert.pem",	// file path
+	}
+	 */
+	https?: ServerOptions
+}
 
 /**
  * Praticamente mantiene un instanza di un server "express"
@@ -26,41 +46,25 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		return this._server
 	}
 
-	get stateDefault(): any {
+	get stateDefault(): HttpServiceConf {
 		return {
 			...super.stateDefault,
 			name: "http",
-			port: 5000,					// porta di ascolto del server
-
-			//// se valorizzato creo un server https
-			// https: {
-			// 	privkey: "privkey.pem", // file path
-			// 	pubcert: "pubcert.pem",	// file path
-			// }
-
-			/// il render da utilizzare per il momento c'e' solo "handlebars"
-			render: null,
-
-			/// le opzioni di express
-			// https://expressjs.com/en/4x/api.html#app.set
-			options: null,
+			port: 5000,
 		}
 	}
 
 	/**
 	 * Creo l'instanza del server EXPRESS collegandola ai plugin
-	 * @param conf 
 	 */
 	protected async onInit(): Promise<void> {
 		super.onInit()
-		//const { template } = this.state
 
 		this.app = express()
 		this.buildProperties()
 		this.app.use(express.json())	// middleware per contenuti json
 		this.app.use(express.urlencoded({ extended: true }))
 		this.app.use(cookieParser())
-		//this.app.use(cors())
 		this.buildRender()
 		this._server = this.buildServer()
 		await this.listenServer()
@@ -95,7 +99,6 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 
 	/**
 	 * Sulla distruzione del nodo fermo il server
-	 * @returns 
 	 */
 	protected async onDestroy(): Promise<void> {
 		return new Promise<void>((res, rej) => {
@@ -116,8 +119,6 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 
 	/**
 	 * Questa funzione è utilizzata dai CHILD quando devono agganciarsi a questo servizio PARENT
-	 * @param router 
-	 * @param path 
 	 */
 	use(router: Router, path: string = "/"): void {
 		this.app.use(path, router)
@@ -125,18 +126,17 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 
 	/**
 	 * Costruisce il server EXPRESS
-	 * @returns 
 	 */
 	private buildServer(): Server {
 		let { https: httpsConf } = this.state
 		let server: Server = null
 
 		if (httpsConf) {
-			if ( httpsConf.privkey ) {
+			if (httpsConf.privkey) {
 				httpsConf.key = fs.readFileSync(httpsConf.privkey)
 				delete httpsConf.privkey
 			}
-			if ( httpsConf.pubcert ) {
+			if (httpsConf.pubcert) {
 				httpsConf.cert = fs.readFileSync(httpsConf.pubcert)
 				delete httpsConf.pubcert
 			}
@@ -151,15 +151,13 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 
 	/**
 	 * Mette in ascolto il server EXPRESS
-	 * @returns 
 	 */
 	private async listenServer(): Promise<http.Server> {
-		const { port } = this.state
 		return new Promise<http.Server>((res, rej) => {
 			const listener = this._server.listen(
-				port,
+				this.state.port,
 				() => {
-					log(`HttpService:start:url:[http://localhost:${port}]`, LOG_TYPE.INFO)
+					log(`HttpService:start:url:[http://localhost:${this.state.port}]`, LOG_TYPE.INFO)
 					res(listener)
 				}
 			)
@@ -168,27 +166,24 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 
 	/**
 	 * Setta l'engine handlebars
-	 * @returns 
 	 */
 	private buildRender(): void {
-		const { render } = this.state
-		if (!render) return
+		if (!this.state.render) return
 		const exphbs = require('express-handlebars')
 
 		// https://github.com/express-handlebars/express-handlebars#api
-		const options = render.options ?? { extname: ".hbs" }
+		const options = this.state.render.options ?? { extname: ".hbs" }
 		const engine = exphbs(options)
 
 		this.app.engine(options.extname, engine)
 		this.app.set('view engine', options.extname);
 	}
-
-	// https://expressjs.com/en/4x/api.html#app.set
+	
+	/**
+	 * https://expressjs.com/en/4x/api.html#app.set
+	 */
 	private buildProperties(): void {
-		const { options } = this.state
-		if (!options) return
-		Object.keys(options).forEach(key => {
-			this.app.set(key, options[key]);
-		})
+		if (!this.state.options) return
+		Object.entries(this.state.options).forEach(([key, value]) => this.app.set(key, value))
 	}
 }

@@ -17,11 +17,11 @@ export class NodeConf extends NodeState {
 	/**
 	 * Contiene le ACTIONs
 	 */
-	get dispatchMap(): any {
+	get dispatchMap() {
 		return {
 			...super.dispatchMap,
-			[ConfActions.INIT]: async (state) => await this.init(),
-			[ConfActions.DESTROY]: async (state) => await this.nodeDestroy(),
+			[ConfActions.INIT]: async () => await this.init(),
+			[ConfActions.DESTROY]: async () => await this.nodeDestroy(),
 		}
 	}
 

@@ -1,14 +1,21 @@
-import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase"
 import { Bus } from "../../../core/path/Bus"
 import { RepoRestActions } from "../../../core/repo/utils"
+import { HttpRouterServiceConf } from "../HttpRouterService"
+import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase"
 
+
+
+export interface HttpRouterRestRepoServiceConf extends HttpRouterServiceConf {
+    /** la mode-path del NODE-REPOSITORY da utilizzare  */
+    repository: string
+}
 /**
  * Collega un ROUTE con un REPO 
  * ed espone dei metodi per il REST
  */
 export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
 
-    get stateDefault(): any {
+    get stateDefault(): HttpRouterRestRepoServiceConf {
         return {
             ...super.stateDefault,
             name: "route-rest-repo",

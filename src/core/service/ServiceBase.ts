@@ -24,6 +24,7 @@ export class ServiceBase extends NodeConf {
 
 	/**
 	 * Permette di emettere un evento
+	 * serve per oggetti esterni ai nodi
 	 */
 	get emitter(): EventEmitter {
 		return this._emitter
@@ -31,11 +32,11 @@ export class ServiceBase extends NodeConf {
 	private _emitter: EventEmitter
 
 
-	get dispatchMap(): any {
+	get dispatchMap() {
 		return {
 			...super.dispatchMap,
-			[ServiceBaseActions.REGISTER]: async (state, name, sender) => this.register({ event: name, path: sender }),
-			[ServiceBaseActions.UNREGISTER]: async (state, name, sender) => this.unregister({ event: name, path: sender }),
+			[ServiceBaseActions.REGISTER]: async (_:void, name:string, sender:string) => this.register({ event: name, path: sender }),
+			[ServiceBaseActions.UNREGISTER]: async (_:void, name:string, sender:string) => this.unregister({ event: name, path: sender }),
 			[ServiceBaseActions.EVENT]: async (state, payload) => this.onEvent(payload),
 		}
 	}
@@ -89,7 +90,6 @@ export class ServiceBase extends NodeConf {
 	/**
 	 * emette un ACTION a tutti i "listeners"
 	 * @param action 
-	 * @returns 
 	 */
 	async dispatch(action: IAction): Promise<any> {
 		const res = await super.dispatch(action)

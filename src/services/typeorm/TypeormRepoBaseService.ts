@@ -29,6 +29,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 		return <IRepoStructActions<any>>{
 			...super.dispatchMap,
 			[Actions.FIND]: async (_, query) => await this.find(query),
+			[Actions.FIND_ONE]: async (_, query) => await this.findOne(query),
 			[RepoStructActions.SEED]: async (state, seeds) => await this.seed(seeds ?? state.seeds),
 			[RepoStructActions.TRUNCATE]: async _ => await this.truncate(),
 			[RepoStructActions.CLEAR]: async _ => await this.clear(),
@@ -64,10 +65,6 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	protected getRepo(model?: string): Repository<unknown> {
 		const repo = this.connection.getRepository(model ?? this.model)
 		return repo
-		// if ( this.repo == null) {
-		// 	this.repo = this.connection.getRepository(model ?? this.model)
-		// }
-		// return this.repo
 	}
 
 	// [II] da implementare
@@ -87,26 +84,35 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	 */
 	private async find(query: any): Promise<any[]> {
 		const repo = this.getRepo()
+		return await repo.find(this.normalizeQuery(query))
+	}
+
+	private async findOne(query: any): Promise<any> {
+		const repo = this.getRepo()
+		return await repo.findOne(this.normalizeQuery(query))
+	}
+
+	private normalizeQuery(query: any): any {
 		if (query.where) {
 			// permette di poter utilizzare le "Advanced Options"
 			// https://typeorm.io/find-options#advanced-options
 			Object.keys(query.where).forEach(key => {
 				const value = query.where[key]
 				const { type } = value
-				if ( !type ) return
-				switch ( type ) {
+				if (!type) return
+				switch (type) {
 					case "raw":
 						const { sql } = value
 						query.where[key] = Raw(alias => sql?.replace("{*}", alias))
-					break
+						break
 					case "between":
 						const { from, to } = value
 						query.where[key] = Between(from, to)
-					break
+						break
 				}
 			})
 		}
-		return await repo.find(query)
+		return query
 	}
 
 	/**

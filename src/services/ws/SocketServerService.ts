@@ -1,23 +1,26 @@
-import { request, Request } from "express"
-import WebSocket from "ws"
+import { Request } from "express"
 import url, { URLSearchParams } from 'url'
-
-
-import * as jwtNs from "../jwt"
+import WebSocket from "ws"
 import { Bus } from "../../core/path/Bus"
-
-import * as http from "../http"
 import * as errorNs from "../error"
+import * as http from "../http"
+import * as jwtNs from "../jwt"
+import { SocketCommunicator, SocketCommunicatorConf } from "./SocketCommunicator"
+import { clientIsEqual, Errors, IClient, IMessage, SocketServerActions } from "./utils"
 
-import { SocketServerActions, IClient, IMessage, clientIsEqual } from "./utils"
-import { SocketCommunicator } from "./SocketCommunicator"
-import { Errors } from "./utils"
 
 
+export interface SocketServerServiceConf extends SocketCommunicatorConf {
+	autostart: boolean
+	port: number
+	jwt: string,
+	clients: IClient[],
+	onAuth: (jwtPayload: string) => boolean,
+}
 
 export class SocketServerService extends SocketCommunicator {
 
-	get stateDefault(): any {
+	get stateDefault(): SocketServerServiceConf {
 		return {
 			...super.stateDefault,
 			name: "ws-server",
@@ -179,8 +182,8 @@ export class SocketServerService extends SocketCommunicator {
 		this.server.on('connection', (cws: WebSocket, req: Request, jwtPayload: any) => {
 			const params = this.getUrlParams(req)
 			const client = {
-				remoteAddress: req.connection.remoteAddress,
-				remotePort: req.connection.remotePort,
+				remoteAddress: req.socket.remoteAddress,
+				remotePort: req.socket.remotePort,
 				params,
 				jwtPayload
 			}
