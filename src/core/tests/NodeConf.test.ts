@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest"
 import { utils, ConfActions } from "../../index"
 import FarmService from "../../services/farm"
 import { NodeConf } from "../node/NodeConf"

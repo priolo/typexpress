@@ -1,8 +1,9 @@
 import winston from "winston";
-import { Bus, ServiceBase } from "../../index"
-import { Actions, LogLevel, LogNotify } from "./utils"
-import { INode } from "core/node/INode";
-import LogTransportService from "./LogTransportService";
+import { Bus, ServiceBase } from "../../index.js"
+import { Actions, LogLevel, LogNotify } from "./utils.js"
+import { INode } from "core/node/INode.js";
+import LogTransportService from "./LogTransportService.js";
+
 
 
 /**

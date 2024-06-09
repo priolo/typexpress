@@ -1,6 +1,6 @@
-import { IMessage, SocketRouteActions, IClient } from "./utils"
-import { ServiceBase } from "../../core/service/ServiceBase"
-import { NodeStateConf } from "../../core/node/NodeState"
+import { IMessage, SocketRouteActions, IClient } from "./utils.js"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { NodeStateConf } from "../../core/node/NodeState.js"
 
 
 

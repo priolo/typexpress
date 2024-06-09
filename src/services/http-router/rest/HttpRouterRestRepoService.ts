@@ -1,7 +1,7 @@
-import { Bus } from "../../../core/path/Bus"
-import { RepoRestActions } from "../../../core/repo/utils"
-import { HttpRouterServiceConf } from "../HttpRouterService"
-import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase"
+import { Bus } from "../../../core/path/Bus.js"
+import { RepoRestActions } from "../../../core/repo/utils.js"
+import { HttpRouterServiceConf } from "../HttpRouterService.js"
+import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase.js"
 
 
 

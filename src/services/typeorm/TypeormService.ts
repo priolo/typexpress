@@ -1,13 +1,15 @@
 import { DataSource, EntitySchema } from "typeorm";
 import path from "path"
-import { ServiceBase } from "../../core/service/ServiceBase";
-import { TypeormRepoService } from "./TypeormRepoService";
-import { Bus } from "../../core/path/Bus";
-import * as errorNs from "../error";
-import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
+import { ServiceBase } from "../../core/service/ServiceBase.js";
+import { TypeormRepoService } from "./TypeormRepoService.js";
+import { Bus } from "../../core/path/Bus.js";
+import * as errorNs from "../error/index.js";
+import { TypeormRepoBaseService } from "./TypeormRepoBaseService.js";
 
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
+
+
 
 /**
  * Crea e utilizza un DataSource Typeorm. 

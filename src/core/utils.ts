@@ -1,7 +1,7 @@
-import { INode } from "./node/INode"
+import { INode } from "./node/INode.js"
 //import { NodeState } from "./node/NodeState"
 import { obj } from "@priolo/jon-utils"
-import { NodeState } from "./node/NodeState"
+import { NodeState } from "./node/NodeState.js"
 
 
 

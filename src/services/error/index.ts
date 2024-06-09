@@ -1,5 +1,5 @@
-import ErrorService from "./ErrorService"
-import { ErrorNotify, ErrorLevel } from "./ErrorNotify"
+import ErrorService from "./ErrorService.js"
+import { ErrorNotify, ErrorLevel } from "./ErrorNotify.js"
 
 export {
 	ErrorService as default,
@@ -8,4 +8,4 @@ export {
 	ErrorLevel,
 }
 
-export * from "./utils"
+export * from "./utils.js"

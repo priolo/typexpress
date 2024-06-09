@@ -1,4 +1,4 @@
-import { SocketCommunicator, SocketCommunicatorConf } from "./SocketCommunicator"
+import { SocketCommunicator, SocketCommunicatorConf } from "./SocketCommunicator.js"
 
 
 

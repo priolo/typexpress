@@ -1,8 +1,8 @@
 import cors from "cors";
 import express, { Router } from "express";
-import { PathFinder, ServiceBase } from "../../index";
-import { IHttpRouter } from "../http/utils";
-import { NodeStateConf } from "../../core/node/NodeState";
+import { PathFinder, ServiceBase } from "../../index.js";
+import { IHttpRouter } from "../http/utils.js";
+import { NodeStateConf } from "../../core/node/NodeState.js";
 
 
 

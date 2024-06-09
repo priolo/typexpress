@@ -1,6 +1,6 @@
-import { fnNodePattern, nodeParents, nodeParentsFind } from "../utils"
-import { INode } from "../node/INode"
-import { PathFinderList } from "./PathFinderList"
+import { fnNodePattern, nodeParents, nodeParentsFind } from "../utils.js"
+import { INode } from "../node/INode.js"
+import { PathFinderList } from "./PathFinderList.js"
 
 
 

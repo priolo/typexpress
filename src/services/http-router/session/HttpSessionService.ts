@@ -1,13 +1,12 @@
-import express, { Router } from "express"
-
-import { PathFinder } from "../../../core/path/PathFinder"
-import { IEvent, ServiceBaseEvents } from "../../../core/service/index"
-
-import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
+import { TypeormStore } from "connect-typeorm"
+import { Router } from "express"
 import session from 'express-session'
-import {TypeormService} from "../../typeorm/TypeormService"
-import { TypeormStore } from "connect-typeorm";
-import { SessionEntity } from "./SessionEntity"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { IEvent, ServiceBaseEvents } from "../../../core/service/index.js"
+import { TypeormService } from "../../typeorm/TypeormService.js"
+import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
+import { SessionEntity } from "./SessionEntity.js"
+
 
 
 /**

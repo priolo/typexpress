@@ -1,3 +1,3 @@
 
-export * from "./utils"
-export { ServiceBase } from "./ServiceBase"
+export * from "./utils.js"
+export { ServiceBase } from "./ServiceBase.js"

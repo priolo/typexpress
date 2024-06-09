@@ -1,7 +1,7 @@
-import { Node } from "./Node";
-import { IAction } from "./IAction";
+import { Node } from "./Node.js";
+import { IAction } from "./IAction.js";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { INode } from "./INode";
+import { INode } from "./INode.js";
 
 
 

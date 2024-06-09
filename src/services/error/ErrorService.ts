@@ -1,10 +1,10 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
-import { INode } from "../../core/node/INode";
-import { Bus } from "../../core/path/Bus"
-import { Actions } from "./utils"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { INode } from "../../core/node/INode.js";
+import { Bus } from "../../core/path/Bus.js"
+import { Actions } from "./utils.js"
 
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { ErrorLevel, ErrorNotify } from "./ErrorNotify";
+import { ErrorLevel, ErrorNotify } from "./ErrorNotify.js";
 
 
 /**

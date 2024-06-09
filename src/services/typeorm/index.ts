@@ -1,6 +1,6 @@
-import { TypeormService } from "./TypeormService"
-import { TypeormRepoService } from "./TypeormRepoService"
-import { TypeormRepoTreeService } from "./TypeormRepoTreeService"
+import { TypeormService } from "./TypeormService.js"
+import { TypeormRepoService } from "./TypeormRepoService.js"
+import { TypeormRepoTreeService } from "./TypeormRepoTreeService.js"
 import { IsNull } from "typeorm";
 
 export {
@@ -10,4 +10,4 @@ export {
 	TypeormRepoTreeService as tree,
 	IsNull
 }
-export * from "./utils"
+export * from "./utils.js"

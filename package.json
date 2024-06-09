@@ -1,13 +1,20 @@
 {
 	"name": "typexpress",
 	"version": "0.4.0",
+	"description": "Project Typexpress",
 	"private": false,
+	"type": "module",
+	"main": "dist/typexpress.cjs.js",
+	"module": "dist/typexpress.es.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
 	"keywords": [
 		"express",
 		"typescript",
 		"typexpress"
 	],
-	"description": "Project Typexpress",
 	"author": "Iorio Ivano <iorioivano@gmail.com>",
 	"license": "MIT",
 	"homepage": "https://github.com/priolo/typexpress",
@@ -15,15 +22,10 @@
 		"type": "git",
 		"url": "https://github.com/priolo/typexpress.git"
 	},
-	"main": "dist/index.js",
-	"files": [
-		"dist"
-	],
 	"scripts": {
-		"build": "npx tsc",
-		"build-watch": "tsc -w",
-		"test": "jest dist --no-cache --runInBand",
-		"test-watch": "jest dist --watch --runInBand",
+		"build-dev": "vite build --mode production --sourcemap --watch",
+		"build": "vite build",    
+		"test": "vitest",
 		"pub": "tsc && npm publish"
 	},
 	"//dependencies": {
@@ -52,14 +54,10 @@
 		"serve-index": "^1.9.1",
 		"sqlite3": "^5.0.2",
 		"typeorm": "^0.3.20",
-		"ws": "^7.4.5",
-		"winston": "^3.8.2"
+		"winston": "^3.8.2",
+		"ws": "^7.4.5"
 	},
 	"devDependencies": {
-		"@babel/plugin-proposal-class-properties": "^7.14.5",
-		"@babel/plugin-proposal-decorators": "^7.14.5",
-		"@babel/preset-env": "^7.14.4",
-		"@babel/preset-typescript": "^7.13.0",
 		"@tsconfig/node18": "^18.2.4",
 		"@types/cookie-parser": "^1.4.2",
 		"@types/cors": "^2.8.10",
@@ -68,17 +66,15 @@
 		"@types/express-session": "^1.17.1",
 		"@types/form-data": "^2.5.0",
 		"@types/graphql": "^14.5.0",
-		"@types/jest": "^26.0.15",
 		"@types/jsonwebtoken": "^8.5.0",
 		"@types/multer": "^1.4.5",
 		"@types/node": "^18.8.5",
 		"@types/nodemailer": "^6.4.0",
 		"@types/serve-index": "^1.7.30",
 		"@types/ws": "^7.4.4",
-		"jest": "^27.5.1",
-		"typescript": "^5.4.5"
-	},
-	"jest": {
-		"testURL": "http://localhost:5001"
+		"typescript": "^5.4.5",
+		"vite": "^5.2.12",
+		"vite-plugin-dts": "^3.9.1",
+		"vitest": "^1.6.0"
 	}
 }

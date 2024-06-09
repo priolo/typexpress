@@ -1,4 +1,4 @@
-import { HttpStaticService } from "./HttpStaticService"
+import { HttpStaticService } from "./HttpStaticService.js"
 
 export {
 	HttpStaticService as Service,

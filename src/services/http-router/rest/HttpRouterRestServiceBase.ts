@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HttpRouterService, HttpRouterServiceConf } from "../HttpRouterService";
+import { HttpRouterService, HttpRouterServiceConf } from "../HttpRouterService.js";
 
 
 

@@ -2,13 +2,13 @@ import fs from "fs"
 import path from "path"
 import { Column, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
 
-import { RootService } from "../../../core/RootService"
-import { PathFinder } from "../../../core/path/PathFinder";
-import { RepoStructActions, RepoTreeActions } from "../../../core/repo/utils";
-import { Bus } from "../../../core/path/Bus";
+import { RootService } from "../../../core/RootService.js"
+import { PathFinder } from "../../../core/path/PathFinder.js";
+import { RepoStructActions, RepoTreeActions } from "../../../core/repo/utils.js";
+import { Bus } from "../../../core/path/Bus.js";
 
-import * as orm from "../index";
-import { deleteIfExist } from "../../fs";
+import * as orm from "../index.js";
+import { deleteIfExist } from "../../fs/index.js";
 
 
 

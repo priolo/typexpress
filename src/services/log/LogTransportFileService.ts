@@ -1,5 +1,5 @@
 import winston from "winston";
-import LogTransportService from "./LogTransportService";
+import LogTransportService from "./LogTransportService.js";
 
 
 /**

@@ -2,6 +2,8 @@ import { Bus } from "../path/Bus"
 import FarmService from "../../services/farm"
 import { NodeConf } from "../node/NodeConf"
 import { ConfActions } from "../node/utils"
+import { afterAll, beforeAll, expect } from "vitest"
+import test from "node:test"
 
 
 

@@ -1,5 +1,5 @@
 import express, { Request, Response, Router } from "express"
-import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
+import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
 
 
 

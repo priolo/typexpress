@@ -3,11 +3,11 @@
  */
 
 import axios from "axios"
-import { ConfActions } from "../../../core/node/utils"
+import { ConfActions } from "../../../core/node/utils.js"
 import { Request, Response } from "express"
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-import { HttpRouterService } from "../HttpRouterService"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import { HttpRouterService } from "../HttpRouterService.js"
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
 

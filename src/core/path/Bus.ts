@@ -1,9 +1,9 @@
-import { IAction } from "../node/IAction";
-import { INode } from "../node/INode";
-import { NodeState } from "../node/NodeState";
-import { nodePath } from "../utils";
+import { IAction } from "../node/IAction.js";
+import { INode } from "../node/INode.js";
+import { NodeState } from "../node/NodeState.js";
+import { nodePath } from "../utils.js";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { PathFinder } from "./PathFinder";
+import { PathFinder } from "./PathFinder.js";
 import { time } from "@priolo/jon-utils"
 
 

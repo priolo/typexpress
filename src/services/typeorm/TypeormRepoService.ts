@@ -1,5 +1,5 @@
-import { IRepoRestDispatch, RepoRestActions } from "../../core/repo/utils";
-import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
+import { IRepoRestDispatch, RepoRestActions } from "../../core/repo/utils.js";
+import { TypeormRepoBaseService } from "./TypeormRepoBaseService.js";
 
 
 

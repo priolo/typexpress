@@ -1,5 +1,5 @@
-import LogService from "./LogService"
-import LogTransportFileService from "./LogTransportFileService"
+import LogService from "./LogService.js"
+import LogTransportFileService from "./LogTransportFileService.js"
 
 export {
 	LogService as default,
@@ -7,4 +7,4 @@ export {
 	LogTransportFileService as file
 }
 
-export * from "./utils"
+export * from "./utils.js"

@@ -1,12 +1,12 @@
 import { Request } from "express"
 import url, { URLSearchParams } from 'url'
 import WebSocket from "ws"
-import { Bus } from "../../core/path/Bus"
-import * as errorNs from "../error"
-import * as http from "../http"
-import * as jwtNs from "../jwt"
-import { SocketCommunicator, SocketCommunicatorConf } from "./SocketCommunicator"
-import { clientIsEqual, Errors, IClient, IMessage, SocketServerActions } from "./utils"
+import { Bus } from "../../core/path/Bus.js"
+import * as errorNs from "../error/index.js"
+import * as http from "../http/index.js"
+import * as jwtNs from "../jwt/index.js"
+import { SocketCommunicator, SocketCommunicatorConf } from "./SocketCommunicator.js"
+import { clientIsEqual, Errors, IClient, IMessage, SocketServerActions } from "./utils.js"
 
 
 

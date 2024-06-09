@@ -1,7 +1,7 @@
-import { ServiceBase } from "../../index"
+import { ServiceBase } from "../../index.js"
 
 import winston from "winston";
-import { LogLevel } from "./utils";
+import { LogLevel } from "./utils.js";
 
 
 /**

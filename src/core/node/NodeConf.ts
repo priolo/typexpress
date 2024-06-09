@@ -1,9 +1,9 @@
-import { NodeState } from "./NodeState";
-import FarmService from "../../services/farm";
-import { PathFinder } from "../path/PathFinder";
-import { ConfActions } from "./utils";
-import { INode } from "./INode"
-import { nodeForeach } from "../utils";
+import { NodeState } from "./NodeState.js";
+import FarmService from "../../services/farm/index.js";
+import { PathFinder } from "../path/PathFinder.js";
+import { ConfActions } from "./utils.js";
+import { INode } from "./INode.js"
+import { nodeForeach } from "../utils.js";
 
 
 

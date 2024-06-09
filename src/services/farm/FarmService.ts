@@ -1,6 +1,6 @@
-import { INode } from "../../core/node/INode"
-import { Node } from "../../core/node/Node"
-import { NodeConf } from "../../core/node/NodeConf"
+import { INode } from "../../core/node/INode.js"
+import { Node } from "../../core/node/Node.js"
+import { NodeConf } from "../../core/node/NodeConf.js"
 
 
 

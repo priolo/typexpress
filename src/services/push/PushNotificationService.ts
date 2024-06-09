@@ -1,9 +1,9 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
-import { Bus } from "../../core/path/Bus"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { Bus } from "../../core/path/Bus.js"
 
-import * as errorNs from "../error"
+import * as errorNs from "../error/index.js"
 import * as admin from "firebase-admin"
-import { Actions, Errors } from "./utils"
+import { Actions, Errors } from "./utils.js"
 
 
 export class PushNotificationService extends ServiceBase {
