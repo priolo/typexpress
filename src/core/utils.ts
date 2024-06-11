@@ -1,7 +1,5 @@
 import { INode } from "./node/INode"
-//import { NodeState } from "./node/NodeState"
 import { obj } from "@priolo/jon-utils"
-import { NodeState } from "./node/NodeState"
 
 
 
@@ -102,7 +100,7 @@ export function nodeToJson(node: INode): object {
 	if (!node) return {}
 	return {
 		name: node.name,
-		...(node instanceof NodeState ? node.state : {}),
+		//...(node instanceof NodeState ? node.state : {}),
 		...(node.children?.length > 0 ? {
 			children: node.children.map(c => nodeToJson(c))
 		} : {})
