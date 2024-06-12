@@ -1,11 +1,12 @@
 import { RootService } from "../RootService"
 import { NodeConf } from "../node/NodeConf"
+import { NodeState } from "../node/NodeState"
 import { ConfActions } from "../node/utils"
 import { Bus } from "../path/Bus"
 
 
 
-let root:RootService = null
+let root:RootService | null = null
 class TestNode extends NodeConf {
 
 	private tryError = 3
@@ -53,12 +54,12 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-	root.dispatch({ type: ConfActions.DESTROY })
+	root?.dispatch({ type: ConfActions.DESTROY })
 })
 
 
 test("setup", async () => {
-	const node = root.children.find(n => n.name == "child1")?.children.find(n => n.name == "child1.2")
+	const node = root?.children.find(n => n.name == "child1")?.children.find(n => n.name == "child1.2")
 	expect(node).toBeInstanceOf(TestNode)
 })
 
@@ -68,7 +69,7 @@ test("send action", async () => {
 		payload: "topolino",
 	})
 	expect(ret).toBe("pluto")
-	const node = root.children.find(n => n.name == "child1")?.children.find(n => n.name == "child1.2")
+	const node:NodeState = root?.children.find(n => n.name == "child1")?.children.find(n => n.name == "child1.2") as  NodeState
 	expect(node.state.value).toBe("topolino")
 })
 
