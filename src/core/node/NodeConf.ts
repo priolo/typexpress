@@ -69,7 +69,7 @@ export class NodeConf extends NodeState {
 	 * Valorizza questo NODE e costruisce tutti i children tramite il parametro JSON
 	 * @param json 
 	 */
-	protected async buildByJson(json: any = {}): Promise<void> {
+	async buildByJson(json: any = {}): Promise<void> {
 
 		// faccio una copia e tolgo "children" e "class"
 		const config = { ...json }

@@ -1,41 +1,39 @@
-import { RootService } from "../RootService"
-import { nodeToJson, nodeMap, nodePath } from "../utils"
+import { INode } from "../node/INode";
+import { NodeConf } from "../node/NodeConf";
 import { PathFinder } from "../path/PathFinder";
-import { ConfActions } from "../node/utils";
-import { INode } from "../node/INode"
+import { nodeMap, nodePath, nodeToJson } from "../utils";
 
 
-let root;
+
+let root: NodeConf;
 
 beforeAll(async () => {
-	root = new RootService("root")
-	await root.dispatch({
-		type: ConfActions.INIT,
-		payload: {
-			// sovrascrivo "root" con "root2"
-			name: "root2",
-			value: 23,
-			children: [
-				{
-					name: "child1",
-					children: [
-						{ name: "child1.1" },
-						{ name: "child1.2" }
-					]
-				},
-				{
-					name: "child2",
-					children: [
-						{ name: "child2.1" }
-					]
-				}
-			]
-		}
+	debugger
+	root = new NodeConf()
+	root.buildByJson({
+		// sovrascrivo "root" con "root2"
+		name: "root2",
+		value: 23,
+		children: [
+			{
+				name: "child1",
+				children: [
+					{ name: "child1.1" },
+					{ name: "child1.2" }
+				]
+			},
+			{
+				name: "child2",
+				children: [
+					{ name: "child2.1" }
+				]
+			}
+		]
 	})
 })
 
 test("nodeToJson", async () => {
-
+debugger
 	const json = nodeToJson(root)
 
 	expect(json).toEqual({

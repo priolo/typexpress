@@ -1,12 +1,11 @@
-import { Bus } from "../path/Bus"
-import FarmService from "../../services/farm"
+import { RootService } from "../RootService"
 import { NodeConf } from "../node/NodeConf"
 import { ConfActions } from "../node/utils"
-import { RootService } from "../RootService"
+import { Bus } from "../path/Bus"
 
 
 
-let root = null
+let root:RootService = null
 class TestNode extends NodeConf {
 
 	private tryError = 3
