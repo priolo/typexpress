@@ -1,10 +1,12 @@
-import { SocketCommunicator, SocketCommunicatorConf } from "./SocketCommunicator"
+import { SocketCommunicator } from "./SocketCommunicator"
 
 
+
+export type SocketRouteConf = Partial<SocketRouteService['stateDefault']> & { class: "ws/route" }
 
 export class SocketRouteService extends SocketCommunicator {
 
-	get stateDefault(): SocketCommunicatorConf {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "ws-route",
@@ -12,4 +14,3 @@ export class SocketRouteService extends SocketCommunicator {
 	}
 
 }
-

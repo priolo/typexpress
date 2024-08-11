@@ -5,9 +5,14 @@ import { TypeormRepoService } from "./TypeormRepoService";
 import { Bus } from "../../core/path/Bus";
 import * as errorNs from "../error";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
-
+import { DataSourceOptions} from "typeorm"
+import { EntitySchemaOptions } from "typeorm/browser";
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
+
+
+
+export type TypeormServiceConf = Partial<TypeormService['stateDefault']> & { class: "typeorm" }
 
 /**
  * Crea e utilizza un DataSource Typeorm. 
@@ -15,21 +20,20 @@ import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
  */
 export class TypeormService extends ServiceBase {
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "typeorm",
-			// [II] sostituire con "options"
-			// https://typeorm.io/#/connection-options
-			options: {
-				"type": "sqlite",
+			// https://typeorm.io/data-source-options#common-data-source-options
+			options: <DataSourceOptions>{
+				type: "sqlite",
 				//"username": null,
 				//"password": null,
-				"database": path.join(__dirname, "../database/database.sqlite"),
-				"synchronize": true,
-				"logging": true,
-				"entities": [], // array-schema-entity-directory:mandatory:ex:[path.join(__dirname, "./models/**/*.js")]
-				"schemas": [],	// array-schema
+				database: path.join(__dirname, "../database/database.sqlite"),
+				synchronize: true,
+				logging: true,
+				entities: [], // array-schema-entity-directory:mandatory:ex:[path.join(__dirname, "./models/**/*.js")]
+				schemas: [],	// array-schema
 				// "migrations": [
 				// 	"./database/migration/**/*.js"
 				// ],
@@ -41,7 +45,8 @@ export class TypeormService extends ServiceBase {
 				// 	"migrationsDir": "database/migration",
 				// 	"subscribersDir": "app/subscriber"
 				// }
-			}
+			},
+			schemas: <EntitySchemaOptions<any>[]>null,
 		}
 	}
 

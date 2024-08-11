@@ -5,28 +5,30 @@ import { HttpRouterServiceBase, HttpRouterServiceBaseConf } from "./HttpRouterSe
 
 
 
-export interface HttpRouterServiceConf extends HttpRouterServiceBaseConf {
-	/** 
-	 * @example
-	{ path: "/hi", verb: "get", method: (req, res, next) => "HELLO WORLD" },
-	{ path: "/test", verb: "post", method: "myFunction" },
-	*/
-	routers: IRouteParam[]
-	/** wrap try--catch intorno al metodo */
-	handleErrors?: boolean
-}
+// export interface HttpRouterServiceConf extends HttpRouterServiceBaseConf {
+// 	/** 
+// 	 * @example
+// 	{ path: "/hi", verb: "get", method: (req, res, next) => "HELLO WORLD" },
+// 	{ path: "/test", verb: "post", method: "myFunction" },
+// 	*/
+// 	routers: IRouteParam[]
+// 	/** wrap try--catch intorno al metodo */
+// 	handleErrors?: boolean
+// }
+
+export type HttpRouterServiceConf = Partial<HttpRouterService['stateDefault']> & { class: "http-router", children?: HttpRouterServiceConf[] }
 
 /**
  * Mappa una richiesta http con le funzioni della classe
  */
 export class HttpRouterService extends HttpRouterServiceBase {
 
-	get stateDefault(): HttpRouterServiceConf {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "route",
 			handleErrors: true,
-			routers: []
+			routers: <IRouteParam[]>[]
 		}
 	}
 
@@ -69,8 +71,8 @@ export class HttpRouterService extends HttpRouterServiceBase {
 
 export interface IRouteParam {
 	path?: string,
-	verb?: Verb,
+	verb?: string, //"get" | "post" | "update" | "delete",
 	method: string | IRouteMethod,
 }
 type IRouteMethod = (req: Request, res: Response, next: any) => any
-type Verb = "get" | "post" | "update" | "delete"
+//type Verb = "get" | "post" | "update" | "delete"

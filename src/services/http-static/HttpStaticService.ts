@@ -3,8 +3,11 @@ import serveIndex from "serve-index"
 import fs from "fs"
 import p from "path"
 import { log, LOG_TYPE } from "@priolo/jon-utils"
-
 import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServiceBase"
+
+
+
+export type HttpStaticServiceConf = Partial<HttpStaticService['stateDefault']> & { class: "http-static" }
 
 /**
  * Crea un ROUTE che punta ad una directory
@@ -12,7 +15,7 @@ import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServ
  */
 export class HttpStaticService extends HttpRouterServiceBase {
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "http-static",

@@ -6,14 +6,16 @@ import { NodeStateConf } from "../../core/node/NodeState";
 
 
 
-export interface HttpRouterServiceBaseConf extends NodeStateConf {
-	/** OUTING relativo a questo NODE */
-	path: string
-	/** https://expressjs.com/en/4x/api.html#req.accepts */
-	headers: {[key:string]:string}
-	/** http://expressjs.com/en/resources/middleware/cors.html#configuration-options */
-	cors: any	
-}
+// export interface HttpRouterServiceBaseConf extends NodeStateConf {
+// 	/** OUTING relativo a questo NODE */
+// 	path: string
+// 	/** https://expressjs.com/en/4x/api.html#req.accepts */
+// 	headers: {[key:string]:string}
+// 	/** http://expressjs.com/en/resources/middleware/cors.html#configuration-options */
+// 	cors: any	
+// }
+
+export type HttpRouterServiceBaseConf = Partial<HttpRouterServiceBase['stateDefault']>
 
 /**
  * Si attacca al PARENT (deve implementare IHttpRouter) come ROUTER
@@ -22,11 +24,11 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 
 	private router: Router = null
 
-	get stateDefault(): HttpRouterServiceBaseConf {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
-			headers: null,
-			cors: null,		
+			headers: <{[key:string]:string}>null,
+			cors: <any>null,		
 			path: "/",
 		}
 	}

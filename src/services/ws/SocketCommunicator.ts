@@ -1,25 +1,19 @@
-import { IMessage, SocketRouteActions, IClient } from "./utils"
 import { ServiceBase } from "../../core/service/ServiceBase"
-import { NodeStateConf } from "../../core/node/NodeState"
+import { IClient, IMessage, SocketRouteActions } from "./utils"
 
 
 
-export interface SocketCommunicatorConf extends NodeStateConf {
-	path: string
-	onConnect: (client: IClient) => void
-	onDisconnect: (client: IClient) => void
-	onMessage: (client: IClient, message: string | IMessage) => void
-}
+export type SocketCommunicatorConf = Partial<SocketCommunicator['stateDefault']>
 
 export abstract class SocketCommunicator extends ServiceBase {
 
-	get stateDefault(): SocketCommunicatorConf {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
-			path: null,
-			onConnect: null,
-			onDisconnect: null,
-			onMessage: null,
+			path: <string>null,
+			onConnect: <(client: IClient) => void>null,
+			onDisconnect: <(client: IClient) => void>null,
+			onMessage: <(client: IClient, message: string | IMessage) => void>null,
 		}
 	}
 
@@ -46,14 +40,14 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 * @param jwtPayload 
 	 */
 	onConnect(client: IClient): void {
-		this.state?.onConnect.bind(this)(client)
+		this.state.onConnect?.bind(this)(client)
 		this.children.forEach(node => {
 			if (node instanceof SocketCommunicator) node.onConnect(client)
 		})
 	}
 
 	onDisconnect(client: IClient) {
-		this.state?.onDisconnect.bind(this)(client)
+		this.state.onDisconnect?.bind(this)(client)
 		this.children.forEach(node => {
 			if (node instanceof SocketCommunicator) node.onDisconnect(client)
 		})
@@ -71,7 +65,6 @@ export abstract class SocketCommunicator extends ServiceBase {
 		if (!message) return
 		if (!path) path = ""
 		if (path.startsWith("/")) path = path.slice(1)
-
 
 		// se il messaggio non ha paths allora manda a tutti
 		if (paths == null) {

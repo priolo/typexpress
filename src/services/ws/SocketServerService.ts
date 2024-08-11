@@ -5,34 +5,31 @@ import { Bus } from "../../core/path/Bus"
 import * as errorNs from "../error"
 import * as http from "../http"
 import * as jwtNs from "../jwt"
-import { SocketCommunicator, SocketCommunicatorConf } from "./SocketCommunicator"
-import { clientIsEqual, Errors, IClient, IMessage, SocketServerActions } from "./utils"
+import LogService from "../log"
+import { SocketCommunicator } from "./SocketCommunicator"
+import { SocketRouteConf } from "./SocketRouteService"
+import { Errors, IClient, IMessage, SocketServerActions, clientIsEqual } from "./utils"
 
 
 
-export interface SocketServerServiceConf extends SocketCommunicatorConf {
-	autostart: boolean
-	port: number
-	jwt: string,
-	clients: IClient[],
-	onAuth: (jwtPayload: string) => boolean,
-}
+export type SocketServerConf = Partial<SocketServerService['stateDefault']> & { class: "ws", children?: SocketRouteConf[]  }
+export type SocketServerAct = SocketServerService['dispatchMap']
 
 export class SocketServerService extends SocketCommunicator {
 
-	get stateDefault(): SocketServerServiceConf {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "ws-server",
 			autostart: true,
-			port: null,
-			jwt: null,
-			clients: [],
-			onAuth: null,
+			port: <number>null,
+			jwt: <string>null,
+			clients: <IClient[]>[],
+			onAuth: <(jwtPayload: string) => boolean>null,
 		}
 	}
 
-	get dispatchMap(): any {
+	get dispatchMap() {
 		return {
 			...super.dispatchMap,
 			[SocketServerActions.START]: async (state) => {
@@ -51,10 +48,8 @@ export class SocketServerService extends SocketCommunicator {
 
 	protected async onInit() {
 		super.onInit()
-		const { autostart } = this.state
-		if (!autostart) return
+		if (!this.state.autostart) return
 		await this.startListener()
-
 	}
 
 	protected async onDestroy() {
@@ -86,12 +81,13 @@ export class SocketServerService extends SocketCommunicator {
 	 * @returns 
 	 */
 	private async buildServer(): Promise<void> {
-		const { port } = this.state
-		let resolve, reject
-		const promise = new Promise<void>((res, rej) => { resolve = res; reject = rej })
-		if (!port) reject("no port")
-		this.server = new WebSocket.Server({ port }, () => { resolve() })
-		return promise
+		return new Promise((res, rej) => {
+			if (!this.state.port) rej("no port")
+			this.server = new WebSocket.Server(
+				{ port: this.state.port },
+				() => res()
+			)
+		})
 	}
 
 	/**
@@ -103,6 +99,7 @@ export class SocketServerService extends SocketCommunicator {
 
 		this.server = new WebSocket.Server({ noServer: true })
 		parentHttp.on('upgrade', this.onUpgrade)
+		LogService.Send(this, "attached")
 	}
 	private detachToServerHttp() {
 		const parentHttp = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
@@ -135,7 +132,7 @@ export class SocketServerService extends SocketCommunicator {
 		// a qaunto pare non è possibile leggere l'header
 		// https://stackoverflow.com/a/4361358/5224029		
 		this.server.handleUpgrade(request, socket, head, (ws) => {
-			this.server.emit('connection', ws, request, jwtPayload);
+			this.server.emit('connection', ws, request, jwtPayload)
 		})
 	}
 
@@ -179,9 +176,10 @@ export class SocketServerService extends SocketCommunicator {
 	 */
 	private buildEventsServer() {
 
+		// when a CLIENT conect
 		this.server.on('connection', (cws: WebSocket, req: Request, jwtPayload: any) => {
 			const params = this.getUrlParams(req)
-			const client = {
+			const client: IClient = {
 				remoteAddress: req.socket.remoteAddress,
 				remotePort: req.socket.remotePort,
 				params,

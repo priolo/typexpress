@@ -2,6 +2,7 @@
  * Definisce la struttura ad albero dei Node
  */
  export interface INode {
+
 	/**
 	 * random identifier of the node
 	 */

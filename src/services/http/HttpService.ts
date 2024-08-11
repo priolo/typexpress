@@ -10,27 +10,31 @@ import { PathFinder } from "../../core/path/PathFinder"
 import { ServiceBase } from "../../core/service/ServiceBase"
 import ErrorService, { Actions as ActionsError } from "../error"
 import { Errors, IHttpRouter } from "./utils"
+import { HttpRouterServiceConf } from "../http-router/HttpRouterService"
 
 
 
-export interface HttpServiceConf extends NodeStateConf {
-	/** porta di ascolto del server */
-	port: number
-	/** il render da utilizzare per il momento c'e' solo "handlebars"  */
-	render?: any
-	/** opzioni di express
-	 * https://expressjs.com/en/4x/api.html#app.set
-	 */
-	options?: { [key: string]: any }
-	/** se valorizzato creo un server https
-	 * @example
-	https: {
-		privkey: "privkey.pem", // file path
-		pubcert: "pubcert.pem",	// file path
-	}
-	 */
-	https?: ServerOptions
-}
+// export interface HttpServiceConf extends NodeStateConf {
+// 	/** porta di ascolto del server */
+// 	port: number
+// 	/** il render da utilizzare per il momento c'e' solo "handlebars"  */
+// 	render?: any
+// 	/** opzioni di express
+// 	 * https://expressjs.com/en/4x/api.html#app.set
+// 	 */
+// 	options?: { [key: string]: any }
+// 	/** se valorizzato creo un server https
+// 	 * @example
+// 	https: {
+// 		privkey: "privkey.pem", // file path
+// 		pubcert: "pubcert.pem",	// file path
+// 	}
+// 	 */
+// 	https?: ServerOptions
+// }
+
+export type HttpServiceConf = Partial<HttpService['stateDefault']> & { class: "http", children?: HttpRouterServiceConf[] }
+//export type HttpServiceAct = HttpService['dispatchMap']
 
 /**
  * Praticamente mantiene un instanza di un server "express"
@@ -46,11 +50,27 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		return this._server
 	}
 
-	get stateDefault(): HttpServiceConf {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "http",
+			/** porta di ascolto del server */
 			port: 5000,
+			/** il render da utilizzare per il momento c'e' solo "handlebars"  */
+			render: <any>null,
+			/** opzioni di express
+			 * https://expressjs.com/en/4x/api.html#app.set
+			 */
+			options: <{ [key: string]: any }>null,
+			/** se valorizzato creo un server https
+				@example
+				https: {
+				privkey: "privkey.pem", // file path
+				pubcert: "pubcert.pem",	// file path
+				}
+			*/
+			https: <ServerOptions>null,
+
 		}
 	}
 
@@ -86,6 +106,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			a questo punto pensare ai log nella stessa maniera
 			*/
 
+			// se c'e' un gestore di errore come figlio inoltra l'errore pure li
 			const errorSrv = new PathFinder(this).getNode<ErrorService>("error")
 			if (errorSrv) {
 				errorSrv.dispatch({
@@ -93,6 +114,8 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 					payload: err
 				})
 			}
+
+			// continua il discorso...
 			next(err)
 		})
 	}
@@ -178,7 +201,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		this.app.engine(options.extname, engine)
 		this.app.set('view engine', options.extname);
 	}
-	
+
 	/**
 	 * https://expressjs.com/en/4x/api.html#app.set
 	 */

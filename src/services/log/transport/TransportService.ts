@@ -1,17 +1,17 @@
-import { ServiceBase } from "../../index"
-
 import winston from "winston";
-import { LogLevel } from "./utils";
+import { ServiceBase } from "../../../index";
+import { LogLevel } from "../utils";
+
 
 
 /**
  * Crea internamente il TRANSPORT
  */
-export default abstract class LogTransportService extends ServiceBase {
+export default abstract class TransportService extends ServiceBase {
 
 	//#region SERVICE
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "transport",
@@ -37,7 +37,7 @@ export default abstract class LogTransportService extends ServiceBase {
 	protected abstract buildTransport(): void 
 
 	protected destroyTransport(): void {
-		this.transport.close()
+		this.transport?.close?.()
 		this.transport = null
 	}
 

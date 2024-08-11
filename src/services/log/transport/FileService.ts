@@ -1,15 +1,18 @@
 import winston from "winston";
-import LogTransportService from "./LogTransportService";
+import TransportService from "./TransportService";
 
+
+
+export type FileConf = Partial<FileService['stateDefault']> & { class: "log/file" }
 
 /**
  * Crea internamente il TRANSPORT
  */
-export default class LogTransportFileService extends LogTransportService {
+export default class FileService extends TransportService {
 
 	//#region SERVICE
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "transport-file",
@@ -18,13 +21,11 @@ export default class LogTransportFileService extends LogTransportService {
 	}
 
 	//#endregion
-
-
+	
 	
 	protected buildTransport(): void {
-		const { filename } = this.state
 		this.transport = new winston.transports.File({
-			filename
+			filename: this.state.filename
 		})
 	}
 

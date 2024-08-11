@@ -28,7 +28,10 @@ export default class FarmService extends Node {
             console.error(e) 
             return null 
         }
-        if ( !classes ) return null
+        if ( !classes ) {
+            console.error("classe non trovata") 
+            return null
+        }
 
         // se è definito un "className" prendo la class con quel "className"
         if ( className ) {

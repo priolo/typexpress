@@ -1,3 +1,4 @@
+import { ErrorLevel } from "./utils"
 
 
 /**
@@ -12,11 +13,4 @@ export class ErrorNotify extends Error {
 	}
 	code: string
 	level: string
-}
-
-export enum ErrorLevel {
-	WARNING = "warning",
-	PROBLEM = "problem",
-	ERROR = "error",
-	ALARM = "alarm"
 }

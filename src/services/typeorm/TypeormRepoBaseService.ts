@@ -59,8 +59,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 
 	/**
 	 * Restituiesce il "Repository" nativo typeorm di questo nodo
-	 * @param model 
-	 * @returns 
+	 * [II] gestire errori... per esempio qua c'e' un errore se il repository non esiste
 	 */
 	protected getRepo(model?: string): Repository<unknown> {
 		const repo = this.connection.getRepository(model ?? this.model)

@@ -9,10 +9,10 @@ import { error as errorNs, RootService } from "../../index"
 
 
 axios.defaults.adapter = require('axios/lib/adapters/http')
-let PORT
+let PORT:number
 let axiosIstance: AxiosInstance
-let root = null
-const results = []
+let root:RootService
+const results:any[] = []
 
 
 beforeEach(async () => {

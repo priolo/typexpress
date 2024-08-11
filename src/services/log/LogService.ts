@@ -1,9 +1,16 @@
-import winston from "winston";
-import { Bus, ServiceBase } from "../../index"
-import { Actions, LogLevel, LogNotify } from "./utils"
 import { INode } from "@/core/node/INode";
-import LogTransportService from "./LogTransportService";
+import winston from "winston";
+import { Bus, ServiceBase } from "../../index";
+import TransportService from "./transport/TransportService";
+import { Actions, LogLevel, LogNotify } from "./utils";
 
+
+
+export type LogConf = Partial<LogService['stateDefault']> & { class: "log" }
+interface LogAction {
+	type: Actions.LOG
+	payload: LogLevel
+}
 
 /**
  * Permette di gestire i log.. per esempio su console o su file
@@ -17,7 +24,7 @@ export default class LogService extends ServiceBase {
 	 * @param message 
 	 * @param level 
 	 */
-	 static Send(node: INode, message: string, level: LogLevel) {
+	static Send(node: INode, message: string, level?: LogLevel) {
 		new Bus(node, "/log").dispatch({
 			type: Actions.LOG,
 			payload: { message, level }
@@ -28,20 +35,18 @@ export default class LogService extends ServiceBase {
 
 	//#region SERVICE
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
-			name: "log",
-			onLog: null,
+			name: <string>"log",
+			onLog: <(notify: LogNotify) => void>null,
 		}
 	}
 
 	get dispatchMap(): any {
 		return {
 			...super.dispatchMap,
-			[Actions.LOG]: async (state: any, log: LogNotify, sender: string) => {
-				this.onNotify(log, sender)
-			},
+			[Actions.LOG]: (state: any, log: LogNotify, sender: string) => this.onNotify(log, sender),
 		}
 	}
 
@@ -57,10 +62,13 @@ export default class LogService extends ServiceBase {
 
 
 
-	private logger: winston.Logger
+	private logger: winston.Logger = null
 
 	private buildLog(): void {
-		const transports = (<LogTransportService[]>this.children).map ( c => c.getTransport())
+
+		const transports = (<TransportService[]>this.children).map(c => c.getTransport?.()).filter(c => !!c)
+		if (transports.length == 0) return
+
 		this.logger = winston.createLogger({
 			level: 'info',
 			format: winston.format.json(),
@@ -69,11 +77,55 @@ export default class LogService extends ServiceBase {
 		})
 	}
 
-	protected onNotify(notify: LogNotify, sender: string): void {
-		const { onLog } = this.state
-		//log(`${sender}::${logMessage}`, LOG_TYPE.ERROR)
-		this.logger.log(notify.level, notify.message)
-		onLog?.bind(this)(notify)
+	protected onNotify(notify: LogNotify, sender?: string): void {
+		const senderName = sender ?? "log"
+		const level = notify?.level ?? LogLevel.INFO
+		const message = notify?.message ?? "<null>"
+
+		// use winston
+		if (!this.logger) {
+			const color = {
+				[LogLevel.ERROR]: LOG_CMM.BgRed,
+				[LogLevel.WARN]: LOG_CMM.BgYellow,
+				[LogLevel.INFO]: LOG_CMM.BgBlue,
+			}[level] ?? ""
+			console.log(`${color} ${level} ${LOG_CMM.Reset}::[${senderName}]`, message)
+
+			// use console
+		} else {
+			this.logger.log(level, message)
+		}
+		this.state.onLog?.bind(this)(notify)
 	}
 
+}
+
+
+
+const LOG_CMM = {
+	Reset: "\x1b[0m",
+	Bright: "\x1b[1m",
+	Dim: "\x1b[2m",
+	Underscore: "\x1b[4m",
+	Blink: "\x1b[5m",
+	Reverse: "\x1b[7m",
+	Hidden: "\x1b[8m",
+
+	FgBlack: "\x1b[30m",
+	FgRed: "\x1b[31m",
+	FgGreen: "\x1b[32m",
+	FgYellow: "\x1b[33m",
+	FgBlue: "\x1b[34m",
+	FgMagenta: "\x1b[35m",
+	FgCyan: "\x1b[36m",
+	FgWhite: "\x1b[37m",
+
+	BgBlack: "\x1b[40m",
+	BgRed: "\x1b[41m",
+	BgGreen: "\x1b[42m",
+	BgYellow: "\x1b[43m",
+	BgBlue: "\x1b[44m",
+	BgMagenta: "\x1b[45m",
+	BgCyan: "\x1b[46m",
+	BgWhite: "\x1b[47m",
 }

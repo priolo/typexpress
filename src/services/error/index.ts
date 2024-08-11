@@ -1,11 +1,8 @@
-import ErrorService from "./ErrorService"
-import { ErrorNotify, ErrorLevel } from "./ErrorNotify"
+export { 
+	default,
+	default as Service,
+	ErrorServiceConf as conf,
+} from "./ErrorService"
 
-export {
-	ErrorService as default,
-	ErrorService as Service,
-	ErrorNotify,
-	ErrorLevel,
-}
-
+export * from "./ErrorNotify"
 export * from "./utils"

@@ -1,27 +1,32 @@
-/**
- * @jest-environment node
- */
-import { log as logNs, RootService, PathFinder } from "../../index"
+import { PathFinder, RootService, log as logNs } from "../../index"
+import { ConsoleConf } from "./ConsoleService"
+import LogService, { LogConf } from "./LogService"
+import { Actions, LogLevel } from "./utils"
 
-let root = null
 
+
+let root: RootService | null = null
 
 beforeEach(async () => {
 
 	root = await RootService.Start([
-		{
+		<LogConf>{
 			class: "log",
 			children: [
-				{
-					class: "file",
-					filename: "pippo.log"
+				<ConsoleConf>{
+					class: "log/console",
 				}
 			]
+		},
+		<LogConf>{
+			name: "logbase",
+			class: "log",
 		},
 	])
 })
 
 afterAll(async () => {
+	if (!root) return
 	await RootService.Stop(root)
 })
 
@@ -29,7 +34,6 @@ afterAll(async () => {
 
  */
 test("creazione", async () => {
-
 	/**
 	 * E' possibile quindi chiamare questo servizio e generare dei log
 	 * in base ai `LogTransportService` definiti come children  
@@ -38,14 +42,24 @@ test("creazione", async () => {
 	// in questo caso la `path` è "/log"
 	const log = new PathFinder(root).getNode<logNs.Service>("/log")
 	expect(log instanceof logNs.Service).toBeTruthy()
-	
+
 })
 
 test("log", async () => {
-
 	// ottenuto il servizio...
 	const log = new PathFinder(root).getNode<logNs.Service>("/log")
-	
 	// ...quindi posso generare un log
-	
+	log.dispatch({ type: Actions.LOG, payload: { message: "test log!" } })
+})
+
+test("log base", async () => {
+	// ottenuto il servizio...
+	const log = new PathFinder(root).getNode<logNs.Service>("/logbase")
+	// ...quindi posso generare un log
+	log.dispatch({ type: Actions.LOG, payload: { level: LogLevel.WARN,  message: "test log!" } })
+})
+
+test("log base without level", async () => {
+	// sent directly a message
+	LogService.Send(root, "another log")
 })

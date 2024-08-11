@@ -1,14 +1,15 @@
-import { Node } from "./Node";
-import { IAction } from "./IAction";
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { INode } from "./INode";
+import { IAction } from "./IAction";
+import { Node } from "./Node";
 
 
 
-export interface NodeStateConf {
-	name?: string
-	children: INode[]
-}
+// export interface NodeStateConf {
+// 	name?: string
+// 	children?: NodeStateConf[]
+// }
+
+export type NodeStateConf = Partial<NodeState['stateDefault']>
 
 /**
  * - Classe responsabile di mantenere uno STATE
@@ -32,9 +33,11 @@ export abstract class NodeState extends Node {
 	 * in "constructor" viene mergiato con lo STATE di istanza
 	 * determina il valore iniziale dello STATE
 	 */
-	get stateDefault(): NodeStateConf {
+	get stateDefault() {
 		return {
-			children: null,
+			name: <string>null,
+			children: <any[]>null,
+
 		}
 	}
 
@@ -76,6 +79,7 @@ export abstract class NodeState extends Node {
 		// [II] spostare gli arguments della funzione in: playload, state, sender
 
 		const fnc = this.dispatchMap[action.type]
+
 		try {
 			if (fnc.constructor.name === "AsyncFunction") {
 				return new Promise(async (res, rej) => {

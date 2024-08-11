@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { HttpRouterService, HttpRouterServiceConf } from "../HttpRouterService";
+import { HttpRouterService, HttpRouterServiceConf, IRouteParam } from "../HttpRouterService";
 
 
+//export type HttpRouterRestServiceBaseConf = Partial<HttpRouterRestServiceBase['stateDefault']>
 
 /**
  * [ABSTRACT] DA IMPLEMENTARE
@@ -9,11 +10,11 @@ import { HttpRouterService, HttpRouterServiceConf } from "../HttpRouterService";
  */
 export abstract class HttpRouterRestServiceBase extends HttpRouterService {
 
-	get stateDefault(): HttpRouterServiceConf {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "route-rest",
-			routers: [
+			routers: <IRouteParam[]>[
 				{ path: "/", verb: "get", method: "_getAll" },
 				{ path: "/:id", verb: "get", method: "_getById" },
 				{ path: "/", verb: "post", method: "_save" },

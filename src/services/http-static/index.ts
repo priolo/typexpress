@@ -1,6 +1,9 @@
-import { HttpStaticService } from "./HttpStaticService"
+import { HttpStaticService, HttpStaticServiceConf } from "./HttpStaticService"
+
+
 
 export {
+	HttpStaticService as default,
 	HttpStaticService as Service,
-	HttpStaticService as default
+	HttpStaticServiceConf as conf,
 }

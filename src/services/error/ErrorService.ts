@@ -1,11 +1,13 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
 import { INode } from "../../core/node/INode";
-import { Bus } from "../../core/path/Bus"
-import { Actions } from "./utils"
+import { Bus } from "../../core/path/Bus";
+import { ServiceBase } from "../../core/service/ServiceBase";
+import { ErrorNotify } from "./ErrorNotify";
+import { ErrorLevel } from "./utils";
+import { Actions, NotifyAction } from "./utils";
 
-import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { ErrorLevel, ErrorNotify } from "./ErrorNotify";
 
+
+export type ErrorServiceConf = Partial<ErrorService['stateDefault']> & { class: "error" }
 
 /**
  * Si occupa di ricevere gli errori dei nodi e intervenire
@@ -18,15 +20,15 @@ export default class ErrorService extends ServiceBase {
 	 * @param code 
 	 * @param error 
 	 */
-	static Send(node: INode, error: Error | string, code?: string, level?:ErrorLevel) {
+	static Send(node: INode, error: Error | string, code?: string, level?: ErrorLevel) {
 		const e = new ErrorNotify(error, code, level)
-		new Bus(node, "/error").dispatch({
+		new Bus(node, "/error").dispatch(<NotifyAction>{
 			type: Actions.NOTIFY,
 			payload: e
 		})
 	}
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			name: "error",
@@ -34,9 +36,10 @@ export default class ErrorService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get dispatchMap() {
 		return {
 			...super.dispatchMap,
+			/** quando viene generato un errore */
 			[Actions.NOTIFY]: async (state: any, error: ErrorNotify, sender: string) => {
 				this.onNotify(error, sender)
 			},

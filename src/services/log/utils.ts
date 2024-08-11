@@ -14,6 +14,6 @@ export enum LogLevel {
 }
 
 export interface LogNotify {
+	level?: LogLevel,
 	message: string,
-	level: LogLevel,
 }

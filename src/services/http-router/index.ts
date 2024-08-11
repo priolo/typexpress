@@ -1,5 +1,5 @@
-import { HttpRouterService } from "./HttpRouterService";
-import { HttpRouterRestRepoService } from "./rest/HttpRouterRestRepoService";
+import { HttpRouterService, HttpRouterServiceConf } from "./HttpRouterService";
+import { HttpRouterRestRepoService, HttpRouterRestRepoServiceConf } from "./rest/HttpRouterRestRepoService";
 import { HttpRouterRestServiceBase } from "./rest/HttpRouterRestServiceBase";
 import * as jwt from "./jwt";
 import { HttpFsService } from "./fs/HttpFsService";
@@ -8,15 +8,17 @@ import { HttpSessionService } from "./session/HttpSessionService";
 
 
 
-
 export {
-	HttpRouterService as Service,
 	HttpRouterService as default,
+	HttpRouterService as Service,
+	HttpRouterServiceConf as conf,	
 
 	HttpRouterRestServiceBase as repoBase,
 	HttpRouterRestRepoService as repo,
+	HttpRouterRestRepoServiceConf as repoConf,
+
 	jwt,
-	HttpFsService as fss,
+	HttpFsService as fs,
 	HttpUploadService as upload,
 	HttpSessionService as session,
 }

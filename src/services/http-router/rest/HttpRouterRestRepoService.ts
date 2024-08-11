@@ -5,17 +5,21 @@ import { HttpRouterRestServiceBase } from "./HttpRouterRestServiceBase"
 
 
 
-export interface HttpRouterRestRepoServiceConf extends HttpRouterServiceConf {
-    /** la mode-path del NODE-REPOSITORY da utilizzare  */
-    repository: string
-}
+// export interface HttpRouterRestRepoServiceConf extends HttpRouterServiceConf {
+//     /** la mode-path del NODE-REPOSITORY da utilizzare  */
+//     repository: string
+// }
+
+export type HttpRouterRestRepoServiceConf = Partial<HttpRouterRestRepoService['stateDefault']> & { class: "http-router/repo", children?: HttpRouterServiceConf[] }
+
+
 /**
  * Collega un ROUTE con un REPO 
  * ed espone dei metodi per il REST
  */
 export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
 
-    get stateDefault(): HttpRouterRestRepoServiceConf {
+    get stateDefault() {
         return {
             ...super.stateDefault,
             name: "route-rest-repo",

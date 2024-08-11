@@ -1,10 +1,12 @@
 import LogService from "./LogService"
-import LogTransportFileService from "./LogTransportFileService"
+import FileService from "./transport/FileService"
+import ConsoleService from "./transport/ConsoleService"
 
 export {
 	LogService as default,
 	LogService as Service,
-	LogTransportFileService as file
+	FileService as file,
+	ConsoleService as console
 }
 
 export * from "./utils"
