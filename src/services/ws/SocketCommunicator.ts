@@ -11,9 +11,9 @@ export abstract class SocketCommunicator extends ServiceBase {
 		return {
 			...super.stateDefault,
 			path: <string>null,
-			onConnect: <(client: IClient) => void>null,
-			onDisconnect: <(client: IClient) => void>null,
-			onMessage: <(client: IClient, message: string | IMessage) => void>null,
+			onConnect: <(this: SocketCommunicator, client: IClient) => void>null,
+			onDisconnect: <(this: SocketCommunicator, client: IClient) => void>null,
+			onMessage: <(this: SocketCommunicator, client: IClient, message: string | IMessage) => void>null,
 		}
 	}
 
@@ -21,14 +21,14 @@ export abstract class SocketCommunicator extends ServiceBase {
 		return {
 			...super.dispatchMap,
 
-			[SocketRouteActions.SEND]: (state, payload) => {
+			[SocketRouteActions.SEND]: (state, payload: { client: IClient, message: any }) => {
 				const { client, message } = payload
 				this.sendToClient(client, message)
 			},
-			[SocketRouteActions.BROADCAST]: (state, message) => {
+			[SocketRouteActions.BROADCAST]: (state, message: any) => {
 				this.sendToAll(message)
 			},
-			[SocketRouteActions.DISCONNECT]: (state, client) => {
+			[SocketRouteActions.DISCONNECT]: (state, client: IClient) => {
 				this.disconnectClient(client)
 			},
 		}
@@ -77,10 +77,10 @@ export abstract class SocketCommunicator extends ServiceBase {
 			return
 
 			// non c'e' corrispondenza ma il primo path corrisponde... mando ai child
-		} else if ( paths[0] == path) {
+		} else if (paths[0] == path) {
 			paths.splice(0, 1)
 
-		} else if ( path.length==0 ) {
+		} else if (path.length == 0) {
 
 			// non c'e' corrispondenza quindi fuori dal ramo
 		} else {

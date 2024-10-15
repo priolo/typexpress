@@ -1,6 +1,10 @@
 import net from "net"
 
-
+/**
+ * Rappresenta un client connesso al server WEBSOCKET
+ * le connessioni reali al websocket sono in un altro array
+ * per dividere i dati del client da quelli del websocket
+ */
 export interface IClient {
 	remoteAddress: string,
 	remotePort: number,

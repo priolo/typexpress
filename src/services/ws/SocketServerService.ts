@@ -12,7 +12,7 @@ import { Errors, IClient, IMessage, SocketServerActions, clientIsEqual } from ".
 
 
 
-export type SocketServerConf = Partial<SocketServerService['stateDefault']> & { class: "ws", children?: SocketRouteConf[]  }
+export type SocketServerConf = Partial<SocketServerService['stateDefault']> & { class: "ws", children?: SocketRouteConf[] }
 export type SocketServerAct = SocketServerService['dispatchMap']
 
 export class SocketServerService extends SocketCommunicator {
@@ -30,7 +30,7 @@ export class SocketServerService extends SocketCommunicator {
 	}
 
 	get dispatchMap() {
-		return {
+		return { 
 			...super.dispatchMap,
 			[SocketServerActions.START]: async (state) => {
 				await this.startListener()
@@ -63,7 +63,6 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Inizializza il server in base a come è impostato il config (come al solito inzomma)
-	 * @returns 
 	 */
 	private async startListener() {
 		if (this.server) return
@@ -136,6 +135,10 @@ export class SocketServerService extends SocketCommunicator {
 		})
 	}
 
+	/** 
+	 * restituisce i parametri QUERY-STRING presenti nella request 
+	 * [II] da mettere esterna
+	 * */
 	private getUrlParams(request: Request): any {
 		const index = request.url.lastIndexOf("?")
 		const querystring = (index == -1 ? url : request.url.slice(index)) as string
@@ -145,8 +148,6 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Ricavo il JWT-PAYLOAD 
-	 * @param token 
-	 * @returns 
 	 */
 	private async getJwtPayload(token: string) {
 		const { jwt } = this.state
@@ -172,7 +173,6 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Si mette in ascolto sugli eventi del SERVER-WEB-SOCKET
-	 * @param jwtPayload il JWT-PAYLOAD della connessione JWT-TOKEN
 	 */
 	private buildEventsServer() {
 
@@ -196,7 +196,6 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Si mette in ascolto sugli eventi del CLIENT-WEB-SOCKET arrivato al server
-	 * @param cws CLIENT-WEB-SOCKET
 	 */
 	private buildEventsClient(cws: WebSocket) {
 
@@ -223,8 +222,6 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Restituisce un CLIENT-WEB-SOCKET tramite CLIENT-JSON
-	 * @param client 
-	 * @returns 
 	 */
 	private findCWSByClient(client: IClient) {
 		const iter = this.server.clients as Set<any>
@@ -239,8 +236,6 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Restituisce un CLIENT-JSON tramite CLIENT-WEB-SOCKET
-	 * @param cws 
-	 * @returns 
 	 */
 	private findClientByCWS(cws: WebSocket) {
 		const { clients } = this.state
@@ -249,8 +244,11 @@ export class SocketServerService extends SocketCommunicator {
 		return client
 	}
 
+	/**
+	 * Aggiorna la lista dei CLIENT-JSON dalla lista dei CLIENT-WS
+	 */
 	private updateClients() {
-		const clients: Array<IClient> = !this.server ? []
+		const clients: IClient[] = !this.server ? []
 			: [...this.server.clients].map((cws: WebSocket) => {
 				const socket = (cws as any)._socket
 				return {
