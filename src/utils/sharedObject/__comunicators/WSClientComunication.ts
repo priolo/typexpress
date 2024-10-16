@@ -1,26 +1,24 @@
+import WebSocket from "ws"
 import { ClientObjects } from "../ClientObjects"
 import { ClientInitMessage, ClientUpdateMessage, ServerInitMessage, ServerUpdateMessage } from "../types"
-import { delay } from "../utils"
-import { MemServerComunication } from "./MemServerComunication"
 
 
 
-export class MemClientComunication {
-	constructor(clientObjects: ClientObjects, serverCom: MemServerComunication) {
-		this.clientObjects = clientObjects
-		this.serverCom = serverCom
+export class WSClientComunication {
+
+	constructor(client: ClientObjects, ws: WebSocket) {
+		this.ws = ws
+		this.clientObjects = client
+		ws.on("message", (message) => {
+			this.receive(message.toString())
+		})
 	}
 
-
-	/** usato per test */
-	isOnline: boolean = true
-	clientObjects: ClientObjects
-	private serverCom: MemServerComunication
+	private clientObjects: ClientObjects
+	private ws: WebSocket
 	private initResolve: ((value: void | PromiseLike<void>) => void) | null = null
 
-
-
-	requestInit(idObj: string): Promise<void> {
+	async requestInit(idObj: string): Promise<void> {
 		const message: ClientInitMessage = {
 			type: "c:init",
 			payload: { idObj }
@@ -46,11 +44,10 @@ export class MemClientComunication {
 		this.send(message)
 	}
 
-	receive(messageStr: string) {
+	async receive(messageStr: string) {
 		const message = JSON.parse(messageStr)
 		switch (message.type) {
 			case "s:init": {
-				//if ( this.clientObjects["name"] === "client2" ) debugger
 				const msgInit = message as ServerInitMessage
 				this.clientObjects.setObject(msgInit.idObj, msgInit.data, msgInit.version)
 				if (this.initResolve) {
@@ -60,7 +57,6 @@ export class MemClientComunication {
 				break
 			}
 			case "s:update": {
-				//if ( this.clientObjects["name"] === "client2" ) debugger
 				const msgUp = message as ServerUpdateMessage
 				this.clientObjects.updateObject(msgUp.idObj, msgUp.actions)
 				break
@@ -69,10 +65,7 @@ export class MemClientComunication {
 
 	}
 
-	async send(msg: any) {
-		await delay(100)
-		if (!this.isOnline) throw new Error("Client is offline")
-		await delay(100)
-		this.serverCom.receive(JSON.stringify(msg), this)
+	async send(message: any) {
+		this.ws.send(JSON.stringify(message))
 	}
 }

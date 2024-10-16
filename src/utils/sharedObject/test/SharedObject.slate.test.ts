@@ -1,9 +1,7 @@
-import { ServerObjects } from "../ServerObjects"
 import { ClientObjects } from "../ClientObjects"
-import { MemClientComunication } from "../comunicators/MemClientComunication"
-import { MemServerComunication } from "../comunicators/MemServerComunication"
-import { delay } from "../utils"
+import { ServerObjects } from "../ServerObjects"
 import { ApplyAction } from "../applicators/SlateApplicator"
+import { delay } from "../utils"
 
 
 
@@ -15,38 +13,45 @@ afterAll(async () => {
 
 test("send actions", async () => {
 	const myServer = new ServerObjects()
-	myServer.apply = ApplyAction
 	const myClient = new ClientObjects()
-	myClient.apply = ApplyAction
 
-	const serverCom = new MemServerComunication(myServer)
-	const clientCom = new MemClientComunication(myClient, serverCom)
+	myServer.apply = ApplyAction
+	myServer.onSend = async (client, message) => {
+		(<ClientObjects>client).receive(JSON.stringify(message))
+	}
+	myClient.apply = ApplyAction
+	myClient.onSend = async (message) => {
+		myServer.receive(JSON.stringify(message), myClient)
+	}
+
+	//const serverCom = new MemServerComunication(myServer)
+	//const clientCom = new MemClientComunication(myClient, serverCom)
 
 	myClient.observe("pippo", (data) => {
 		console.log(data)
 	})
 
-	await clientCom.requestInit("pippo")
+	await myClient.init("pippo")
 
 	await delay(500)
 
-	clientCom.requestCommand("pippo", {
+	myClient.command("pippo", {
 		"type": "insert_text",
 		"path": [0, 0], "offset": 0,
 		"text": "pluto"
 	})
-	clientCom.requestCommand("pippo", {
+	myClient.command("pippo", {
 		"type": "remove_text",
 		"path": [0, 0], "offset": 2,
 		"text": "ut"
 	})
 
 	await delay(200)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 	await delay(200)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 	await delay(500)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 
 	await delay(1000)
 

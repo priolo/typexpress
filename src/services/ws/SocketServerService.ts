@@ -278,7 +278,7 @@ export class SocketServerService extends SocketCommunicator {
 	//#region COMMUNICATOR 
 
 	//[II] DA FARE
-	onProcessMessage(client: IClient, message: string | IMessage) {
+	onMessageNative(client: IClient, message: string | IMessage) {
 	}
 
 	/**

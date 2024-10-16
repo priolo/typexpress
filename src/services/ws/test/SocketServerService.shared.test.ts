@@ -1,107 +1,34 @@
 import WebSocket from "ws"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
+import { ApplyAction } from "../../../utils/sharedObject/applicators/SlateApplicator"
+import { ClientObjects } from "../../../utils/sharedObject/ClientObjects"
+import { ServerObjects } from "../../../utils/sharedObject/ServerObjects"
+import { delay } from "../../../utils/sharedObject/utils"
 import * as wsNs from "../index"
 import { SocketServerConf } from "../SocketServerService"
-import { getFreePort, SocketRouteActions } from "../utils"
-
 
 
 let PORT: number = 52
 let root: RootService
+let myServer: ServerObjects
+let myClient: ClientObjects
+
 
 beforeAll(async () => {
-	PORT = await getFreePort()
 	root = await RootService.Start(
 		<SocketServerConf>{
 			class: "ws",
 			port: PORT,
-			onMessage: async function (client, messageStr: string) {
-				const message = JSON.parse(messageStr)
-				switch (message.type) {
-
-					case "c:init": {
-						const msgInit = message as ClientInitMessage
-						let data = sharedServer[msgInit.payload.idObj]
-						let listener: Listener
-						if (!data) {
-							listener = { client, lastVersion: 0 }
-							data = {
-								idObj: msgInit.payload.idObj,
-								value: [],
-								listeners: [listener],
-								actions: []
-							}
-							sharedServer[msgInit.payload.idObj] = data
-						} else {
-							listener = {
-								client,
-								lastVersion: data.actions[data.actions.length - 1].version
-							}
-							data.listeners.push(listener)
-						}
-
-						// invio lo stato iniziale
-						const msg: ServerInitMessage = {
-							type: "s:init",
-							idObj: data.idObj,
-							data: data.value,
-							version: listener.lastVersion
-						}
-						await this.dispatch({
-							type: SocketRouteActions.SEND,
-							payload: { client, message: JSON.stringify(msg) }
-						})
-
-						break
-					}
-
-
-					case "c:update": {
-						const msgUp = message as ClientUpdateMessage
-						const objShared = sharedServer[msgUp.payload.idObj]
-						if (!objShared) return
-						const action:Action = {
-							action: msgUp.payload.action,
-							atVersion: msgUp.payload.atVersion,
-							version: objShared.actions.length
-						}
-						objShared.actions.push(action)
-						ApplyAction(objShared.value, action)
-						break
-					}
-
-				}
+			onMessage: async function (client, message: any) {
+				myServer.receive(JSON.stringify(message), client)
 			},
 		}
 	)
-
-
-	const wss: wsNs.Service = new PathFinder(root).getNode<wsNs.Service>("/ws-server")
-
-	// invia gli aggiornamenti ai client
-	await new Promise(resolve => setTimeout(resolve, 1000));
-
-	for (const idObj in sharedServer) {
-		const data = sharedServer[idObj]
-		const lastVersion = data.actions[data.actions.length - 1]?.version ?? 0
-		data.listeners.forEach(async listener => {
-			if ( listener.lastVersion == lastVersion ) return
-			const actions = data.actions.filter(action => action.version > listener.lastVersion)
-			const msg:ServerUpdateMessage = {
-				type: "s:update",
-				idObj: data.idObj,
-				actions,
-				version: lastVersion
-			}
-			wss.dispatch({
-				type: SocketRouteActions.SEND,
-				payload: { client: listener.client, message: JSON.stringify(msg) }
-			})
-			listener.lastVersion = lastVersion
-		})
-	}
-
+	myServer = new ServerObjects()
+	myClient = new ClientObjects()
+	myServer.apply = ApplyAction
+	myClient.apply = ApplyAction
 })
 
 afterAll(async () => {
@@ -116,156 +43,55 @@ test("su creazione", async () => {
 
 test("client connetc/send/close", async () => {
 
-	const ws = new WebSocket(`ws://localhost:${PORT}/`);
+	const wss = new PathFinder(root).getNode<wsNs.Service>("/ws-server")
+	const wsc = new WebSocket(`ws://localhost:${PORT}/`)
 
-	// dopo INIT mando subito un update
-	function onInit() {
-		const data = sharedClient["test"/*msgInit.idObj*/]
-		ws.send(<ClientUpdateMessage>{
-			type: "c:update",
-			payload: {
-				idObj: "test",
-				atVersion: data.version,
-				action: "remove 1",
-			},
-		})
+	myServer.onSend = async (client, message) => {
+		wss.sendToClient(client, message)
 	}
+	myClient.onSend = async (message) => {
+		wsc.send(JSON.stringify(message))
+	}	
 
-	const result = await new Promise<string>((res, rej) => {
-
-		ws.on('open', function open() {
-			ws.send(<ClientInitMessage>{
-				type: "c:init",
-				payload: { idObj: "test" },
-			})
-		});
-
-		ws.on('message', (wsData: any) => {
-			const message = JSON.parse(wsData);
-			const type = message.type
-			switch (type) {
-
-				case "s:init": {
-					const msgInit = message as ServerInitMessage
-					sharedClient[msgInit.idObj] = {
-						idObj: msgInit.idObj,
-						value: msgInit.data,
-						version: msgInit.version
-					}
-					onInit()
-					break
-				}
-
-				case "s:update": {
-					const msgUp = message as ServerUpdateMessage
-					const data = sharedClient[msgUp.idObj]
-					msgUp.actions.forEach(action => {
-						ApplyAction(data.value, action)
-					})
-					data.version = msgUp.version
-					break
-				}
-
-			}
-
-		});
-		ws.on('close', function close() {
-			res("ok")
-		});
+	await new Promise<string>((res, rej) => {
+		wsc.on('open', () => {
+			res("open")
+		})
+		wsc.on('message', (data) => {
+			myClient.receive(data.toString())
+		})
 	})
 
-	expect(result).toBe("ok")
+	myClient.observe("pippo", (data) => {
+		console.log(data)
+	})
 
-})
+	await myClient.init("pippo")
 
+	myClient.command("pippo", {
+		"type": "insert_text",
+		"path": [0, 0], "offset": 0,
+		"text": "pluto"
+	})
+	myClient.command("pippo", {
+		"type": "remove_text",
+		"path": [0, 0], "offset": 2,
+		"text": "ut"
+	})
 
-// *** SERVER ***
-interface ServerShared {
-	[idObj: string]: ServerObject
-}
+	await delay(200)
+	myServer.update()
+	await delay(200)
+	myServer.update()
+	await delay(500)
+	myServer.update()
+	await delay(1000)
 
-interface ServerObject {
-	idObj: string
-	value: any[]
-	listeners: Listener[]
-	actions: Action[]
-}
+	expect(myServer.objects["pippo"].value).toEqual([
+		{ children: [{ text: "plo", }] },
+	])
+	expect(myClient.objects["pippo"].value).toEqual([
+		{ children: [{ text: "plo", }] },
+	])
 
-interface Listener {
-	client: wsNs.IClient
-	lastVersion: number
-}
-
-interface Action {
-	action: string
-	atVersion: number
-	version: number
-}
-
-// MESSAGES
-interface ServerInitMessage {
-	type: "s:init"
-	idObj: string
-	data: any[]
-	version: number
-}
-
-interface ServerUpdateMessage {
-	type: "s:update"
-	idObj: string
-	actions: Action[]
-	version: number
-}
-
-
-// *** CLIENT ******************************************
-
-// DATA
-interface ClientShared {
-	[idObj: string]: ClientObject
-}
-interface ClientObject {
-	idObj: string
-	value: any[]
-	version: number
-}
-
-// MESSAGES
-interface ClientInitMessage {
-	type: "c:init"
-	payload: {
-		idObj: string
-	}
-}
-
-interface ClientUpdateMessage {
-	type: "c:update"
-	payload: {
-		idObj: string, // id dell'Obj
-		atVersion: number,
-		action: any,
-	}
-}
-
-
-
-const sharedServer: ServerShared = {}
-const sharedClient: ClientShared = {}
-
-
-
-
-
-
-function ApplyAction(data: any[], action: Action) {
-	switch (action.action) {
-		case "remove": {
-			data.pop()
-			break
-		}
-		case "add 1": {
-			data.push(action)
-			break
-		}
-	}
-}
+}, 100000)

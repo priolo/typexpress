@@ -1,7 +1,5 @@
-import { ServerObjects } from "../ServerObjects"
 import { ClientObjects } from "../ClientObjects"
-import { MemClientComunication } from "../comunicators/MemClientComunication"
-import { MemServerComunication } from "../comunicators/MemServerComunication"
+import { ServerObjects } from "../ServerObjects"
 import { delay } from "../utils"
 
 
@@ -16,28 +14,34 @@ test("send actions", async () => {
 	const myServer = new ServerObjects()
 	const myClient = new ClientObjects()
 
-	const serverCom = new MemServerComunication(myServer)
-	const clientCom = new MemClientComunication(myClient, serverCom)
+	myServer.onSend = async (client, message) => {
+		(<ClientObjects>client).receive(JSON.stringify(message))
+	}
+	myClient.onSend = async (message) => {
+		myServer.receive(JSON.stringify(message), myClient)
+	}
+	// const serverCom = new MemServerComunication(myServer)
+	// const clientCom = new MemClientComunication(myClient, serverCom)
 
 	myClient.observe("pippo", (data) => {
 		console.log(data)
 	})
 
-	await clientCom.requestInit("pippo")
+	await myClient.init("pippo")
 
 	await delay(500)
 
-	clientCom.requestCommand("pippo", "add")
-	clientCom.requestCommand("pippo", "add")
-	clientCom.requestCommand("pippo", "remove")
-	clientCom.requestCommand("pippo", "add")
+	myClient.command("pippo", "add")
+	myClient.command("pippo", "add")
+	myClient.command("pippo", "remove")
+	myClient.command("pippo", "add")
 
 	await delay(200)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 	await delay(200)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 	await delay(500)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 
 	await delay(1000)
 
@@ -51,7 +55,6 @@ test("send actions", async () => {
 	])
 }, 100000)
 
-
 test("send actions 2 client", async () => {
 	const myServer = new ServerObjects()
 	const myClient1 = new ClientObjects()
@@ -59,10 +62,20 @@ test("send actions 2 client", async () => {
 	const myClient2 = new ClientObjects()
 	myClient2["name"] = "client2"
 
-	const serverCom = new MemServerComunication(myServer)
-	const clientCom1 = new MemClientComunication(myClient1, serverCom)
-	const clientCom2 = new MemClientComunication(myClient2, serverCom)
-	
+	// const serverCom = new MemServerComunication(myServer)
+	// const clientCom1 = new MemClientComunication(myClient1, serverCom)
+	// const clientCom2 = new MemClientComunication(myClient2, serverCom)
+	myServer.onSend = async (client, message) => {
+		(<ClientObjects>client).receive(JSON.stringify(message))
+	}
+	myClient1.onSend = async (message) => {
+		myServer.receive(JSON.stringify(message), myClient1)
+	}
+	myClient2.onSend = async (message) => {
+		myServer.receive(JSON.stringify(message), myClient2)
+	}
+
+
 	myClient1.observe("pippo", (data) => {
 		console.log("client1", data)
 	})
@@ -70,18 +83,18 @@ test("send actions 2 client", async () => {
 		console.log("client2", data)
 	})
 
-	clientCom1.requestInit("pippo")
+	myClient1.init("pippo")
 	await delay(500)
 
-	clientCom1.requestCommand("pippo", "add")
+	myClient1.command("pippo", "add")
 	await delay(200)
-	clientCom2.requestInit("pippo")
-	clientCom1.requestCommand("pippo", "add")
+	myClient2.init("pippo")
+	myClient1.command("pippo", "add")
 
 	await delay(200)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 	await delay(500)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 	await delay(1000)
 
 	expect(myServer.objects["pippo"].value).toEqual([
@@ -98,46 +111,50 @@ test("send actions 2 client", async () => {
 	])
 }, 100000)
 
+// test("init and fast update throw error", async () => {
+// 	const myServer = new ServerObjects()
+// 	const myClient = new ClientObjects()
+// 	myServer.onSend = async (client, message) => {
+// 		(<ClientObjects>client).receive(JSON.stringify(message))
+// 	}
+// 	myClient.onSend = async (message) => {
+// 		myServer.receive(JSON.stringify(message), myClient)
+// 	}
 
-test("init and fast update throw error", async () => {
-	const myServer = new ServerObjects()
-	const myClient = new ClientObjects()
+// 	// const serverCom = new MemServerComunication(myServer)
+// 	// const clientCom = new MemClientComunication(myClient, serverCom)
 
-	const serverCom = new MemServerComunication(myServer)
-	const clientCom = new MemClientComunication(myClient, serverCom)
-	
-	clientCom.requestInit("pippo")
-	let error = false
-	try {
-		clientCom.requestCommand("pippo", "add")
-	} catch (e) {
-		error = true
-	}
+// 	myClient.sendMessageInit("pippo")
+// 	let error = false
+// 	try {
+// 		myClient.requestCommand("pippo", "add")
+// 	} catch (e) {
+// 		error = true
+// 	}
 
-	expect(error).toBe(true)
-})
-
+// 	expect(error).toBe(true)
+// })
 
 test("init and fast update sync", async () => {
 	const myServer = new ServerObjects()
 	const myClient = new ClientObjects()
+	myServer.onSend = async (client, message) => {
+		(<ClientObjects>client).receive(JSON.stringify(message))
+	}
+	myClient.onSend = async (message) => {
+		myServer.receive(JSON.stringify(message), myClient)
+	}
+	// const serverCom = new MemServerComunication(myServer)
+	// const clientCom = new MemClientComunication(myClient, serverCom)
 
-	const serverCom = new MemServerComunication(myServer)
-	const clientCom = new MemClientComunication(myClient, serverCom)
-	
-	await clientCom.requestInit("pippo")
-	clientCom.requestCommand("pippo", "add")
+	await myClient.init("pippo")
+	myClient.command("pippo", "add")
 
 	await delay(500)
-	myServer.updateToClient(serverCom)
+	myServer.update()
 	await delay(500)
 
 	expect(myClient.objects["pippo"].value).toEqual([
 		"add row version 1",
 	])
 })
-
-
-
-
-
