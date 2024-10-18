@@ -1,16 +1,16 @@
-import { ApplyAction } from "./applicators/ArrayApplicator"
-import { Action, ApplyActionFunction, ClientInitMessage, ClientObject, ClientUpdateMessage, ServerInitMessage, ServerUpdateMessage } from "./types"
+import { Action, ApplyActionFunction, ClientInitMessage, ClientMessage, ClientObject, ClientResetMessage, ClientUpdateMessage, ServerInitMessage, ServerUpdateMessage } from "./types"
 
 
 
 export class ClientObjects {
 
-	apply: ApplyActionFunction = ApplyAction
-	onSend: (message: ClientInitMessage | ClientUpdateMessage) => Promise<void> = null
+	apply: ApplyActionFunction = null
+	onSend: (message: ClientMessage) => Promise<void> = null
 
 	objects: { [idObj: string]: ClientObject } = {}
 	private observers: { [idObj: string]: ((data: any) => void)[] } = {}
 	private initResolve: ((value: void | PromiseLike<void>) => void) | null = null
+
 
 
 	//#region OBSERVERS
@@ -43,15 +43,43 @@ export class ClientObjects {
 
 	/** invia un comando di aggiornamento al server */
 	command(idObj: string, command: any) {
-		const data = this.objects[idObj]
-		if (!data) throw new Error("Object not found")
+		const object = this.objects[idObj]
+		if (!object) throw new Error("Object not found")
+		//object.buffer.push(command)
 		const message: ClientUpdateMessage = {
 			type: "c:update",
 			payload: {
 				idObj: idObj,
-				atVersion: data.version,
-				command: command,
+				atVersion: object.version,
+				commands: command,
 			},
+		}
+		this.onSend(message)
+	}
+
+	/** invia al server tutti i command memorizzati nel buffer */
+	update() {
+		for (const idObj in this.objects) {
+			const object = this.objects[idObj]
+			if (object.buffer.length == 0) continue
+			const message: ClientUpdateMessage = {
+				type: "c:update",
+				payload: {
+					idObj: idObj,
+					atVersion: object.version,
+					commands: object.buffer,
+				},
+			}
+			this.onSend(message)
+			object.buffer = []
+		}
+	}
+
+	/** chiede al server tutte le informazioni parziali che aveva il client prima di disconnettersi */
+	reset() {
+		const message: ClientResetMessage = {
+			type: "c:reset",
+			payload: Object.values(this.objects).map(obj => ({ idObj: obj.idObj, version: obj.version }))
 		}
 		this.onSend(message)
 	}
@@ -78,15 +106,15 @@ export class ClientObjects {
 	}
 
 	private setObject(idObj: string, value: any[], version: number) {
-		this.objects[idObj] = { idObj, value, version }
+		this.objects[idObj] = { idObj, value, version, buffer: [] }
 		this.notify(idObj, value)
 	}
 
 	private updateObject(idObj: string, action: Action[]) {
 		const obj = this.objects[idObj]
-		action.forEach(act => {
-			obj.value = this.apply(obj.value, act)
-		})
+		if (!obj) throw new Error("Object not found")
+
+		action.forEach(act => obj.value = this.apply(obj.value, act))
 		obj.version = action[action.length - 1].version
 		this.notify(idObj, obj.value)
 	}

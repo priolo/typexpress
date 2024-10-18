@@ -8,13 +8,9 @@ import net from "net"
 export interface IClient {
 	remoteAddress: string,
 	remotePort: number,
-	/**
-	 * Sono i parametri ricavati dall'URL durante la connessione
-	 */
-	params?: any,
-	/**
-	 * PAYLOAD-JWT se è stato definito
-	 */
+	/** parametri ricavati dall'URL durante la connessione	*/
+	//params?: any,
+	/** PAYLOAD-JWT se è stato definito	*/
 	jwtPayload?: any,
 }
 

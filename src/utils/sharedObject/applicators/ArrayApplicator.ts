@@ -2,7 +2,9 @@ import { Action } from "../types";
 
 
 
-export function ApplyAction(data: any[], action: Action): any[] {
+export function ApplyAction(data?: any[], action?: Action): any[] {
+	if (!data) return []
+	
 	switch (action.command) {
 		case "remove": {
 			data.pop()

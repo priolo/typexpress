@@ -178,11 +178,11 @@ export class SocketServerService extends SocketCommunicator {
 
 		// when a CLIENT conect
 		this.server.on('connection', (cws: WebSocket, req: Request, jwtPayload: any) => {
-			const params = this.getUrlParams(req)
+			//const params = this.getUrlParams(req)
 			const client: IClient = {
 				remoteAddress: req.socket.remoteAddress,
 				remotePort: req.socket.remotePort,
-				params,
+				//params,
 				jwtPayload
 			}
 			this.buildEventsClient(cws)
@@ -208,7 +208,8 @@ export class SocketServerService extends SocketCommunicator {
 
 		cws.on('close', (code: number, reason: string) => {
 			const client = this.findClientByCWS(cws)
-			this.updateClients()//this.removeClient(client)
+			//this.updateClients()
+			this.removeClient(client)
 			this.onDisconnect(client)
 		})
 
@@ -226,8 +227,7 @@ export class SocketServerService extends SocketCommunicator {
 	private findCWSByClient(client: IClient) {
 		const iter = this.server.clients as Set<any>
 		for (const cws of iter) {
-			const socket = cws._socket
-			if (clientIsEqual(socket, client)) {
+			if (clientIsEqual(cws._socket, client)) {
 				return cws
 			}
 		}
@@ -246,6 +246,7 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Aggiorna la lista dei CLIENT-JSON dalla lista dei CLIENT-WS
+	 * [II] NON VA BENE! perche' ricreo l'oggetto completamente e magari nel client c'ho messo delle informazioni che poi perdo
 	 */
 	private updateClients() {
 		const clients: IClient[] = !this.server ? []
@@ -266,8 +267,7 @@ export class SocketServerService extends SocketCommunicator {
 	}
 
 	private removeClient(client: IClient) {
-		const { clients } = this.state
-		const clientsnew = clients.filter(c => !clientIsEqual(client, c))
+		const clientsnew = this.state.clients.filter(c => !clientIsEqual(client, c))
 		this.setState({ clients: clientsnew })
 	}
 

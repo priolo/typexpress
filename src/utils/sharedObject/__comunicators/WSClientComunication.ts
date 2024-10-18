@@ -38,7 +38,7 @@ export class WSClientComunication {
 			payload: {
 				idObj: idObj,
 				atVersion: data.version,
-				command: command,
+				commands: command,
 			},
 		}
 		this.send(message)

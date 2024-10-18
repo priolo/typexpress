@@ -34,7 +34,7 @@ export interface ServerUpdateMessage {
 	type: "s:update"
 	idObj: string
 	actions: Action[]
-	version: number
+	//version: number
 }
 
 
@@ -46,9 +46,14 @@ export interface ClientObject {
 	idObj: string
 	value: any[]
 	version: number
+	buffer: Action[]
 }
 
 // MESSAGES
+
+/**
+ * dice al server che il client vuole ricevere e osservare un OBJECT
+ */
 export interface ClientInitMessage {
 	type: "c:init"
 	payload: {
@@ -56,15 +61,30 @@ export interface ClientInitMessage {
 	}
 }
 
+/** 
+ * dice al server a quale versione il client è arrivato su tutti gli OBJECTs osservati 
+ * Serve quando il client si disconnette e si riconnette
+ * */
+export interface ClientResetMessage {
+	type: "c:reset"
+	payload: {
+		idObj: string,
+		version: number,
+	}[]
+}
+
+/** 
+ * dice al server che il client ha eseguito un comando di aggiornamento su un OBJECT osservato
+ * */
 export interface ClientUpdateMessage {
 	type: "c:update"
 	payload: {
 		idObj: string, // id dell'Obj
 		atVersion: number,
-		command: any,
+		commands: any[],
 	}
 }
 
+export type ClientMessage = ClientInitMessage | ClientUpdateMessage | ClientResetMessage
 
-
-export type ApplyActionFunction = (data: any[], action: Action) => any[];
+export type ApplyActionFunction = (data?: any[], action?: Action) => any[];

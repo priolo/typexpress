@@ -3,12 +3,12 @@ import { Action } from "../types";
 
 
 
-export function ApplyAction(data: any[], action: Action): any[] {
+export function ApplyAction(data?: any[], action?: Action): any[] {
 	const editor = createEditor();
+	if (!data || data.length === 0) data = [{ children: [{ text: '' }] }];
 	editor.children = data;
-	if ( data.length === 0) {
-		Transforms.insertNodes(editor, { children: [{ text: '' }] });
-	}
+	if (!action) return editor.children;
+
 	withoutNormalizing(editor, () => {
 		//actions.forEach(op => {
 		if (action.command.type === 'set_selection' && !editor.selection) {

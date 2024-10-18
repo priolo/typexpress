@@ -1,7 +1,7 @@
 import { ClientObjects } from "../ClientObjects"
 import { ServerObjects } from "../ServerObjects"
 import { delay } from "../utils"
-
+import {ApplyAction} from "../applicators/ArrayApplicator"
 
 
 beforeAll(async () => {
@@ -14,14 +14,16 @@ test("send actions", async () => {
 	const myServer = new ServerObjects()
 	const myClient = new ClientObjects()
 
+
 	myServer.onSend = async (client, message) => {
 		(<ClientObjects>client).receive(JSON.stringify(message))
 	}
+	myServer.apply = ApplyAction
 	myClient.onSend = async (message) => {
 		myServer.receive(JSON.stringify(message), myClient)
 	}
-	// const serverCom = new MemServerComunication(myServer)
-	// const clientCom = new MemClientComunication(myClient, serverCom)
+	myClient.apply = ApplyAction
+
 
 	myClient.observe("pippo", (data) => {
 		console.log(data)
@@ -111,30 +113,6 @@ test("send actions 2 client", async () => {
 	])
 }, 100000)
 
-// test("init and fast update throw error", async () => {
-// 	const myServer = new ServerObjects()
-// 	const myClient = new ClientObjects()
-// 	myServer.onSend = async (client, message) => {
-// 		(<ClientObjects>client).receive(JSON.stringify(message))
-// 	}
-// 	myClient.onSend = async (message) => {
-// 		myServer.receive(JSON.stringify(message), myClient)
-// 	}
-
-// 	// const serverCom = new MemServerComunication(myServer)
-// 	// const clientCom = new MemClientComunication(myClient, serverCom)
-
-// 	myClient.sendMessageInit("pippo")
-// 	let error = false
-// 	try {
-// 		myClient.requestCommand("pippo", "add")
-// 	} catch (e) {
-// 		error = true
-// 	}
-
-// 	expect(error).toBe(true)
-// })
-
 test("init and fast update sync", async () => {
 	const myServer = new ServerObjects()
 	const myClient = new ClientObjects()
@@ -158,3 +136,4 @@ test("init and fast update sync", async () => {
 		"add row version 1",
 	])
 })
+

@@ -35,7 +35,7 @@ export class WSServerComunication {
 
 			case "c:update": {
 				const msgUp = message as ClientUpdateMessage
-				this.serverObjects.updateFromAction(msgUp.payload.idObj, msgUp.payload.command, msgUp.payload.atVersion)
+				this.serverObjects.updateFromAction(msgUp.payload.idObj, msgUp.payload.commands, msgUp.payload.atVersion)
 				break
 			}
 
