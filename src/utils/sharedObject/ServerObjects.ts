@@ -1,4 +1,3 @@
-import { IClient } from "../../services/ws"
 import { Action, ApplyActionFunction, ClientInitMessage, ClientResetMessage, ClientUpdateMessage, Listener, ServerInitMessage, ServerObject, ServerUpdateMessage } from "./types"
 
 
@@ -14,10 +13,10 @@ export class ServerObjects {
 		for (const idObj in this.objects) {
 			const object = this.objects[idObj]
 			const lastVersion = object.actions[object.actions.length - 1]?.version ?? 0
-			object.listeners.forEach(async listener => {
+			for ( let listener of object.listeners ) {
 
 				/** il client è gi' aggiornato all'ultima versione */
-				if (listener.lastVersion == -1 || listener.lastVersion == lastVersion) return
+				if (listener.lastVersion == -1 || listener.lastVersion == lastVersion) continue
 
 				/** tutti gli actions da inviare al listener */
 				const actions = object.actions.filter(action => action.version > listener.lastVersion)
@@ -25,32 +24,48 @@ export class ServerObjects {
 					type: "s:update",
 					idObj: object.idObj,
 					actions,
-					//version: lastVersion
 				}
 
 				this.sendToListener(msg, listener, lastVersion)
-			})
+			}
+			this.gc(object)	
 		}
 	}
-
 	private async sendToListener(msg: ServerUpdateMessage, listener: Listener, lastVersion: number) {
 		let oldVersion = listener.lastVersion
 		try {
 			listener.lastVersion = -1
 			await this?.onSend(listener.client, msg)
 			listener.lastVersion = lastVersion
-			console.log( "sendToListener", listener.client.remotePort, msg)
 		} catch (error) {
 			console.error(error)
 			listener.lastVersion = oldVersion
 		}
 	}
+	private gc(object:ServerObject) {
+		const minVersion = object.listeners.reduce((min, l) => Math.min(min, l.lastVersion), Infinity)
+		if ( minVersion == -1 ) return
+		object.actions = object.actions.filter(a => a.version > minVersion)
+	}
+
+	/** disconnette un client */
+	disconnect(client: any) {
+		for (const idObj in this.objects) {
+			const object = this.objects[idObj]
+			const index = object.listeners.findIndex(l => l.client == client)
+			if (index == -1) continue
+			object.listeners.splice(index, 1)
+		}
+	}
+
+
+
+
 
 	/** riceve un messaggio dal client */
 	receive(messageStr: string, client: any) {
-		console.log("receive", messageStr)
-		
 		const message = JSON.parse(messageStr)
+
 		switch (message.type) {
 
 			case "c:init": {
@@ -69,7 +84,7 @@ export class ServerObjects {
 
 			case "c:update": {
 				const msg = message as ClientUpdateMessage
-				this.updateFromCommand(msg.payload.idObj, msg.payload.commands, msg.payload.atVersion)
+				this.updateFromCommand(msg.payload.idObj, msg.payload.command, msg.payload.atVersion)
 				break
 			}
 
@@ -77,20 +92,9 @@ export class ServerObjects {
 				const msg = message as ClientResetMessage
 				msg.payload.forEach(obj => {
 					const object = this.getObject(obj.idObj, client)
-					object.listeners.find(l => l.client == client).lastVersion = obj.version			
+					object.listeners.find(l => l.client == client).lastVersion = obj.version
 				})
 				break
-			}
-		}
-	}
-	
-	/** disconnette un client */
-	disconnect(client: IClient) {
-		for (const idObj in this.objects) {
-			const data = this.objects[idObj]
-			const listener = data.listeners.find(l => l.client == client)
-			if (listener) {
-				data.listeners = data.listeners.filter(l => l != listener)
 			}
 		}
 	}

@@ -34,7 +34,6 @@ export interface ServerUpdateMessage {
 	type: "s:update"
 	idObj: string
 	actions: Action[]
-	//version: number
 }
 
 
@@ -46,7 +45,6 @@ export interface ClientObject {
 	idObj: string
 	value: any[]
 	version: number
-	buffer: Action[]
 }
 
 // MESSAGES
@@ -81,7 +79,7 @@ export interface ClientUpdateMessage {
 	payload: {
 		idObj: string, // id dell'Obj
 		atVersion: number,
-		commands: any[],
+		command: any,
 	}
 }
 

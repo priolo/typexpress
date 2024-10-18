@@ -10,8 +10,7 @@ export class ClientObjects {
 	objects: { [idObj: string]: ClientObject } = {}
 	private observers: { [idObj: string]: ((data: any) => void)[] } = {}
 	private initResolve: ((value: void | PromiseLike<void>) => void) | null = null
-
-
+	private buffer: ClientMessage[] = []
 
 	//#region OBSERVERS
 
@@ -30,49 +29,31 @@ export class ClientObjects {
 	//#endregion
 
 	/** chiede al server di restituire/creare un certo oggetto */
-	init(idObj: string): Promise<void> {
+	init(idObj: string, send?: boolean): Promise<void> {
 		const message: ClientInitMessage = {
 			type: "c:init",
 			payload: { idObj }
 		}
 		return new Promise<void>(resolve => {
 			this.initResolve = resolve
-			this.onSend?.(message)
+			this.buffer.push(message)
+			if (send) this.update()
 		})
 	}
 
-	/** invia un comando di aggiornamento al server */
+	/** memorizza nel buffer una richiesta di update dell'OBJECT osservato*/
 	command(idObj: string, command: any) {
 		const object = this.objects[idObj]
 		if (!object) throw new Error("Object not found")
-		//object.buffer.push(command)
 		const message: ClientUpdateMessage = {
 			type: "c:update",
 			payload: {
 				idObj: idObj,
 				atVersion: object.version,
-				commands: command,
+				command,
 			},
 		}
-		this.onSend(message)
-	}
-
-	/** invia al server tutti i command memorizzati nel buffer */
-	update() {
-		for (const idObj in this.objects) {
-			const object = this.objects[idObj]
-			if (object.buffer.length == 0) continue
-			const message: ClientUpdateMessage = {
-				type: "c:update",
-				payload: {
-					idObj: idObj,
-					atVersion: object.version,
-					commands: object.buffer,
-				},
-			}
-			this.onSend(message)
-			object.buffer = []
-		}
+		this.buffer.push(message)
 	}
 
 	/** chiede al server tutte le informazioni parziali che aveva il client prima di disconnettersi */
@@ -83,6 +64,16 @@ export class ClientObjects {
 		}
 		this.onSend(message)
 	}
+
+	/** invia al server tutti i command memorizzati nel buffer */
+	update() {
+		this.buffer.forEach(message => this.onSend(message))
+		this.buffer = []
+	}
+
+
+
+
 
 	/** stringa messaggio da analizzare */
 	receive(messageStr: string) {
@@ -106,16 +97,16 @@ export class ClientObjects {
 	}
 
 	private setObject(idObj: string, value: any[], version: number) {
-		this.objects[idObj] = { idObj, value, version, buffer: [] }
+		this.objects[idObj] = { idObj, value, version }
 		this.notify(idObj, value)
 	}
 
-	private updateObject(idObj: string, action: Action[]) {
+	private updateObject(idObj: string, actions: Action[]) {
 		const obj = this.objects[idObj]
 		if (!obj) throw new Error("Object not found")
 
-		action.forEach(act => obj.value = this.apply(obj.value, act))
-		obj.version = action[action.length - 1].version
+		actions.forEach(action => obj.value = this.apply(obj.value, action))
+		obj.version = actions[actions.length - 1].version
 		this.notify(idObj, obj.value)
 	}
 }
