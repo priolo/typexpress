@@ -1,17 +1,20 @@
 import axios, { AxiosInstance } from "axios"
 import fs from "fs"
-
 import { RootService } from "../../../core/RootService"
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder"
-
 import { HttpRouterRestRepoService } from "../rest/HttpRouterRestRepoService";
 import { getFreePort } from "../../ws";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import httpAdapter from 'axios/lib/adapters/http';
 
 
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
-let PORT
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+axios.defaults.adapter = httpAdapter
+let PORT:number
 let axiosIstance: AxiosInstance
 const dbPath = `${__dirname}/database.sqlite`
 let root, user1, user2, users

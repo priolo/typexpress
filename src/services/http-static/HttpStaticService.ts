@@ -53,7 +53,7 @@ export class HttpStaticService extends HttpRouterServiceBase {
 		const router = super.onBuildRouter()
 		const { dir, options, index, spaFile } = this.state
 
-		router.use(<Router>express.static(dir, options))
+		router.use(express.static(dir, options))
 
 		// abilito l'index
 		if (index == true) {

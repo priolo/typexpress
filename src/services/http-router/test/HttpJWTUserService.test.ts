@@ -1,23 +1,24 @@
-/**
- * @jest-environment node
- */
-import axios, { AxiosInstance } from "axios"
-import fs from "fs"
-
-import { RootService } from "../../../core/RootService"
-import { PathFinder } from "../../../core/path/PathFinder"
+import axios, { AxiosInstance } from "axios";
+import fs from "fs";
+import { RootService } from "../../../core/RootService";
 import { Bus } from "../../../core/path/Bus";
-import { RepoRestActions } from "../../../core/repo/utils"
-
-import * as jwt from "../jwt"
+import { PathFinder } from "../../../core/path/PathFinder";
+import { RepoRestActions } from "../../../core/repo/utils";
 import { getFreePort } from "../../ws";
+import * as jwt from "../jwt";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import httpAdapter from 'axios/lib/adapters/http';
 
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
-let PORT
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+axios.defaults.adapter = httpAdapter;
+let PORT:number
 let axiosIstance: AxiosInstance
 const dbPath = `${__dirname}/database.sqlite`
-let root = null
+let root:RootService
 let user1, user2, token:string
 
 beforeAll(async () => {
@@ -116,7 +117,7 @@ test("crea due USER", async () => {
 })
 
 test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
-	let err = null
+	let err:any = null
 	try {
 		await axiosIstance.get(`/user`)
 	} catch (e) {

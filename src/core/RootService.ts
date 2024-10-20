@@ -1,4 +1,4 @@
-import ErrorService from "../services/error";
+import ErrorService from "../services/error/ErrorService";
 import FarmService from "../services/farm";
 import { ConfActions } from "./node/utils";
 import { ServiceBase } from "./service/ServiceBase";

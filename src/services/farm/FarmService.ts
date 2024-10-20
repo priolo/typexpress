@@ -1,7 +1,10 @@
 import { INode } from "../../core/node/INode"
 import { Node } from "../../core/node/Node"
 import { NodeConf } from "../../core/node/NodeConf"
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 /**
@@ -23,7 +26,7 @@ export default class FarmService extends Node {
         const { path:loc, className } = this.getAlias(path)
         let classes = null
         try { 
-            classes = await require(loc) 
+            classes = await import(loc)
         } catch (e) {
             console.error(e) 
             return null 

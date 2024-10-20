@@ -5,8 +5,12 @@ import fs from "fs"
 import { createDirIfNotExist, deleteIfExist, getDirInfo, getIfExists } from "../utils"
 import { wait } from "../../../test_utils"
 import * as fsService from "../index"
+import { fileURLToPath } from 'url';
 
-let root: RootService = null
+
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+let root: RootService
 
 beforeEach(async () => {
 	root = await RootService.Start({

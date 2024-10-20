@@ -9,10 +9,15 @@ import { DataSourceOptions} from "typeorm"
 import { EntitySchemaOptions } from "typeorm/browser";
 // import { TypeormRestService } from "./TypeormRestService";
 // import { ConfActions } from "../../core/node/NodeConf";
-
-
+import { fileURLToPath } from 'url';
 
 export type TypeormServiceConf = Partial<TypeormService['stateDefault']> & { class: "typeorm" }
+
+
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+
 
 /**
  * Crea e utilizza un DataSource Typeorm. 

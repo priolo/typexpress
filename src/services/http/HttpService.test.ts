@@ -5,7 +5,7 @@ import HttpService from "./index"
 describe("HTTP SERVICE", () => {
 
 	let PORT = 0
-	let root = null
+	let root:RootService = null
 
 	beforeAll( async ()=>{
 		PORT = await getFreePort()

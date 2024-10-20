@@ -4,7 +4,7 @@ import { RootService } from "../../core/RootService"
 import { Bus } from "../../core/path/Bus"
 
 
-let root = null
+let root: RootService | null = null
 
 beforeAll(async () => {
 	root = await RootService.Start([

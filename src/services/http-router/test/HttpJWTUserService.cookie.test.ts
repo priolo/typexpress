@@ -1,25 +1,25 @@
-/**
- * @jest-environment node
- */
 import axios, { AxiosInstance } from "axios"
 import fs from "fs"
-
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { RootService } from "../../../core/RootService"
-import { PathFinder } from "../../../core/path/PathFinder"
 import { Bus } from "../../../core/path/Bus"
-import { RepoStructActions, RepoRestActions } from "../../../core/repo/utils"
-
-import * as jwtNs from "../jwt"
+import { PathFinder } from "../../../core/path/PathFinder"
+import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils"
 import { getFreePort } from "../../ws"
+import * as jwtNs from "../jwt"
+import httpAdapter from 'axios/lib/adapters/http';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 
-let PORT
+let PORT: number
 const dbPath = `${__dirname}/database.sqlite`
-let root = null
-axios.defaults.adapter = require('axios/lib/adapters/http')
-let axiosIstance: AxiosInstance
+let root:RootService
 
+axios.defaults.adapter = httpAdapter;
+let axiosIstance: AxiosInstance
 
 beforeAll(async () => {
 	PORT = await getFreePort()
@@ -136,19 +136,21 @@ test("creation", async () => {
 })
 
 test("if I log in WITHOUT the token ... it should give me an error", async () => {
-	let err = null
+	let err:any
 	try {
 		await axiosIstance.get(`/user`)
 	} catch (e) {
 		err = e
 	}
-	expect(err.response.status).toBe(401)
+	expect(err && err.response && err.response.status).toBe(401)
 })
 
 test("if I log in with the token in the cookies it doesn't give me an error", async () => {
 	// login
 	const resp = await axiosIstance.get(`/user/login/2`)
-	const [cookie] = resp.headers["set-cookie"]
+	const setCookieHeader = resp.headers["set-cookie"];
+	if (!setCookieHeader) throw new Error("Set-Cookie header is missing in the response")
+	const [cookie] = setCookieHeader;
 	// get auth data
 	const { data } = await axiosIstance.get(`/user`, { headers: { Cookie: cookie } })
 	expect(data).toMatchObject({ id: 2, username: "Marina" })

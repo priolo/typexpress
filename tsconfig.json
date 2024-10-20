@@ -1,29 +1,27 @@
 {
-  "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
-    // "moduleResolution": "Node",
-    //    "target": "ES6",
-    //    "module": "ES6",
-    //    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "outDir": "./dist",
     "rootDir": "./src",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "preserveConstEnums": true,
-    "allowJs": true,
     "paths": {
       "@/*": [
         "./src/*"
       ]
     },
-    "declaration": true,
-    "declarationMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true, 
+    "declarationMap": true,
     "strictNullChecks": false,
+    "noImplicitAny": false,
   },
   "include": [
     "src"

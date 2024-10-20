@@ -38,7 +38,7 @@ export default class EmailService extends ServiceBase {
 				let res = false
 				try {
 					res = await emailCheck(address)
-				} catch ( err ) {
+				} catch ( err:any ) {
 					if (err.message === 'refuse') {
 						// The MX server is refusing requests from your IP address.
 					} else {
