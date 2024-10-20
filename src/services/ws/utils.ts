@@ -1,4 +1,8 @@
 import net from "net"
+import url, { URLSearchParams } from 'url'
+import { Request } from "express"
+
+
 
 /**
  * Rappresenta un client connesso al server WEBSOCKET
@@ -9,7 +13,7 @@ export interface IClient {
 	remoteAddress: string,
 	remotePort: number,
 	/** parametri ricavati dall'URL durante la connessione	*/
-	//params?: any,
+	params?: any,
 	/** PAYLOAD-JWT se è stato definito	*/
 	jwtPayload?: any,
 }
@@ -67,11 +71,21 @@ export function clientIsEqual(client: IClient, ws: IClient): boolean {
  * Restituisce una porta random libera
  */
 export async function getFreePort(): Promise<number> {
-	return new Promise( res => {
+	return new Promise(res => {
 		const srv = net.createServer();
 		srv.listen(0, () => {
 			const port = (<net.AddressInfo>srv.address()).port
 			srv.close((err) => res(port))
 		});
 	})
+}
+
+/** 
+ * restituisce i parametri QUERY-STRING presenti nella request 
+ * */
+export function getUrlParams(request: Request): any {
+	const index = request.url.lastIndexOf("?")
+	const querystring = (index == -1 ? url : request.url.slice(index)) as string
+	const params = new URLSearchParams(querystring)
+	return Object.fromEntries(params)
 }

@@ -5,12 +5,14 @@ import { IClient, IMessage, SocketRouteActions } from "./utils"
 
 export type SocketCommunicatorConf = Partial<SocketCommunicator['stateDefault']>
 
+/**
+ * Nodo astratto che puo' essere messo in gerarchia e riceve gli eventi dai parent
+ */
 export abstract class SocketCommunicator extends ServiceBase {
 
 	get stateDefault() {
 		return {
 			...super.stateDefault,
-			path: <string>null,
 			onConnect: <(this: SocketCommunicator, client: IClient) => void>null,
 			onDisconnect: <(this: SocketCommunicator, client: IClient) => void>null,
 			onMessage: <(this: SocketCommunicator, client: IClient, message: string | IMessage) => void>null,
@@ -35,101 +37,79 @@ export abstract class SocketCommunicator extends ServiceBase {
 	}
 
 	/**
-	 * Chiamato quando c'e' una NUOVA connessione da un client
-	 * @param client 
-	 * @param jwtPayload 
+	 * c'e' una NUOVA connessione da un client
 	 */
 	onConnect(client: IClient): void {
+		if (!client) return
 		this.state.onConnect?.bind(this)(client)
 		this.children.forEach(node => {
 			if (node instanceof SocketCommunicator) node.onConnect(client)
 		})
+		this.emitter.emit("open", { client })
 	}
 
+	/**
+	 * un client si disconnette
+	 */
 	onDisconnect(client: IClient) {
+		if (!client) return
 		this.state.onDisconnect?.bind(this)(client)
 		this.children.forEach(node => {
 			if (node instanceof SocketCommunicator) node.onDisconnect(client)
 		})
+		this.emitter.emit("close", { client })
 	}
 
 	/**
-	 * Richiamato quando c'e' un messaggio dal CLIENT
-	 * @param client Il CLIENT che mi manda il MESSAGE
-	 * @param message Dovrebbe essere sempre una stringa
-	 * @returns 
+	 * Richiamato quando c'e' un MESSAGE dal CLIENT
 	 */
-	onMessage(client: IClient, message: string | IMessage, paths: string[] = null) {
-		let { path } = this.state
-
-		if (!message) return
-		if (!path) path = ""
-		if (path.startsWith("/")) path = path.slice(1)
-
-		// se il messaggio non ha paths allora manda a tutti
-		if (paths == null) {
-			this.state.onMessage?.bind(this)(client, message)
-
-			// se c'e' la corrispondenza con questo NODO 
-			// mandalo a questo e finisci
-		} else if ((paths.length == 1 && paths[0] == path) || (paths.length == 0 && path.length == 0)) {
-			this.state.onMessage?.bind(this)(client, message)
-			return
-
-			// non c'e' corrispondenza ma il primo path corrisponde... mando ai child
-		} else if (paths[0] == path) {
-			paths.splice(0, 1)
-
-		} else if (path.length == 0) {
-
-			// non c'e' corrispondenza quindi fuori dal ramo
-		} else {
-			return
-		}
-
-		// mando il messaggio nei CHILDREN
-		const routes = this.children as SocketCommunicator[]
-		for (const route of routes) {
-			route.onMessage(client, message, paths)
-		}
+	onMessage(client: IClient, message: string | IMessage) {
+		if (!client || !message) return
+		this.state.onMessage?.bind(this)(client, message)
+		this.children.forEach(node => {
+			if (node instanceof SocketCommunicator) node.onMessage(client, message)
+		})
+		this.emitter.emit("message", { client, message })
 	}
 
 	/**
-	 * Invia un oggetto JSON ad un CLIENT-JSON
-	 * @param client è un client JSON (da non confondere con un ws-client)
-	 * @param message payload JSON 
+	 * Invia un MESSAGE ad un CLIENT
 	 */
 	sendToClient(client: IClient, message: any) {
+		if (!client || !message) return
 		if (!(this.parent instanceof SocketCommunicator)) return
 		this.parent.sendToClient(client, message)
 	}
 
 	/**
-	 * Invia un MESSAGE a tutti i client di questo ROUTE
-	 * @param message 
+	 * Invia un MESSAGE a tutti i CLIENT
 	 */
 	sendToAll(message: any) {
 		const clients = this.getClients()
 		clients.forEach(client => this.sendToClient(client, message))
 	}
 
+	/**
+	 * Invia un segnale di PING al CLIENT e attende la risposta
+	 */
 	async sendPing(client: IClient, timeout: number): Promise<number> {
 		if (!(this.parent instanceof SocketCommunicator)) return
 		return await this.parent.sendPing(client, timeout)
 	}
 
-
 	/**
-	 * Chiudi la connessione ad un CLIENT-JSON 
-	 * @param client client JSON
+	 * Chiude la connessione ad un CLIENT 
 	 */
 	disconnectClient(client: IClient) {
 		if (!(this.parent instanceof SocketCommunicator)) return
 		this.parent.disconnectClient(client)
 	}
 
+	/**
+	 * Restituisce tutti i CLIENT connessi
+	 */
 	getClients(): IClient[] {
-		if (!(this.parent instanceof SocketCommunicator)) return
+		if (!(this.parent instanceof SocketCommunicator)) return []
 		return this.parent.getClients()
 	}
 }

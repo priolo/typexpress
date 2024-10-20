@@ -1,5 +1,5 @@
 import { Request } from "express"
-import url, { URLSearchParams } from 'url'
+import url from 'url'
 import WebSocket from "ws"
 import { Bus } from "../../core/path/Bus"
 import * as errorNs from "../error"
@@ -8,7 +8,7 @@ import * as jwtNs from "../jwt"
 import LogService from "../log"
 import { SocketCommunicator } from "./SocketCommunicator"
 import { SocketRouteConf } from "./SocketRouteService"
-import { Errors, IClient, IMessage, SocketServerActions, clientIsEqual } from "./utils"
+import { Errors, IClient, IMessage, SocketServerActions, clientIsEqual, getUrlParams } from "./utils"
 
 
 
@@ -30,7 +30,7 @@ export class SocketServerService extends SocketCommunicator {
 	}
 
 	get dispatchMap() {
-		return { 
+		return {
 			...super.dispatchMap,
 			[SocketServerActions.START]: async (state) => {
 				await this.startListener()
@@ -62,7 +62,8 @@ export class SocketServerService extends SocketCommunicator {
 	//#region FARM
 
 	/**
-	 * Inizializza il server in base a come è impostato il config (come al solito inzomma)
+	 * Inizializza il server in base a come è impostato il config.
+	 * (insomma tutte le cose pallose)
 	 */
 	private async startListener() {
 		if (this.server) return
@@ -77,7 +78,6 @@ export class SocketServerService extends SocketCommunicator {
 
 	/**
 	 * Costruisce un SERVER-WEB-SOCKET senza bisogno di un SERVER-HTTP 
-	 * @returns 
 	 */
 	private async buildServer(): Promise<void> {
 		return new Promise((res, rej) => {
@@ -107,7 +107,7 @@ export class SocketServerService extends SocketCommunicator {
 	}
 	private onUpgrade = async (request, socket, head) => {
 		let { path, jwt, onAuth } = this.state
-		const params = this.getUrlParams(request)
+		const params = getUrlParams(request)
 
 		// controllo che il path sia giusto
 		const wsUrl = url.parse(request.url)
@@ -133,17 +133,6 @@ export class SocketServerService extends SocketCommunicator {
 		this.server.handleUpgrade(request, socket, head, (ws) => {
 			this.server.emit('connection', ws, request, jwtPayload)
 		})
-	}
-
-	/** 
-	 * restituisce i parametri QUERY-STRING presenti nella request 
-	 * [II] da mettere esterna
-	 * */
-	private getUrlParams(request: Request): any {
-		const index = request.url.lastIndexOf("?")
-		const querystring = (index == -1 ? url : request.url.slice(index)) as string
-		const params = new URLSearchParams(querystring)
-		return Object.fromEntries(params)
 	}
 
 	/**
@@ -178,11 +167,10 @@ export class SocketServerService extends SocketCommunicator {
 
 		// when a CLIENT conect
 		this.server.on('connection', (cws: WebSocket, req: Request, jwtPayload: any) => {
-			//const params = this.getUrlParams(req)
 			const client: IClient = {
 				remoteAddress: req.socket.remoteAddress,
 				remotePort: req.socket.remotePort,
-				//params,
+				params: getUrlParams(req),
 				jwtPayload
 			}
 			this.buildEventsClient(cws)
@@ -208,8 +196,7 @@ export class SocketServerService extends SocketCommunicator {
 
 		cws.on('close', (code: number, reason: string) => {
 			const client = this.findClientByCWS(cws)
-			//this.updateClients()
-			this.removeClient(client)
+			this.removeClient(client)//this.updateClients()
 			this.onDisconnect(client)
 		})
 
@@ -260,12 +247,18 @@ export class SocketServerService extends SocketCommunicator {
 		this.setState({ clients })
 	}
 
+	/**
+	 * aggiunge una connessione CLIENT
+	 */
 	private addClient(client: IClient) {
 		const { clients } = this.state
 		clients.push(client)
 		this.setState({ clients })
 	}
 
+	/**
+	 * rimuove una connessione CLIENT
+	 */
 	private removeClient(client: IClient) {
 		const clientsnew = this.state.clients.filter(c => !clientIsEqual(client, c))
 		this.setState({ clients: clientsnew })
@@ -277,37 +270,20 @@ export class SocketServerService extends SocketCommunicator {
 
 	//#region COMMUNICATOR 
 
-	//[II] DA FARE
-	onMessageNative(client: IClient, message: string | IMessage) {
-	}
-
 	/**
-	 * Quando arriva un messaggio dal client
-	 * @param client 
-	 * @param message 
-	 * @override
+	 * Invia un MESSAGE al CLIENT
+	 * @param client il client che riceve il messaggio
+	 * @param message messaggio da mandare
 	 */
-	onMessage(client: IClient, message: string | IMessage) {
-		if (!message || !client) return
-		if ( this.children.length == 0 ) {
-			this.state.onMessage?.bind(this)(client, message)
-			this.emitter.emit("message",{ client, message})
-			return
-		}
-		if (typeof message == "string" && message.length > 0) {
-			try {
-				message = JSON.parse(message)
-			} catch (error) { }
-		}
-		const paths = message["path"]?.split("/").filter(path => path && path.length > 0)
-		super.onMessage(client, message, paths)
-	}
-
 	sendToClient(client: IClient, message: any) {
 		const cws: WebSocket = this.findCWSByClient(client)
 		this.sendToCWS(cws, message)
 	}
 
+	/**
+	 * Invia a tutti i client connessi
+	 * @param message messaggio da inviare
+	 */
 	sendToAll(message: any) {
 		this.server.clients.forEach(cws => {
 			this.sendToCWS(cws, message)
@@ -346,23 +322,23 @@ export class SocketServerService extends SocketCommunicator {
 		return this.state.clients
 	}
 
-	//#endregion
-
+	/**
+	 * Invio il message al client websocket 
+	 */
 	private sendToCWS(cws: WebSocket, message: any): boolean {
-		if (cws.readyState === WebSocket.OPEN) {
-			if (typeof message != "string") message = JSON.stringify(message)
-			try {
-				cws.send(message)
-			} catch (error) {
-				new Bus(this, "/error").dispatch({
-					type: errorNs.Actions.NOTIFY,
-					payload: { code: Errors.BROADCAST, error }
-				})
-				return false
-			}
-			return true
+		if (cws.readyState != WebSocket.OPEN) return false
+		try {
+			cws.send(message)
+		} catch (error) {
+			new Bus(this, "/error").dispatch({
+				type: errorNs.Actions.NOTIFY,
+				payload: { code: Errors.BROADCAST, error }
+			})
+			return false
 		}
-		return false
+		return true
 	}
+
+	//#endregion
 
 }
