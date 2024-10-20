@@ -1,18 +1,15 @@
 import WebSocket from "ws"
 import { PathFinder } from "../../../core/path/PathFinder"
 import { RootService } from "../../../core/RootService"
-import { ApplyAction } from "../../../utils/sharedObject/applicators/SlateApplicator"
-import { ClientObjects } from "../../../utils/sharedObject/ClientObjects"
-import { ServerObjects } from "../../../utils/sharedObject/ServerObjects"
-import { delay } from "../../../utils/sharedObject/utils"
 import * as wsNs from "../index"
 import { SocketServerConf } from "../SocketServerService"
+import { ArrayApplicator, ClientObjects, ServerObjects } from "@priolo/jess"
 
 
 let PORT: number = 52
 let root: RootService
-let myServer: ServerObjects
-let myClient: ClientObjects
+
+
 
 
 beforeAll(async () => {
@@ -20,15 +17,8 @@ beforeAll(async () => {
 		<SocketServerConf>{
 			class: "ws",
 			port: PORT,
-			onMessage: async function (client, message: any) {
-				myServer.receive(JSON.stringify(message), client)
-			},
 		}
 	)
-	myServer = new ServerObjects()
-	myClient = new ClientObjects()
-	myServer.apply = ApplyAction
-	myClient.apply = ApplyAction
 })
 
 afterAll(async () => {
@@ -42,29 +32,23 @@ test("su creazione", async () => {
 })
 
 test("client connetc/send/close", async () => {
+	const myServer= new ServerObjects()
+	const wss: wsNs.Service = PathFinder.Get(root, "/ws-server")
+	wss.emitter.on("message", ({ client, message }) => myServer.receive(message, client))	
+	myServer.apply = ArrayApplicator.ApplyAction
+	myServer.onSend = async (client, message) => wss.sendToClient(client, message)
 
-	const wss = new PathFinder(root).getNode<wsNs.Service>("/ws-server")
+
+	const myClient = new ClientObjects()
 	const wsc = new WebSocket(`ws://localhost:${PORT}/`)
-
-	myServer.onSend = async (client, message) => {
-		wss.sendToClient(client, message)
-	}
-	myClient.onSend = async (message) => {
-		wsc.send(JSON.stringify(message))
-	}	
-
-	await new Promise<string>((res, rej) => {
-		wsc.on('open', () => {
-			res("open")
-		})
-		wsc.on('message', (data) => {
-			myClient.receive(data.toString())
-		})
+	myClient.apply = ArrayApplicator.ApplyAction
+	myClient.onSend = async (message) => wsc.send(JSON.stringify(message))
+	await new Promise<void>(res=> {
+		wsc.on('open', () => res())
+		wsc.on('message', (data) => myClient.receive(data.toString()))
 	})
 
-	myClient.observe("pippo", (data) => {
-		console.log(data)
-	})
+
 
 	await myClient.init("pippo")
 

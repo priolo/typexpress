@@ -5,6 +5,13 @@ import { PathFinderList } from "./PathFinderList"
 
 
 export class PathFinder {
+
+	// [facility]: restituisce un NODE
+	static Get<T>(node: INode, path: string): T {
+		return new PathFinder(node).getNode<T>(path)
+	}
+
+
 	constructor(node: INode) {
 		if (node == null || !node.children || !node.name) throw new Error("PathFinder:constructor:argument:invalid:need-INode")
 		this.node = node
@@ -47,17 +54,17 @@ export class PathFinder {
 				pattern = path.slice(1)
 				const fn = fnNodePattern(pattern)
 				const nodeParent = nodeParents(this.node, n => !fn(n))
-				nextPathFinder = nodeParent!=null ? new PathFinder(nodeParent) : null
+				nextPathFinder = nodeParent != null ? new PathFinder(nodeParent) : null
 
-			// ricerca su oggetto tra i miei children e ricorsivamente su quelli del parent
+				// ricerca su oggetto tra i miei children e ricorsivamente su quelli del parent
 			} else if (pattern.startsWith("^")) {
 				pattern = path.slice(1)
 				const nodeFind = nodeParentsFind(this.node, n => {
 					return new PathFinderList(n.children).getBy(pattern)?.node
 				})
-				nextPathFinder = nodeFind!=null ? new PathFinder(nodeFind) : null
+				nextPathFinder = nodeFind != null ? new PathFinder(nodeFind) : null
 
-			// se è una ricerca sui children (diretti)
+				// se è una ricerca sui children (diretti)
 			} else {
 				nextPathFinder = this.getChildren().getBy(pattern)
 			}

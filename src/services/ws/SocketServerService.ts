@@ -288,7 +288,12 @@ export class SocketServerService extends SocketCommunicator {
 	 * @override
 	 */
 	onMessage(client: IClient, message: string | IMessage) {
-		if (!message) return
+		if (!message || !client) return
+		if ( this.children.length == 0 ) {
+			this.state.onMessage?.bind(this)(client, message)
+			this.emitter.emit("message",{ client, message})
+			return
+		}
 		if (typeof message == "string" && message.length > 0) {
 			try {
 				message = JSON.parse(message)

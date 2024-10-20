@@ -27,10 +27,12 @@
 	},
 	"//dependencies": {
 		"@priolo/jon-utils#local": "file:C://Users//iorio//Documents//jon-utils",
+		"@priolo/jess": "file:C://Users//iorio//Documents//jess",
 		"@priolo/jon-utils": "0.3"
 	},
 	"dependencies": {
 		"@priolo/jon-utils": "0.3",
+		"@priolo/jess": "file:C://Users//iorio//Documents//jess",
 		"axios": "^0.23.0",
 		"connect-typeorm": "^2.0.0",
 		"cookie-parser": "^1.4.6",
@@ -53,8 +55,6 @@
 		"typeorm": "^0.3.20",
 		"winston": "^3.13.0",
 		"ws": "^7.4.5",
-		"y-websocket": "^2.0.4",
-		"yjs": "^13.6.19",
 		"slate": "^0.103.0"
 	},
 	"devDependencies": {
