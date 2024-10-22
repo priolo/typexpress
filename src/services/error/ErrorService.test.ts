@@ -2,9 +2,9 @@
  * @jest-environment node
  */
 import axios, { AxiosInstance } from "axios"
-import { getFreePort } from "../ws"
+import { getFreePort } from "../ws/index.js"
 
-import { error as errorNs, RootService } from "../../index"
+import { error as errorNs, RootService } from "../../index.js"
 
 
 

@@ -1,4 +1,4 @@
-import { RootService, utils } from "../../index"
+import { RootService, utils } from "../../index.js"
 
 test("su creazione", async () => {
 	const root = await RootService.Start([{

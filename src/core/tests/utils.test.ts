@@ -1,7 +1,7 @@
-import { INode } from "../node/INode";
-import { NodeConf } from "../node/NodeConf";
-import { PathFinder } from "../path/PathFinder";
-import { nodeMap, nodePath, nodeToJson } from "../utils";
+import { INode } from "../node/INode.js";
+import { NodeConf } from "../node/NodeConf.js";
+import { PathFinder } from "../path/PathFinder.js";
+import { nodeMap, nodePath, nodeToJson } from "../utils.js";
 
 
 

@@ -1,22 +1,22 @@
-/**
- * @jest-environment node
- */
-import axios from "axios"
-import path from "path"
-import { getFreePort } from "../../ws"
-
-import { RootService } from "../../../core/RootService"
-
-axios.defaults.adapter = require('axios/lib/adapters/http')
+import axios from "axios";
+import httpAdapter from 'axios/lib/adapters/http';
+import path from "path";
+import { fileURLToPath } from 'url';
+import { RootService } from "../../../core/RootService.js";
+import { getFreePort } from "../../ws/index.js";
 
 
 
-let root, res
-let PORT
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+axios.defaults.adapter = httpAdapter;
 
-beforeAll(async() => {
+let root: RootService
+let res: any
+let PORT: number
+
+beforeAll(async () => {
 	PORT = await getFreePort()
-	root = await RootService.Start (
+	root = await RootService.Start(
 		{
 			class: "http",
 			port: PORT,
@@ -37,7 +37,7 @@ beforeAll(async() => {
 	)
 })
 
-afterAll(async() => {
+afterAll(async () => {
 	await RootService.Stop(root)
 })
 
@@ -54,7 +54,7 @@ test("accesso a SPA con url inesistente", async () => {
 test("url inesistente in PUBLIC da errore", async () => {
 	try {
 		res = await axios.get(`http://localhost:${PORT}/public/not/exist/url/spa.spa`)
-	} catch ( e ) {
+	} catch (e) {
 		res = e
 	}
 	expect(res.response.status).toBe(404)

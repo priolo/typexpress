@@ -1,5 +1,5 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
-import { IClient, IMessage, SocketRouteActions } from "./utils"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { IClient, IMessage, SocketRouteActions } from "./utils.js"
 
 
 

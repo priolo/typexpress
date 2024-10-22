@@ -8,11 +8,12 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "preserveConstEnums": true,
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
+    "allowArbitraryExtensions": true,
+    // "paths": {
+    //   "@/*": [
+    //     "./src/*"
+    //   ]
+    // },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strict": false,

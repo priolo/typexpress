@@ -3,13 +3,13 @@
  */
  import WebSocket from "ws"
 
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-import { Bus } from "../../../core/path/Bus"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import { Bus } from "../../../core/path/Bus.js"
 
-import * as jwtNs from "../../jwt"
-import * as wsNs from "../index"
-import { getFreePort } from "../utils"
+import * as jwtNs from "../../jwt.js"
+import * as wsNs from "../index.js"
+import { getFreePort } from "../utils.js"
 
 
 

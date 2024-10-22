@@ -1,17 +1,13 @@
-/**
- * @jest-environment node
- */
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-
-import * as wsNs from "../index"
-import { getFreePort } from "../utils"
-
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import * as wsNs from "../index.js"
+import { getFreePort } from "../utils.js"
 
 
-let PORT
-let root = null
+
+let PORT: number
+let root: RootService
 
 
 beforeAll(async () => {
@@ -57,7 +53,7 @@ test("su creazione", async () => {
 })
 
 test("verifica connetc/send/close su servizio WS montato su servizio HTTP ", async () => {
-	
+
 	let client = new WebSocket(`ws://localhost:${PORT}/server1`)
 	let result = await new Promise<string>((res, rej) => {
 		let result
@@ -75,7 +71,7 @@ test("verifica connetc/send/close su servizio WS montato su servizio HTTP ", asy
 
 
 	client = new WebSocket(`ws://localhost:${PORT}/server2`);
-	result = await new Promise( (res, rej) => {
+	result = await new Promise((res, rej) => {
 		let result
 		client.on('open', function open() {
 			client.send("from client2")

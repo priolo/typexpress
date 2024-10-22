@@ -1,11 +1,11 @@
 import { Repository, Raw, Between, DataSource } from "typeorm";
 
-import { ServiceBase } from "../../core/service/ServiceBase"
-import { PathFinder } from "../../core/path/PathFinder";
-import { IRepoStructActions, RepoStructActions } from "../../core/repo/utils";
+import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { PathFinder } from "../../core/path/PathFinder.js";
+import { IRepoStructActions, RepoStructActions } from "../../core/repo/utils.js";
 
-import { TypeormService } from "./TypeormService";
-import { Actions } from "./utils";
+import { TypeormService } from "./TypeormService.js";
+import { Actions } from "./utils.js";
 
 
 

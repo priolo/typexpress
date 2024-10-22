@@ -1,5 +1,5 @@
-import { IAction } from "../../core/node/IAction"
-import { ErrorNotify } from "./ErrorNotify"
+import { IAction } from "../../core/node/IAction.js"
+import { ErrorNotify } from "./ErrorNotify.js"
 
 
 

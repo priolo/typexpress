@@ -1,18 +1,16 @@
-import path from "path"
+import path from "path";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
-import { RootService } from "../../../core/RootService"
-import { PathFinder } from "../../../core/path/PathFinder";
-import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils";
-import { Bus } from "../../../core/path/Bus";
-
-import * as orm from "../index"
-import { deleteIfExist } from "../../fs";
+import { RootService } from "../../../core/RootService.js";
+import { Bus } from "../../../core/path/Bus.js";
+import { PathFinder } from "../../../core/path/PathFinder.js";
+import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils.js";
+import { deleteIfExist } from "../../fs/index.js";
+import * as orm from "../index.js";
 
 
 
 const dbPath = path.join(__dirname, "/database.sqlite")
-let root: RootService = null
+let root: RootService
 
 @Entity()
 export class Item {

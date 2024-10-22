@@ -1,7 +1,7 @@
-import { INode } from "../node/INode"
-import { PathFinder } from "./PathFinder"
-import { nodeFind } from "../utils"
-import { fnNodePattern } from "../utils"
+import { INode } from "../node/INode.js"
+import { PathFinder } from "./PathFinder.js"
+import { nodeFind } from "../utils.js"
+import { fnNodePattern } from "../utils.js"
 
 
 export class PathFinderList {

@@ -1,8 +1,8 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
 import fs from "fs"
 import path from "path"
-import { Actions, FsItem, FsType } from "./utils"
-import { createDirIfNotExist, deleteIfExist } from "."
+import { Actions, FsItem, FsType } from "./utils.js"
+import { createDirIfNotExist, deleteIfExist } from "./utils.js"
 
 
 export default class FsService extends ServiceBase {

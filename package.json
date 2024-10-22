@@ -24,9 +24,9 @@
 	],
 
 	"scripts": {
-		"build": "npx tsc",
+		"build": "tsc",
 		"build-watch": "tsc -w",
-		"test": "node --experimental-vm-modules --inspect-brk ./node_modules/jest/bin/jest.js",
+		"test": "node --experimental-vm-modules --trace-warnings --inspect-brk ./node_modules/jest/bin/jest.js",
 		"pub": "tsc && npm publish"
 	},
 	"//dependencies": {

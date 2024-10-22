@@ -1,6 +1,6 @@
-import { TypeormService, TypeormServiceConf } from "./TypeormService"
-import { TypeormRepoService } from "./TypeormRepoService"
-import { TypeormRepoTreeService } from "./TypeormRepoTreeService"
+import { TypeormService, TypeormServiceConf } from "./TypeormService.js"
+import { TypeormRepoService } from "./TypeormRepoService.js"
+import { TypeormRepoTreeService } from "./TypeormRepoTreeService.js"
 import { IsNull } from "typeorm";
 
 
@@ -14,4 +14,4 @@ export {
 	TypeormRepoTreeService as repoTree,
 	IsNull
 }
-export * from "./utils"
+export * from "./utils.js"

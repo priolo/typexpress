@@ -1,6 +1,6 @@
-import { RootService } from "../../core/RootService"
-import { PathFinder } from "../../core/path/PathFinder";
-import * as jwtNs from "./index"
+import { RootService } from "../../core/RootService.js"
+import { PathFinder } from "../../core/path/PathFinder.js";
+import * as jwtNs from "./index.js"
 
 
 test("su creazione", async () => {

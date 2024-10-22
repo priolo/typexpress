@@ -2,7 +2,7 @@ export {
 	default,
 	default as Service,
 	ErrorServiceConf as conf,
-} from "./ErrorService"
+} from "./ErrorService.js"
 
-export * from "./ErrorNotify"
-export * from "./utils"
+export * from "./ErrorNotify.js"
+export * from "./utils.js"

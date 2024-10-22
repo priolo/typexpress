@@ -1,12 +1,12 @@
 /**
  * @jest-environment node
  */
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-import { wsFarm } from "../../../test_utils"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import { wsFarm } from "../../../test_utils.js"
 
-import * as wsNs from "../index"
-import { getFreePort } from "../utils"
+import * as wsNs from "../index.js"
+import { getFreePort } from "../utils.js"
 
 
 

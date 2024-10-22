@@ -2,9 +2,9 @@
  * @jest-environment node
  */
 import http from 'http';
-import { getFreePort } from "../../ws";
-import { PathFinder, RootService } from "../../../index";
-import { HttpRouterRestServiceBase } from "../rest/HttpRouterRestServiceBase";
+import { getFreePort } from "../../ws/index.js";
+import { PathFinder, RootService } from "../../../index.js";
+import { HttpRouterRestServiceBase } from "../rest/HttpRouterRestServiceBase.js";
 
 let PORT: number;
 let root: RootService

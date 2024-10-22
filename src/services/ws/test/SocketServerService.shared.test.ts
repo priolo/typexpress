@@ -1,8 +1,8 @@
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder.js"
-import { RootService } from "../../../core/RootService.js"
-import * as wsNs from "../index.js"
-import { SocketServerConf } from "../SocketServerService.js"
+import { PathFinder } from "../../../core/path/PathFinder.js.js"
+import { RootService } from "../../../core/RootService.js.js"
+import * as wsNs from "../index.js.js"
+import { SocketServerConf } from "../SocketServerService.js.js"
 import { time } from "@priolo/jon-utils"
 
 let PORT: number = 52

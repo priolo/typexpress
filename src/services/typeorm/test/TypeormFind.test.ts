@@ -1,18 +1,16 @@
-import fs from "fs"
-import path from "path"
-import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
-
-import { RootService } from "../../../core/RootService"
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RepoStructActions } from "../../../core/repo/utils";
-import { Bus } from "../../../core/path/Bus";
-
-import * as typeormNs from "../index"
+import fs from "fs";
+import path from "path";
+import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions.js";
+import { RootService } from "../../../core/RootService.js";
+import { Bus } from "../../../core/path/Bus.js";
+import { PathFinder } from "../../../core/path/PathFinder.js";
+import { RepoStructActions } from "../../../core/repo/utils.js";
+import * as typeormNs from "../index.js";
 
 
 
 const dbPath = path.join(__dirname, "/database.sqlite")
-let root: RootService = null
+let root: RootService
 
 
 beforeAll(async () => {

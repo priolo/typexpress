@@ -1,8 +1,6 @@
-import jwt, { Secret } from "jsonwebtoken";
-
-import { ServiceBase } from "../../core/service/ServiceBase"
-
-import { Actions } from "./utils";
+import jwt from "jsonwebtoken";
+import { ServiceBase } from "../../core/service/ServiceBase.js";
+import { Actions } from "./utils.js";
 
 
 

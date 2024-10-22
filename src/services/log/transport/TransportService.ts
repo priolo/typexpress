@@ -1,6 +1,6 @@
 import winston from "winston";
-import { ServiceBase } from "../../../index";
-import { LogLevel } from "../utils";
+import { ServiceBase } from "../../../index.js";
+import { LogLevel } from "../utils.js";
 
 
 

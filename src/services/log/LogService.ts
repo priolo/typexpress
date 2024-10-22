@@ -1,8 +1,8 @@
-import { INode } from "@/core/node/INode";
+import { INode } from "../../core/node/INode.js";
 import winston from "winston";
-import { Bus, ServiceBase } from "../../index";
-import TransportService from "./transport/TransportService";
-import { Actions, LogLevel, LogNotify } from "./utils";
+import { Bus, ServiceBase } from "../../index.js";
+import TransportService from "./transport/TransportService.js";
+import { Actions, LogLevel, LogNotify } from "./utils.js";
 
 
 

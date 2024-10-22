@@ -1,13 +1,10 @@
-import fs from "fs"
-import path from "path"
-
-import { RootService } from "../../../core/RootService"
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { PathFinder } from "../../../core/path/PathFinder";
-import { ConfActions } from "../../../core/node/utils";
-import { RepoRestActions } from "../../../core/repo/utils";
-
-import * as typeormNs from "../index"
+import fs from "fs";
+import path from "path";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { PathFinder } from "../../../core/path/PathFinder.js";
+import { RepoRestActions } from "../../../core/repo/utils.js";
+import { RootService } from "../../../core/RootService.js";
+import * as typeormNs from "../index.js";
 
 
 

@@ -1,4 +1,4 @@
-import { ErrorLevel } from "./utils"
+import { ErrorLevel } from "./utils.js"
 
 
 /**

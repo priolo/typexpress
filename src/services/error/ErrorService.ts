@@ -1,9 +1,9 @@
-import { INode } from "../../core/node/INode";
-import { Bus } from "../../core/path/Bus";
-import { ServiceBase } from "../../core/service/ServiceBase";
-import { ErrorNotify } from "./ErrorNotify";
-import { ErrorLevel } from "./utils";
-import { Actions, NotifyAction } from "./utils";
+import { INode } from "../../core/node/INode.js";
+import { Bus } from "../../core/path/Bus.js";
+import { ServiceBase } from "../../core/service/ServiceBase.js";
+import { ErrorNotify } from "./ErrorNotify.js";
+import { ErrorLevel } from "./utils.js";
+import { Actions, NotifyAction } from "./utils.js";
 
 
 

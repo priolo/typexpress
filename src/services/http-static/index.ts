@@ -1,4 +1,4 @@
-import { HttpStaticService, HttpStaticServiceConf } from "./HttpStaticService"
+import { HttpStaticService, HttpStaticServiceConf } from "./HttpStaticService.js"
 
 
 

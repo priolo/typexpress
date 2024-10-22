@@ -1,8 +1,8 @@
-import { RootService } from "../RootService"
-import { NodeConf } from "../node/NodeConf"
-import { NodeState } from "../node/NodeState"
-import { ConfActions } from "../node/utils"
-import { Bus } from "../path/Bus"
+import { RootService } from "../RootService.js"
+import { NodeConf } from "../node/NodeConf.js"
+import { NodeState } from "../node/NodeState.js"
+import { ConfActions } from "../node/utils.js"
+import { Bus } from "../path/Bus.js"
 
 
 

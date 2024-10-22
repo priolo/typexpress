@@ -1,7 +1,7 @@
-import { RootService } from "../RootService"
-import { PathFinder } from "../path/PathFinder"
-import { NodeConf } from "../node/NodeConf"
-import { ConfActions } from "../node/utils"
+import { RootService } from "../RootService.js"
+import { PathFinder } from "../path/PathFinder.js"
+import { NodeConf } from "../node/NodeConf.js"
+import { ConfActions } from "../node/utils.js"
 
 
 describe("PathFinder", () => {

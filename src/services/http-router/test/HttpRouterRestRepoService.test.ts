@@ -1,10 +1,10 @@
 import axios, { AxiosInstance } from "axios"
 import fs from "fs"
-import { RootService } from "../../../core/RootService"
+import { RootService } from "../../../core/RootService.js"
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { PathFinder } from "../../../core/path/PathFinder"
-import { HttpRouterRestRepoService } from "../rest/HttpRouterRestRepoService";
-import { getFreePort } from "../../ws";
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { HttpRouterRestRepoService } from "../rest/HttpRouterRestRepoService.js";
+import { getFreePort } from "../../ws/index.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import httpAdapter from 'axios/lib/adapters/http';

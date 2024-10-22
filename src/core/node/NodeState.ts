@@ -1,6 +1,6 @@
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { IAction } from "./IAction";
-import { Node } from "./Node";
+import { IAction } from "./IAction.js";
+import { Node } from "./Node.js";
 
 
 

@@ -1,10 +1,10 @@
-import { HttpRouterService, HttpRouterServiceConf } from "./HttpRouterService";
-import { HttpRouterRestRepoService, HttpRouterRestRepoServiceConf } from "./rest/HttpRouterRestRepoService";
-import { HttpRouterRestServiceBase } from "./rest/HttpRouterRestServiceBase";
-import * as jwt from "./jwt";
-import { HttpFsService } from "./fs/HttpFsService";
-import { HttpUploadService } from "./upload/HttpUploadService";
-import { HttpSessionService } from "./session/HttpSessionService";
+import { HttpRouterService, HttpRouterServiceConf } from "./HttpRouterService.js";
+import { HttpRouterRestRepoService, HttpRouterRestRepoServiceConf } from "./rest/HttpRouterRestRepoService.js";
+import { HttpRouterRestServiceBase } from "./rest/HttpRouterRestServiceBase.js";
+import * as jwt from "./jwt/index.js";
+import { HttpFsService } from "./fs/HttpFsService.js";
+import { HttpUploadService } from "./upload/HttpUploadService.js";
+import { HttpSessionService } from "./session/HttpSessionService.js";
 
 
 

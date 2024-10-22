@@ -1,14 +1,14 @@
 import { EventEmitter } from "events"
 
-import { NodeConf } from "../node/NodeConf"
-import { Bus } from "../path/Bus"
-import { nodePath } from "../utils"
-import { IAction } from "../node/IAction"
-import { IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./utils"
+import { NodeConf } from "../node/NodeConf.js"
+import { Bus } from "../path/Bus.js"
+import { nodePath } from "../utils.js"
+import { IAction } from "../node/IAction.js"
+import { Errors, IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./utils.js"
 
 // bisogna importarlo direttamente da "utils" altrimenti c'e' un import-circolare
-import { Actions as ErrorActions } from "../../services/error/utils"
-import { Errors } from "."
+import { Actions as ErrorActions } from "../../services/error/utils.js"
+
 
 
 /**

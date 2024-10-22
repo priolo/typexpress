@@ -1,11 +1,11 @@
-import { getFreePort } from "../ws"
-import { PathFinder, RootService, ServiceBase } from "../../index"
-import HttpService from "./index"
+import { getFreePort } from "../ws/utils.js"
+import { PathFinder, RootService, ServiceBase } from "../../index.js"
+import HttpService from "./index.js"
 
 describe("HTTP SERVICE", () => {
 
 	let PORT = 0
-	let root:RootService = null
+	let root:RootService
 
 	beforeAll( async ()=>{
 		PORT = await getFreePort()

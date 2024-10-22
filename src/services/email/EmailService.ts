@@ -1,7 +1,7 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
 import nodemailer, {Transporter} from "nodemailer"
 import emailCheck from "email-check"
-import { Actions, IEmail, IAccount } from "./utils"
+import { Actions, IEmail, IAccount } from "./utils.js"
 
 
 /**

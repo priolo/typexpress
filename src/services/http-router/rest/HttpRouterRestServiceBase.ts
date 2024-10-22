@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HttpRouterService, HttpRouterServiceConf, IRouteParam } from "../HttpRouterService";
+import { HttpRouterService, HttpRouterServiceConf, IRouteParam } from "../HttpRouterService.js";
 
 
 //export type HttpRouterRestServiceBaseConf = Partial<HttpRouterRestServiceBase['stateDefault']>

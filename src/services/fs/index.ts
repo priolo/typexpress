@@ -1,7 +1,7 @@
-import FsService from "./FsService";
+import FsService from "./FsService.js";
 
 export {
 	FsService as Service,
 	FsService as default,
 }
-export * from "./utils"
+export * from "./utils.js"

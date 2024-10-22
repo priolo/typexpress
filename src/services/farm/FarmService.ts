@@ -1,11 +1,11 @@
-import { INode } from "../../core/node/INode"
-import { Node } from "../../core/node/Node"
-import { NodeConf } from "../../core/node/NodeConf"
+import { INode } from "../../core/node/INode.js"
+import { Node } from "../../core/node/Node.js"
+import { NodeConf } from "../../core/node/NodeConf.js"
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
+import { pathToFileURL } from 'url';
 
 /**
  * Il SEVICE che si occupa di caricare l'array di classi presenti in un file js
@@ -23,21 +23,31 @@ export default class FarmService extends Node {
      */
     async loadClassFromFile(path: string): Promise<any> {
         if (path == null) return null
-        const { path:loc, className } = this.getAlias(path)
+        const { path: loc, className } = this.getAlias(path)
         let classes = null
-        try { 
-            classes = await import(loc)
+        const fileUrl = pathToFileURL(loc).href;
+
+        try {
+            classes = await import(`${fileUrl}\\index.js`)
         } catch (e) {
-            console.error(e) 
-            return null 
+            try {
+                classes = await import(fileUrl)
+            } catch (e) {
+                try {
+                    classes = await import(`${fileUrl}\\index`)
+                } catch (e) {
+                    console.error(e)
+                    return null
+                }
+            }
         }
-        if ( !classes ) {
-            console.error("classe non trovata") 
+        if (!classes) {
+            console.error("classe non trovata")
             return null
         }
 
         // se è definito un "className" prendo la class con quel "className"
-        if ( className ) {
+        if (className) {
             const clazz = classes[className]
             return clazz.default ?? clazz
         }

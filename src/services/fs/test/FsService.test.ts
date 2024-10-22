@@ -1,10 +1,10 @@
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
 import path from "path"
 import fs from "fs"
-import { createDirIfNotExist, deleteIfExist, getDirInfo, getIfExists } from "../utils"
-import { wait } from "../../../test_utils"
-import * as fsService from "../index"
+import { createDirIfNotExist, deleteIfExist, getDirInfo, getIfExists } from "../utils.js"
+import { wait } from "../../../test_utils.js"
+import * as fsService from "../index.js"
 import { fileURLToPath } from 'url';
 
 

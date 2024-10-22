@@ -1,11 +1,11 @@
 import axios, { AxiosInstance } from "axios";
 import fs from "fs";
-import { RootService } from "../../../core/RootService";
-import { Bus } from "../../../core/path/Bus";
-import { PathFinder } from "../../../core/path/PathFinder";
-import { RepoRestActions } from "../../../core/repo/utils";
-import { getFreePort } from "../../ws";
-import * as jwt from "../jwt";
+import { RootService } from "../../../core/RootService.js";
+import { Bus } from "../../../core/path/Bus.js";
+import { PathFinder } from "../../../core/path/PathFinder.js";
+import { RepoRestActions } from "../../../core/repo/utils.js";
+import { getFreePort } from "../../ws/index.js";
+import * as jwt from "../jwt/index.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import httpAdapter from 'axios/lib/adapters/http';

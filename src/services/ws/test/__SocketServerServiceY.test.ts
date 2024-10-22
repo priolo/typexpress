@@ -3,9 +3,9 @@
  */
 
 //import * as ws from "ws"
-import { RootService } from "../../../core/RootService"
-import SocketServerService, * as wsNs from "../index"
-import { getFreePort, SocketRouteActions } from "../utils"
+import { RootService } from "../../../core/RootService.js"
+import SocketServerService, * as wsNs from "../index.js"
+import { getFreePort, SocketRouteActions } from "../utils.js"
 
 import ws from "ws"
 

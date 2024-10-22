@@ -2,6 +2,6 @@ export {
 	HttpService as default,
 	HttpService as Service,
 	HttpServiceConf as conf,
-} from "./HttpService"
+} from "./HttpService.js"
 
-export * from "./utils"
+export * from "./utils.js"

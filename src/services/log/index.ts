@@ -1,6 +1,6 @@
-import LogService from "./LogService"
-import FileService from "./transport/FileService"
-import ConsoleService from "./transport/ConsoleService"
+import LogService from "./LogService.js"
+import FileService from "./transport/FileService.js"
+import ConsoleService from "./transport/ConsoleService.js"
 
 export {
 	LogService as default,
@@ -9,4 +9,4 @@ export {
 	ConsoleService as console
 }
 
-export * from "./utils"
+export * from "./utils.js"

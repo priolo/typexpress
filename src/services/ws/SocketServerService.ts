@@ -1,14 +1,14 @@
 import { Request } from "express"
 import url from 'url'
 import WebSocket from "ws"
-import { Bus } from "../../core/path/Bus"
-import * as errorNs from "../error"
-import * as http from "../http"
-import * as jwtNs from "../jwt"
-import LogService from "../log"
-import { SocketCommunicator } from "./SocketCommunicator"
-import { SocketRouteConf } from "./SocketRouteService"
-import { Errors, IClient, IMessage, SocketServerActions, clientIsEqual, getUrlParams } from "./utils"
+import { Bus } from "../../core/path/Bus.js"
+import * as errorNs from "../error/index.js"
+import * as http from "../http/index.js"
+import * as jwtNs from "../jwt/index.js"
+import LogService from "../log/index.js"
+import { SocketCommunicator } from "./SocketCommunicator.js"
+import { SocketRouteConf } from "./SocketRouteService.js"
+import { Errors, IClient, IMessage, SocketServerActions, clientIsEqual, getUrlParams } from "./utils.js"
 
 
 

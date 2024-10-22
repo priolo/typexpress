@@ -1,16 +1,12 @@
-/**
- * @jest-environment node
- */
-import { RootService } from "../../../core/RootService"
-import { distancePoints, getRandom, wsFarm, wait } from "../../../test_utils"
-
-import * as wsNs from "../index"
-import { getFreePort } from "../utils"
+import { RootService } from "../../../core/RootService.js"
+import { distancePoints, getRandom, wsFarm, wait } from "../../../test_utils.js"
+import * as wsNs from "../index.js"
+import { getFreePort } from "../utils.js"
 
 
 
-let PORT
-let root = null
+let PORT: number
+let root: RootService
 
 class RouteCustom extends wsNs.route {
 	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
@@ -53,7 +49,7 @@ test("send send/receive position near", async () => {
 	const indexNear = positions.reduce((acc, position, index) => {
 		if (distancePoints(positions[senderIndex], position) <= distance) acc.push(index)
 		return acc
-	}, [])
+	}, [] as number[])
 
 	const indexReceive = []
 

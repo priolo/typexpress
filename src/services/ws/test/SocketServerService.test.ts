@@ -1,9 +1,9 @@
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-import * as wsNs from "../index"
-import { SocketServerConf } from "../SocketServerService"
-import { getFreePort, SocketRouteActions } from "../utils"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import * as wsNs from "../index.js"
+import { SocketServerConf } from "../SocketServerService.js"
+import { getFreePort, SocketRouteActions } from "../utils.js"
 
 
 

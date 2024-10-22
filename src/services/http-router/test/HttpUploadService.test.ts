@@ -1,23 +1,24 @@
-/**
- * @jest-environment node
- */
 import axios, { AxiosInstance } from "axios"
+import FormData from "form-data"
 import fs from "fs"
 import path from "path"
-import FormData from "form-data"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import { getFreePort } from "../../ws/index.js"
+import { HttpUploadService } from "../upload/HttpUploadService.js"
 
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
+import { fileURLToPath } from 'url';
+import httpAdapter from 'axios/lib/adapters/http';
 
-import { HttpUploadService } from "../upload/HttpUploadService"
-import { getFreePort } from "../../ws"
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+axios.defaults.adapter = httpAdapter;
 
 
-axios.defaults.adapter = require('axios/lib/adapters/http')
-let PORT
+
+let PORT: number
 let axiosIstance: AxiosInstance
 const dirDest = path.join(__dirname, "./dest")
-let root = null
+let root: RootService
 
 
 beforeAll(async () => {

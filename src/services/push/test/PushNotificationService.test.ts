@@ -1,10 +1,7 @@
-/**
- * @jest-environment node
- */
-import { Bus } from "../../../core/path/Bus"
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-import * as push from "../index"
+import { Bus } from "../../../core/path/Bus.js"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import * as push from "../index.js"
 import path from "path"
 
 

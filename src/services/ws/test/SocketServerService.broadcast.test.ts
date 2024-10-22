@@ -1,13 +1,10 @@
-/**
- * @jest-environment node
- */
-import { getFreePort } from ".."
-import { RootService } from "../../../core/RootService"
-import { wsFarm } from "../../../test_utils"
+import { getFreePort } from "../utils.js"
+import { RootService } from "../../../core/RootService.js"
+import { wsFarm } from "../../../test_utils.js"
 
 
-let PORT
-let root = null
+let PORT: number
+let root: RootService
 
 beforeAll(async () => {
 	PORT = await getFreePort()

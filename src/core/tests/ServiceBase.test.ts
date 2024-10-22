@@ -1,10 +1,10 @@
-import { ServiceBase, ServiceBaseActions, IEvent, ServiceBaseEvents } from "../service"
-import { PathFinder } from "../../core/path/PathFinder"
-import { RootService } from "../../core/RootService"
-import { Bus } from "../../core/path/Bus"
+import { ServiceBase, ServiceBaseActions, IEvent, ServiceBaseEvents } from "../service/index.js"
+import { PathFinder } from "../../core/path/PathFinder.js"
+import { RootService } from "../../core/RootService.js"
+import { Bus } from "../../core/path/Bus.js"
 
 
-let root: RootService | null = null
+let root: RootService
 
 beforeAll(async () => {
 	root = await RootService.Start([

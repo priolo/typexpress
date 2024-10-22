@@ -1,5 +1,5 @@
-import { SocketServerService, SocketServerConf } from "./SocketServerService"
-import { SocketRouteService, SocketRouteConf } from "./SocketRouteService"
+import { SocketServerService, SocketServerConf } from "./SocketServerService.js"
+import { SocketRouteService, SocketRouteConf } from "./SocketRouteService.js"
 
 
 export {
@@ -10,4 +10,4 @@ export {
 	SocketRouteConf,
 }
 
-export * from "./utils"
+export * from "./utils.js"

@@ -1,7 +1,7 @@
 
 import { LOG_TYPE, log } from "@priolo/jon-utils";
 import { Request, Response, Router } from "express";
-import { HttpRouterServiceBase, HttpRouterServiceBaseConf } from "./HttpRouterServiceBase";
+import { HttpRouterServiceBase, HttpRouterServiceBaseConf } from "./HttpRouterServiceBase.js";
 
 
 

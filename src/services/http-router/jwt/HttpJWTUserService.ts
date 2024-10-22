@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express"
-import { Bus } from "../../../core/path/Bus"
-import * as jwtNs from "../../jwt"
-import { HttpRouterServiceBase } from "../HttpRouterServiceBase"
-import { CookieStrategy, JWT_PAYLOAD_PROP, RouteJWTUserActions } from "./utils"
+import { Bus } from "../../../core/path/Bus.js"
+import * as jwtNs from "../../jwt/index.js"
+import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
+import { CookieStrategy, JWT_PAYLOAD_PROP, RouteJWTUserActions } from "./utils.js"
 
 
 

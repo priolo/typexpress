@@ -1,8 +1,8 @@
-import { ServiceBase } from "../../core/service/ServiceBase"
-import { PathFinder } from "../../core/path/PathFinder"
-import { RootService } from "../../core/RootService"
-import * as http from "../http"
-import { ConfActions } from "../../core/node/utils"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { PathFinder } from "../../core/path/PathFinder.js"
+import { RootService } from "../../core/RootService.js"
+import * as http from "../http/index.js"
+import { ConfActions } from "../../core/node/utils.js"
 
 class TestService extends ServiceBase {
 	get prop() { return 54 }

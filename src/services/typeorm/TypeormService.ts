@@ -1,14 +1,12 @@
-import { DataSource, EntitySchema } from "typeorm";
-import path from "path"
-import { ServiceBase } from "../../core/service/ServiceBase";
-import { TypeormRepoService } from "./TypeormRepoService";
-import { Bus } from "../../core/path/Bus";
-import * as errorNs from "../error";
-import { TypeormRepoBaseService } from "./TypeormRepoBaseService";
-import { DataSourceOptions} from "typeorm"
+import path from "path";
+import { DataSource, DataSourceOptions, EntitySchema } from "typeorm";
 import { EntitySchemaOptions } from "typeorm/browser";
-// import { TypeormRestService } from "./TypeormRestService";
-// import { ConfActions } from "../../core/node/NodeConf";
+import { Bus } from "../../core/path/Bus.js";
+import { ServiceBase } from "../../core/service/ServiceBase.js";
+import * as errorNs from "../error/index.js";
+import { TypeormRepoBaseService } from "./TypeormRepoBaseService.js";
+// import { TypeormRestService } from "./TypeormRestService.js";
+// import { ConfActions } from "../../core/node/NodeConf.js";
 import { fileURLToPath } from 'url';
 
 export type TypeormServiceConf = Partial<TypeormService['stateDefault']> & { class: "typeorm" }

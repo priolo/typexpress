@@ -4,9 +4,9 @@
 import axios, { AxiosInstance } from "axios"
 
 import { Request, Response } from "express"
-import { getFreePort } from "../../ws"
+import { getFreePort } from "../../ws/index.js"
 
-import { PathFinder, RootService, error, httpRouter, http, ConfActions } from "../../../index"
+import { PathFinder, RootService, error, httpRouter, http, ConfActions } from "../../../index.js"
 
 const { Service: HttpRouterService } = httpRouter
 const { Service: HttpService } = http
@@ -15,9 +15,9 @@ const { Service: HttpService } = http
 describe("Server HTTP e i suoi ROUTER", () => {
 
 	axios.defaults.adapter = require('axios/lib/adapters/http')
-	let PORT
+	let PORT: number
 	let axiosIstance: AxiosInstance
-	let root = null
+	let root: RootService
 
 	/**
 	 * Implementazione di un SERVICE `HttpRouterService`
@@ -41,9 +41,9 @@ describe("Server HTTP e i suoi ROUTER", () => {
 	 */
 	beforeAll(async () => {
 		PORT = await getFreePort()
-		axiosIstance = axios.create({ 
-			baseURL: `http://localhost:${PORT}`, 
-			withCredentials: true 
+		axiosIstance = axios.create({
+			baseURL: `http://localhost:${PORT}`,
+			withCredentials: true
 		});
 	})
 
@@ -55,10 +55,10 @@ describe("Server HTTP e i suoi ROUTER", () => {
 				port: PORT,
 			})
 			const route = new HttpRouterService("route", {
-				routers: [{ 
-					path: "/test", 
-					verb: "get", 
-					method: (req, res, next) => res.json({ response: "test-ok" }) 
+				routers: [{
+					path: "/test",
+					verb: "get",
+					method: (req, res, next) => res.json({ response: "test-ok" })
 				}]
 			})
 			http.addChild(route)

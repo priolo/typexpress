@@ -1,4 +1,4 @@
-import { NodeState } from "../node/NodeState"
+import { NodeState } from "../node/NodeState.js"
 import { time } from "@priolo/jon-utils"
 
 

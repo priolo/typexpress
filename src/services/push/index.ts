@@ -1,4 +1,4 @@
-import { PushNotificationService } from "./PushNotificationService"
+import { PushNotificationService } from "./PushNotificationService.js"
 
 
 export {
@@ -6,4 +6,4 @@ export {
 	PushNotificationService as default
 }
 
-export * from "./utils"
+export * from "./utils.js"

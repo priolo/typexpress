@@ -1,5 +1,5 @@
-import FarmService from "./FarmService";
-import { JestTestService } from "./JestTestService";
+import FarmService from "./FarmService.js";
+import { JestTestService } from "./JestTestService.js";
 
 
 export {

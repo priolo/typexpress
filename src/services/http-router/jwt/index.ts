@@ -1,8 +1,8 @@
-import {HttpJWTUserService} from "./HttpJWTUserService"
+import {HttpJWTUserService} from "./HttpJWTUserService.js"
 import {
 	JWT_PAYLOAD_PROP, RouteJWTUserActions, CookieStrategyFarm, CookieStrategy,
 	HeaderStrategy, JWTStrategy
-} from "./utils"
+} from "./utils.js"
 
 
 export {

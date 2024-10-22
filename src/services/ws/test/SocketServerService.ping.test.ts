@@ -1,11 +1,11 @@
 /**
  * @jest-environment node
  */
-import { RootService } from "../../../core/RootService"
-import { wsFarm, wait } from "../../../test_utils"
+import { RootService } from "../../../core/RootService.js"
+import { wsFarm, wait } from "../../../test_utils.js"
 
-import * as wsNs from "../index"
-import { getFreePort } from "../utils"
+import * as wsNs from "../index.js"
+import { getFreePort } from "../utils.js"
 
 
 

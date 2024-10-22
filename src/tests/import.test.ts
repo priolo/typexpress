@@ -1,4 +1,4 @@
-import { email, RootService } from "../index"
+import { email, RootService } from "../index.js"
 
 
 beforeAll(async () => {

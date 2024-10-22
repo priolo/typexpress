@@ -1,12 +1,12 @@
-import { PathFinder } from "../../../core/path/PathFinder"
-import { RootService } from "../../../core/RootService"
-import { ServiceBaseEvents } from "../../../core/service"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import { ServiceBaseEvents } from "../../../core/service/index.js"
 
-//import EmailService, { Actions, IAccount, IEmail } from "../index"
-import * as emailNs from "../index"
+//import EmailService, { Actions, IAccount, IEmail } from "../index.js"
+import * as emailNs from "../index.js"
 
 
-let root = null
+let root:RootService
 
 beforeEach(async () => {
 	root = await RootService.Start({
