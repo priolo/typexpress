@@ -64,7 +64,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
 	// remove and recreate dir destination
-	fs.rmdirSync(dirDest, { recursive: true })
+	if (fs.existsSync(dirDest)) fs.rmdirSync(dirDest, { recursive: true })
 	expect(fs.existsSync(dirDest)).toBeFalsy()
 })
 

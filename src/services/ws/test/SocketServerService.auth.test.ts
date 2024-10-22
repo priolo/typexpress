@@ -1,21 +1,15 @@
-/**
- * @jest-environment node
- */
- import WebSocket from "ws"
-
+import WebSocket from "ws"
 import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import { Bus } from "../../../core/path/Bus.js"
-
-import * as jwtNs from "../../jwt.js"
+import * as jwtNs from "../../jwt/index.js"
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
 
 
 
-
-let PORT
-let root = null
+let PORT: number
+let root: RootService
 
 beforeAll(async () => {
 	PORT = await getFreePort()
@@ -78,7 +72,7 @@ test("non è concesso l'accesso senza TOKEN JWT", async () => {
 
 	const client = new WebSocket(`ws://localhost:${PORT}`)
 
-	const result = await new Promise<string>( (resolver, rej) =>{
+	const result = await new Promise<string>((resolver, rej) => {
 		client.on('error', (error) => {
 			resolver("error")
 		})

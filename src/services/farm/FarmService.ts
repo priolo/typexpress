@@ -1,13 +1,12 @@
 import { INode } from "../../core/node/INode.js"
 import { Node } from "../../core/node/Node.js"
 import { NodeConf } from "../../core/node/NodeConf.js"
-import path from 'path';
+import p from 'path';
 import { fileURLToPath } from 'url';
 
 
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-import { pathToFileURL } from 'url';
+const __dirname = p.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Il SEVICE che si occupa di caricare l'array di classi presenti in un file js
@@ -27,19 +26,24 @@ export default class FarmService extends Node {
         if (path == null) return null
         const { path: loc, className } = this.getAlias(path)
         let classes = null
-        const fileUrl = pathToFileURL(loc).href;
+        const fileUrl = p.resolve(loc);
 
-        try {
-            classes = await import(`${fileUrl}\\index.js`)
-        } catch (e) {
+        if (fileUrl.endsWith(".js") || fileUrl.endsWith(".ts")) {
+            const clazz = await import(fileUrl)
+            return clazz.default ?? clazz
+        } else {
             try {
-                classes = await import(fileUrl)
+                classes = await import(`${fileUrl}\\index.js`)
             } catch (e) {
                 try {
-                    classes = await import(`${fileUrl}\\index`)
+                    classes = await import(fileUrl)
                 } catch (e) {
-                    console.error(e)
-                    return null
+                    try {
+                        classes = await import(`${fileUrl}\\index`)
+                    } catch (e) {
+                        console.error(e)
+                        return null
+                    }
                 }
             }
         }
@@ -60,17 +64,20 @@ export default class FarmService extends Node {
             .map(k => classes[k])[0]
     }
 
+    /**
+     * Restituisce la path assoluta e il nome della classe da caricare
+     */
     private getAlias(path: string): { path: string, className?: string } {
         const index = path.indexOf("/")
         const [alias, name] = index == -1
             ? ["", path]
-            : [index == 0 ? "/" : path.substring(0, index), path.substr(index + 1)]
+            : [index == 0 ? "/" : path.slice(0, index), path.slice(index + 1)]
 
         if ([".", "..", "/", "@"].indexOf(alias) != -1) {
             return { path }
         }
         return {
-            path: `${__dirname}/../${alias == "" ? path : alias}`,
+            path: p.join(__dirname, "..", alias == "" ? path : alias),
             className: alias == "" ? undefined : name
         }
     }
