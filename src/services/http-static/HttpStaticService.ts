@@ -1,14 +1,14 @@
+import { log, LOG_TYPE } from "@priolo/jon-utils"
 import express, { Router } from "express"
-import serveIndex from "serve-index"
 import fs from "fs"
 import p from "path"
-import { log, LOG_TYPE } from "@priolo/jon-utils"
+import serveIndex from "serve-index"
+import { fileURLToPath } from 'url'
 import { HttpRouterServiceBase } from "../../services/http-router/HttpRouterServiceBase.js"
 
-import { fileURLToPath } from 'url';
+
+
 const __dirname = p.dirname(fileURLToPath(import.meta.url));
-
-
 
 export type HttpStaticServiceConf = Partial<HttpStaticService['stateDefault']> & { class: "http-static" }
 

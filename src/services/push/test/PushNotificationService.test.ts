@@ -3,6 +3,7 @@ import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import * as push from "../index.js"
 import path from "path"
+import { fileURLToPath } from 'url';
 
 
 /*
@@ -13,7 +14,8 @@ https://console.cloud.google.com/iam-admin/iam?authuser=0&folder=&organizationId
 */
 
 
-let root = null
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+let root:RootService
 const pathAutentication = path.join(__dirname, "../../../../extreme-citadel-739-firebase-adminsdk-9re8d-2a0bd23afd.json")
 
 beforeAll(async () => {

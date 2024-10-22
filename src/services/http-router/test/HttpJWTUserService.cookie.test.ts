@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios"
+import httpAdapter from 'axios/lib/adapters/http'
 import fs from "fs"
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -8,11 +9,10 @@ import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils.js"
 import { getFreePort } from "../../ws/index.js"
 import * as jwtNs from "../jwt/index.js"
-import httpAdapter from 'axios/lib/adapters/http';
+
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-
 
 let PORT: number
 const dbPath = `${__dirname}/database.sqlite`

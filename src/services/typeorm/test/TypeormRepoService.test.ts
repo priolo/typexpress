@@ -5,8 +5,11 @@ import { PathFinder } from "../../../core/path/PathFinder.js";
 import { RepoRestActions } from "../../../core/repo/utils.js";
 import { RootService } from "../../../core/RootService.js";
 import * as typeormNs from "../index.js";
+import { fileURLToPath } from 'url';
 
 
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 @Entity()
 export class User {

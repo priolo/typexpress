@@ -12,7 +12,6 @@ import * as typeormNs from "../index.js";
 const dbPath = path.join(__dirname, "/database.sqlite")
 let root: RootService
 
-
 beforeAll(async () => {
 	try { if (fs.existsSync(dbPath)) fs.unlinkSync(dbPath) } catch (e) { console.log(e) }
 

@@ -1,25 +1,23 @@
 import axios, { AxiosInstance } from "axios"
+import httpAdapter from 'axios/lib/adapters/http'
 import FormData from "form-data"
 import fs from "fs"
 import path from "path"
+import { fileURLToPath } from 'url'
 import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import { getFreePort } from "../../ws/index.js"
 import { HttpUploadService } from "../upload/HttpUploadService.js"
 
-import { fileURLToPath } from 'url';
-import httpAdapter from 'axios/lib/adapters/http';
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 axios.defaults.adapter = httpAdapter;
-
-
 
 let PORT: number
 let axiosIstance: AxiosInstance
 const dirDest = path.join(__dirname, "./dest")
 let root: RootService
-
 
 beforeAll(async () => {
 	PORT = await getFreePort()

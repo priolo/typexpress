@@ -1,5 +1,6 @@
 import path from "path";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
 import { PathFinder } from "../../../core/path/PathFinder.js";
@@ -9,6 +10,7 @@ import * as orm from "../index.js";
 
 
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.join(__dirname, "/database.sqlite")
 let root: RootService
 
