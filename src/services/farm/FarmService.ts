@@ -2,8 +2,7 @@ import { INode } from "../../core/node/INode.js"
 import { Node } from "../../core/node/Node.js"
 import { NodeConf } from "../../core/node/NodeConf.js"
 import p from 'path';
-import { fileURLToPath } from 'url';
-
+import { fileURLToPath, pathToFileURL } from 'url';
 
 
 const __dirname = p.dirname(fileURLToPath(import.meta.url));
@@ -26,7 +25,7 @@ export default class FarmService extends Node {
         if (path == null) return null
         const { path: loc, className } = this.getAlias(path)
         let classes = null
-        const fileUrl = p.resolve(loc);
+        const fileUrl = pathToFileURL(loc).href;
 
         if (fileUrl.endsWith(".js") || fileUrl.endsWith(".ts")) {
             const clazz = await import(fileUrl)
