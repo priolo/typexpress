@@ -46,7 +46,7 @@ class PluginPing extends wsNs.route {
 		client["lastPing"] = Date.now()
 	}
 
-	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
+	onMessage(client: wsNs.IClient, message: string) {
 		super.onMessage(client, message)
 		client["lastPing"] = Date.now()
 	}

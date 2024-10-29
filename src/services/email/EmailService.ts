@@ -1,8 +1,11 @@
-import { ServiceBase } from "../../core/service/ServiceBase.js"
-import nodemailer, {Transporter} from "nodemailer"
 import emailCheck from "email-check"
-import { Actions, IEmail, IAccount } from "./utils.js"
+import nodemailer, { Transporter } from "nodemailer"
+import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { Actions, IAccount, IEmail } from "./utils.js"
 
+
+
+export type EmailServiceConf = Partial<EmailService['stateDefault']>
 
 /**
  * Gestisce il traffico in uscita delle email tramite un account definito nel config

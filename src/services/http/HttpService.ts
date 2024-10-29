@@ -13,25 +13,6 @@ import { Errors, IHttpRouter } from "./utils.js"
 
 
 
-// export interface HttpServiceConf extends NodeStateConf {
-// 	/** porta di ascolto del server */
-// 	port: number
-// 	/** il render da utilizzare per il momento c'e' solo "handlebars"  */
-// 	render?: any
-// 	/** opzioni di express
-// 	 * https://expressjs.com/en/4x/api.html#app.set
-// 	 */
-// 	options?: { [key: string]: any }
-// 	/** se valorizzato creo un server https
-// 	 * @example
-// 	https: {
-// 		privkey: "privkey.pem", // file path
-// 		pubcert: "pubcert.pem",	// file path
-// 	}
-// 	 */
-// 	https?: ServerOptions
-// }
-
 export type HttpServiceConf = Partial<HttpService['stateDefault']> & { class: "http", children?: HttpRouterServiceConf[] }
 //export type HttpServiceAct = HttpService['dispatchMap']
 

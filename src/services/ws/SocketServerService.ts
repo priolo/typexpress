@@ -8,7 +8,7 @@ import * as jwtNs from "../jwt/index.js"
 import LogService from "../log/index.js"
 import { SocketCommunicator } from "./SocketCommunicator.js"
 import { SocketRouteConf } from "./SocketRouteService.js"
-import { Errors, IClient, IMessage, SocketServerActions, clientIsEqual, getUrlParams } from "./utils.js"
+import { Errors, IClient, SocketServerActions, clientIsEqual, getUrlParams } from "./utils.js"
 
 
 
@@ -106,7 +106,7 @@ export class SocketServerService extends SocketCommunicator {
 		parentHttp.off('upgrade', this.onUpgrade)
 	}
 	private onUpgrade = async (request, socket, head) => {
-		let { path, jwt, onAuth } = this.state
+		let { path } = this.state
 		const params = getUrlParams(request)
 
 		// controllo che il path sia giusto
@@ -116,10 +116,10 @@ export class SocketServerService extends SocketCommunicator {
 		if (wsUrl.pathname != path) return
 
 		// controllo se c'e' un autentificazione da fare
-		let jwtPayload
-		if (jwt) {
+		let jwtPayload: any
+		if (this.state.jwt) {
 			jwtPayload = await this.getJwtPayload(params.token)
-			const response = onAuth ? onAuth.bind(this)(jwtPayload) : jwtPayload != null
+			const response = this.state.onAuth ? this.state.onAuth.bind(this)(jwtPayload) : jwtPayload != null
 			if (!response) {
 				socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
 				socket.destroy()

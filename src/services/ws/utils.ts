@@ -18,14 +18,14 @@ export interface IClient {
 	jwtPayload?: any,
 }
 
-export interface IMessage {
-	/** la path dove è stato intercettato il messagio oppure a quale route è diretto */
-	path: string,
-	/** [non usato] campo libero del client*/
-	action?: string,
-	/** dati inviati dal client */
-	payload?: any,
-}
+// export interface IMessage {
+// 	/** la path dove è stato intercettato il messagio oppure a quale route è diretto */
+// 	path: string,
+// 	/** [non usato] campo libero del client*/
+// 	action?: string,
+// 	/** dati inviati dal client */
+// 	payload?: any,
+// }
 
 export enum SocketServerActions {
 	/**

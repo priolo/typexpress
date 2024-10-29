@@ -9,8 +9,8 @@ import { getFreePort } from "../utils.js"
 
 
 
-let PORT
-let root = null
+let PORT: number
+let root: RootService
 
 class PluginSession extends wsNs.route {
 
@@ -34,7 +34,7 @@ class PluginSession extends wsNs.route {
 		this.clientsCache.push(client)
 	}
 
-	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
+	onMessage(client: wsNs.IClient, message: string) {
 		//super.onMessage(client, message)
 		if (message.action == "to-all") {
 			this.sendToAll(message)

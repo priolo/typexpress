@@ -8,15 +8,20 @@ import { getFreePort } from "../utils.js"
 let PORT: number
 let root: RootService
 
+/**
+ * Questo ROUTE-CUSTOM invia un messaggio "we are close" a tutti i CLIENTS che si trovano entro una certa distanza
+ * da un CLIENT che ha inviato un messaggio "radar"
+ */
 class RouteCustom extends wsNs.route {
-	onMessage(client: wsNs.IClient, message: wsNs.IMessage) {
+	onMessage(client: wsNs.IClient, msg: string) {
+		const message = JSON.parse(msg)
 		if (message.action == "position") {
 			client["position"] = message.payload
 		} else if (message.action == "radar") {
 			const distance = message.payload
 			const clients = this.getClients()
 				.filter(c => distancePoints(c["position"], client["position"]) <= distance)
-				.forEach(c => this.sendToClient(c, "vicinivicini"))
+				.forEach(c => this.sendToClient(c, "we are close"))
 		}
 	}
 }
@@ -43,26 +48,32 @@ afterAll(async () => {
 
 test("send send/receive position near", async () => {
 
+	// la distanza entro cui un CLIENT riceve il messaggio "we are close"
 	const distance = 10
+	// genero 50 posizioni casuali
 	const positions = Array.from<any, { x: number, y: number }>({ length: 50 }, _ => ({ x: getRandom(1, 100), y: getRandom(1, 100) }))
+	// l'indice della posizione che manderà il messaggio "radar"
 	const senderIndex = getRandom(0, positions.length - 1)
+	// l'indice delle posizioni vicine a senderIndex entro la distanza "distance"
+	// lo uso per nell' "expected"
 	const indexNear = positions.reduce((acc, position, index) => {
 		if (distancePoints(positions[senderIndex], position) <= distance) acc.push(index)
 		return acc
 	}, [] as number[])
 
-	const indexReceive = []
+	// l'indice delle posizioni che riceveranno il messaggio "we are close"
+	const indexReceive: number[] = []
 
 	await new Promise<void>(async (res, rej) => {
 
-		// creo e mando la posizione dei client
+		// creo il CLIENT e mando la sua posizione
 		const clients = await wsFarm(`ws://localhost:${PORT}/`, positions.length, (client, index) => {
 
-			client.send(JSON.stringify({ path: "near", action: "position", payload: positions[index] }))
+			client.send(JSON.stringify({ path: "near", action: "position", payload: positions[index!] }))
 
-			// il client "near" riceve il messaggio "radar" del CLIENT-RANDOM
+			// se il CLIENT riceve "near" allora lo metto nell'array indexReceive
 			client.on('message', message => {
-				indexReceive.push(index)
+				indexReceive.push(index!)
 				// quando tutti i client "near" ricevono il messaggio allora concludi il Promise
 				if (indexReceive.length == indexNear.length) {
 					res()

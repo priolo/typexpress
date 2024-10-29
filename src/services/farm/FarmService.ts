@@ -16,9 +16,9 @@ export default class FarmService extends Node {
 
     /**
      * Carico una specifica classe
-     * "<path>": è la classe di default che si trova nella cartella "services/<path>"
-     * "<path>/<name>": è una classe che si trova nella cartella "services/<path>" esportata col nome "<name>"
-     * "<alias>/<path>": va caricata a seconda dell'alias
+     * "<path>": è la classe di default che si trova nella cartella "/services/<path>"
+     * "<path>/<name>": è una classe che si trova nella cartella "/services/<path>" esportata, nell' "index.ts" col nome "<name>"
+     * "<alias>/<path>": va caricata a seconda dell'alias [II] NON IMPLEMENTATO
      * @param path 
      */
     async loadClassFromFile(path: string): Promise<any> {

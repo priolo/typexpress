@@ -1,17 +1,13 @@
-/**
- * @jest-environment node
- */
+import WebSocket from "ws"
 import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
-import WebSocket from "ws"
-
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
 
 
 
-let PORT
-let root = null
+let PORT: number
+let root: RootService
 
 beforeAll(async () => {
 	PORT = await getFreePort()
@@ -19,15 +15,21 @@ beforeAll(async () => {
 		{
 			class: "ws",
 			port: PORT,
-			onMessage: async function (client, data) {
-				this.sendToClient(client, `root::receive:${JSON.stringify(data)}`)
+			onMessage: async function (client: wsNs.IClient, message: string) {
+				try {
+					if (JSON.parse(message).path != null) return
+				} catch (error) { }
+				this.sendToClient(client, `root::receive:${message}`)
 			},
 			children: [
 				{
 					class: "ws/route",
 					path: "command",
-					onMessage: async function (client, data) {
-						this.sendToClient(client, `command::receive:${JSON.stringify(data)}`)
+					onMessage: async function (client: wsNs.IClient, message: string) {
+						try {
+							if (JSON.parse(message).path != this.state.path) return
+						} catch (error) { }
+						this.sendToClient(client, `command::receive:${message}`)
 					},
 				},
 				{
@@ -36,8 +38,11 @@ beforeAll(async () => {
 					children: [{
 						class: "ws/route",
 						path: "pos2",
-						onMessage: async function (client, message) {
-							this.sendToClient(client, `room1/pos2::receive:${JSON.stringify(message)}`)
+						onMessage: async function (client: wsNs.IClient, message: string) {
+							try {
+								if (!(JSON.parse(message).path as string).endsWith(`/${this.state.path}`)) return
+							} catch (error) { }
+							this.sendToClient(client, `room1/pos2::receive:${message}`)
 						},
 					}],
 				},
@@ -58,7 +63,7 @@ test("su creazione", async () => {
 })
 
 test("message on subpath", async () => {
-	let result = []
+	let result: string[] = []
 
 	// creo il client ws e sull'apertura mando dei dati
 	const ws = new WebSocket(`ws://localhost:${PORT}/`)
@@ -76,7 +81,7 @@ test("message on subpath", async () => {
 	})
 
 	// se ricevo una risposta la memorizzo
-	ws.on('message', message => {
+	ws.on('message', (message: string) => {
 		result.push(message)
 		if (result.length == 5) ws.close()
 	})
@@ -85,9 +90,9 @@ test("message on subpath", async () => {
 	await new Promise<void>((res, rej) => ws.on('close', res))
 
 	expect(result).toEqual([
-		`root::receive:\"only string\"`,
-		`command::receive:\"only string\"`,
-		`room1/pos2::receive:\"only string\"`,
+		`root::receive:only string`,
+		`command::receive:only string`,
+		`room1/pos2::receive:only string`,
 		`room1/pos2::receive:{\"path\":\"room1/pos2\",\"action\":\"message\",\"payload\":{\"message\":\"<room1-pos2>\"}}`,
 		`command::receive:{\"path\":\"command\",\"action\":\"message\",\"payload\":{\"message\":\"<command>\"}}`,
 	])

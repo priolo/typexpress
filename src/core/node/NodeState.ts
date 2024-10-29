@@ -111,4 +111,10 @@ export abstract class NodeState extends Node {
 
 type DispatchMap = { [key: string]: Dispatch }
 
+/**
+ * la funzione eseguita quand arriva un DISPATCH al NODE
+ * @param state lo stato attuale del NODE
+ * @param payload i dati inviati con il DISPATCH
+ * @param sender la path del NODE che ha inviato il DISPATCH
+ */
 type Dispatch = (state: any, payload: any, sender: string) => any

@@ -1,9 +1,8 @@
 import { EventEmitter } from "events"
-
+import { IAction } from "../node/IAction.js"
 import { NodeConf } from "../node/NodeConf.js"
 import { Bus } from "../path/Bus.js"
 import { nodePath } from "../utils.js"
-import { IAction } from "../node/IAction.js"
 import { Errors, IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from "./utils.js"
 
 // bisogna importarlo direttamente da "utils" altrimenti c'e' un import-circolare
@@ -32,11 +31,20 @@ export class ServiceBase extends NodeConf {
 	private _emitter: EventEmitter
 
 
+	get stateDefault(): any {
+		return {
+			...super.stateDefault,
+			onInit: <() => void>null,
+			onInitAfter: <() => void>null,
+			onDestroy: <() => void>null,
+		}
+	}
+
 	get dispatchMap() {
 		return {
 			...super.dispatchMap,
-			[ServiceBaseActions.REGISTER]: async (_:void, name:string, sender:string) => this.register({ event: name, path: sender }),
-			[ServiceBaseActions.UNREGISTER]: async (_:void, name:string, sender:string) => this.unregister({ event: name, path: sender }),
+			[ServiceBaseActions.REGISTER]: async (_: void, name: string, sender: string) => this.register({ event: name, path: sender }),
+			[ServiceBaseActions.UNREGISTER]: async (_: void, name: string, sender: string) => this.unregister({ event: name, path: sender }),
 			[ServiceBaseActions.EVENT]: async (state, payload) => this.onEvent(payload),
 		}
 	}
@@ -73,7 +81,7 @@ export class ServiceBase extends NodeConf {
 	 * @param arg 
 	 */
 	private emit(event: string, arg?: any) {
-		if ( !this.listeners ) return
+		if (!this.listeners) return
 		for (const listener of this.listeners) {
 			if (listener.event != event) continue
 			new Bus(this, listener.path).dispatch({
@@ -117,13 +125,14 @@ export class ServiceBase extends NodeConf {
 		try {
 			await super.onInit()
 		} catch (error) {
-			new Bus(this, "/error").dispatch({ 
-				type: ErrorActions.NOTIFY, 
-				payload: { code: Errors.INIT, error } 
+			new Bus(this, "/error").dispatch({
+				type: ErrorActions.NOTIFY,
+				payload: { code: Errors.INIT, error }
 			})
 			return
 		}
 		this.emit(ServiceBaseEvents.INIT)
+		this.state.onInit?.bind(this)()
 	}
 
 	/**
@@ -133,11 +142,13 @@ export class ServiceBase extends NodeConf {
 	protected async onInitAfter(): Promise<void> {
 		await super.onInitAfter()
 		this.emit(ServiceBaseEvents.INIT_AFTER)
+		this.state.onInitAfter?.bind(this)()
 	}
 
 	protected async onDestroy(): Promise<void> {
 		await super.onDestroy()
 		this.emit(ServiceBaseEvents.DESTROY)
+		this.state.onDestroy?.bind(this)()
 	}
 }
 

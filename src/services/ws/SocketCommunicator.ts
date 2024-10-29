@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/service/ServiceBase.js"
-import { IClient, IMessage, SocketRouteActions } from "./utils.js"
+import { IClient, SocketRouteActions } from "./utils.js"
 
 
 
@@ -15,7 +15,7 @@ export abstract class SocketCommunicator extends ServiceBase {
 			...super.stateDefault,
 			onConnect: <(this: SocketCommunicator, client: IClient) => void>null,
 			onDisconnect: <(this: SocketCommunicator, client: IClient) => void>null,
-			onMessage: <(this: SocketCommunicator, client: IClient, message: string | IMessage) => void>null,
+			onMessage: <(this: SocketCommunicator, client: IClient, message: string) => void>null,
 		}
 	}
 
@@ -63,7 +63,7 @@ export abstract class SocketCommunicator extends ServiceBase {
 	/**
 	 * Richiamato quando c'e' un MESSAGE dal CLIENT
 	 */
-	onMessage(client: IClient, message: string | IMessage) {
+	onMessage(client: IClient, message: string) {
 		if (!client || !message) return
 		this.state.onMessage?.bind(this)(client, message)
 		this.children.forEach(node => {

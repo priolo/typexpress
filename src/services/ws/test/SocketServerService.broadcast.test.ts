@@ -6,6 +6,8 @@ import { wsFarm } from "../../../test_utils.js"
 let PORT: number
 let root: RootService
 
+
+/** Il SERVER quando riceve un messaggio da un CLIENT lo reinvia a tutti i CLIENTS registrati */
 beforeAll(async () => {
 	PORT = await getFreePort()
 	root = await RootService.Start(
