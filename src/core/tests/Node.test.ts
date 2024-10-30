@@ -54,4 +54,16 @@ describe("NODE", () => {
 		expect(root.children.length == 1).toBe(true)
 	})
 
+	/**
+	 * Se volessi cercare un NODE tra i CHILDREN di un NODE
+	 */
+	test("get child", () => {
+		const root = new Node("root")
+		const child1 = new Node("child1")
+		root.addChild(child1)
+		root.addChild(new Node("child2"))
+		root.addChild(new Node("child3"))
+		const child = root.getChild("child1")
+		expect(child).not.toBeNull()
+	})
 })

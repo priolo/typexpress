@@ -1,3 +1,4 @@
+import { PathFinder } from "../path/PathFinder.js";
 import { nodeId } from "../utils.js";
 import { INode } from "./INode.js";
 
@@ -37,6 +38,11 @@ export class Node implements INode {
 	indexChild(child: INode): number {
 		if (child == null) return -1
 		return this._children.indexOf(child)
+	}
+
+	// [facility]: restituisce un nodeCHILD tramite la path
+	getChild(path: string): INode | null {
+		return new PathFinder(this).getNode(path)
 	}
 
 }

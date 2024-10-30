@@ -12,17 +12,17 @@ import { CookieStrategy, JWT_PAYLOAD_PROP, RouteJWTUserActions } from "./utils.j
  */
 export class HttpJWTUserService extends HttpRouterServiceBase {
 
-    get stateDefault(): any {
+    get stateDefault() {
         return {
             ...super.stateDefault,
-            name: "route-jwt",  // string
+            name: "route-jwt", 
             // la path del jwt che si occupa di codificare/decodificare
-            jwt: "",            // path-jwt:request
-            strategy: CookieStrategy,     // strategia da attuare per il login
+            jwt: "",                    // path-jwt:request
+            strategy: CookieStrategy,   // strategia da attuare per il login
         }
     }
 
-    get dispatchMap(): any {
+    get dispatchMap() {
         return {
             ...super.dispatchMap,
             [RouteJWTUserActions.GENERATE_TOKEN]: (state, payload) => this.generateToken(payload),

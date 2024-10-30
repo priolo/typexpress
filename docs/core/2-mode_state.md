@@ -13,78 +13,77 @@ Il costruttore inizializza lo stato del nodo unendo lo stato predefinito (stateD
 ### Proprietà
 
 - **stateDefault**:  
-Restituisce lo stato predefinito del nodo. Questo viene unito con lo stato di istanza nel costruttore.
+Restituisce lo stato predefinito del nodo. 
+Questo viene unito con lo stato di istanza nel costruttore.
+Va implementato sulle classi derivate.
 ```typescript
-get stateDefault() {
-  return {
-    name: <string>null,
-    children: <any[]>null,
-  }
+class MyNode extends NodeState {
+  get stateDefault() {
+		return {
+			...super.stateDefault,
+			text: "",
+		}
+	}
 }
 ```
 
 - **state**:  
 Restituisce lo stato attuale del nodo.
 ```typescript
-get state() {
-  return this._state
-}
+const { text } = root.getChild("my_node").state
 ```
 
 
 ### Metodi
 
-- **setState(state: any): void**:  
-Modifica lo stato del nodo unendo il nuovo stato con quello attuale. Se lo stato cambia, chiama il metodo onChangeState.
+- **setState(state: any): void**  
+Modifica lo stato del nodo. 
+Unisce il parametro "state" con quello attuale. 
+Se lo stato cambia, chiama il metodo onChangeState.
 ```typescript
-public setState(state: any): void {
-  if (this._state == state) return
-  const old = this._state
-  this._state = { ...this._state, ...state }
-  this.onChangeState(old)
+root.getChild("my_node").setState({ text: "new text" })
+```
+
+- **protected onChangeState(old: any): void**  
+Metodo astratto chiamato quando lo stato cambia. 
+Deve essere implementato dalle classi derivate.
+```typescript
+class MyNode extends NodeState {
+  protected onChangeState(old: any): void {
+		super.onChangeState(old)
+		// ...
+	}
 }
 ```
 
-- **onChangeState(old: any)**:  
-void: Metodo astratto chiamato quando lo stato cambia. Deve essere implementato dalle classi derivate.
+
+- **dispatchMap**:  
+Restituisce una mappa di possibili azioni (actions) che possono essere eseguite su questo nodo. 
+Deve essere sovrascritto dalle classi derivate.
 ```typescript
-protected onChangeState(old: any): void { }
-```
-
-- **dispatch(action: IAction): any**:  
-Esegue un'azione (action) utilizzando la mappa di dispatch (dispatchMap). Se l'azione è asincrona, restituisce una Promise.
-```typescript
-dispatch(action: IAction): any {
-  log(`${this.name}:${action.type}`, LOG_TYPE.DEBUG, action.payload)
-
-  const fnc = this.dispatchMap[action.type]
-
-  try {
-    if (fnc.constructor.name === "AsyncFunction") {
-      return new Promise(async (res, rej) => {
-        try {
-          const ret = await fnc(this.state, action.payload, action.sender)
-          res(ret)
-        } catch (e) {
-          rej(e)
-        }
-      })
-    } else {
-      return fnc(this.state, action.payload, action.sender)
+class MyNode extends NodeState {
+  get dispatchMap() {
+    return {
+        ...super.dispatchMap,
+        ["log"]: (state, payload) => console.log(`action: ${payload}`),
     }
-  } catch (error) {
-    // Gestione errori
   }
 }
 ```
 
-- **dispatchMap**:  
-Restituisce una mappa di possibili azioni (actions) che possono essere eseguite su questo nodo. Deve essere sovrascritto dalle classi derivate.
+- **dispatch(action: IAction): any**:  
+Esegue un'azione utilizzando la mappa di dispatch (dispatchMap). 
+Se l'azione è asincrona, restituisce una Promise.
 ```typescript
-protected get dispatchMap(): DispatchMap {
-  return {}
-}
+root.getChild("my_node").dispatch({ type: "log", payload: "hello!" })
 ```
+
+- **dispatchToChild(path: string, action: IAction): any**
+Esegue un'azione su un nodo figlio.
+```typescript
+root.dispatchTo("my_path/child_node", { type: "log", payload: "hello!" })
+```
+
 
 ### Tipi
 

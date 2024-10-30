@@ -1,18 +1,17 @@
 import { RootService } from "../RootService.js"
-import { PathFinder } from "../path/PathFinder.js"
 import { NodeConf } from "../node/NodeConf.js"
-import { ConfActions } from "../node/utils.js"
+import { PathFinder } from "../path/PathFinder.js"
 
 
 describe("PathFinder", () => {
 
-	let root;
+	let root:RootService
 
 	// creiamo priuma di tutto una struttura su cui "esercitarci"
 	beforeAll(async () => {
 
 		class Test extends NodeConf {
-			get stateDefault(): any {
+			get stateDefault() {
 				return {
 					...super.stateDefault,
 					name: "test",
@@ -21,7 +20,7 @@ describe("PathFinder", () => {
 			}
 		}
 
-		root = await RootService.Start({
+		root = await RootService.Start([{
 			name: "root2",
 			value: 23,
 			children: [
@@ -51,21 +50,21 @@ describe("PathFinder", () => {
 					]
 				}
 			]
-		})
+		}])
 	})
 
 	test("regular path", async () => {
-		let path = new PathFinder(root).path("/child2/child2.1")
+		let path = new PathFinder(root).path("/root2/child2/child2.1")
 		expect(path?.node.name).toBe("child2.1")
 		let path2 = path?.path("..")
 		expect(path2?.node.name).toBe("child2")
-		let node = path2?.getNode<any>("/child1")
+		let node = path2?.getNode<any>("/root2/child1")
 		expect(node?.name).toBe("child1")
 	})
 
 	test("find by id", async () => {
-		let node1 = new PathFinder(root).path("/child2/child2.1").node
-		let node2 = new PathFinder(root).path(`/child2/*${node1.id}`).node
+		let node1 = new PathFinder(root).path("/root2/child2/child2.1")?.node
+		let node2 = new PathFinder(root).path(`/root2/child2/*${node1?.id}`)?.node
 		expect(node1).toBe(node2)
 	})
 
@@ -79,7 +78,7 @@ describe("PathFinder", () => {
 	test("find by state", async () => {
 		let node = new PathFinder(root).getNode<any>('/>{"value":"pippo"}')
 		expect(node.name).toBe("child1.3")
-		node = new PathFinder(root).getNode<any>('/{"value":55}/child1.2')
+		node = new PathFinder(root).getNode<any>('/root2/{"value":55}/child1.2')
 		expect(node.name).toBe("child1.2")
 	})
 

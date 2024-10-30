@@ -31,7 +31,7 @@ export class ServiceBase extends NodeConf {
 	private _emitter: EventEmitter
 
 
-	get stateDefault(): any {
+	get stateDefault() {
 		return {
 			...super.stateDefault,
 			onInit: <() => void>null,
@@ -108,7 +108,6 @@ export class ServiceBase extends NodeConf {
 	/**
 	 * Chiamato quando cambia lo stato del NODE ed emette l'evento "STATE_CHANGE"
 	 * @override
-	 * @param old 
 	 */
 	protected onChangeState(old: any): void {
 		super.onChangeState(old)

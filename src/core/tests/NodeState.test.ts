@@ -1,5 +1,7 @@
 import { NodeState } from "../node/NodeState.js"
 import { time } from "@priolo/jon-utils"
+import { RootService } from "../RootService.js"
+import { NodeConf } from "../node/NodeConf.js"
 
 
 type F = {
@@ -15,7 +17,7 @@ describe("NODE STATE", () => {
 	ma l'instanza dell'oggetto "state" cambia sempre
 	> NOTA: Non possiamo creare direttamente NodeState perche' è "abstract"
 	 */
-	test("set state", async ()=> {
+	test("set state", async () => {
 
 		// estendo e instanzio NodeState
 		const node = new class extends NodeState {
@@ -30,18 +32,20 @@ describe("NODE STATE", () => {
 		})
 
 		// NOTA: modifico solo la proprietà "value2"
-		node.setState( { value2: "modify value2"} )
+		node.setState({ value2: "modify value2" })
 		expect(node.state).toMatchObject({
 			value1: "init value1",
 			value2: "modify value2"
 		})
 	})
 
+
+
 	/**
 	Inoltre posso definire un set (`dispatchMap`) di `dispatcher`  
 	Questi `dispatcher` solitamente sono funzioni pure e applicano delle modifiche allo `state`  
 	 */
-	test("call dispatch", async () => {
+	test("dispatch", async () => {
 
 		// definisco la KEY delle ACTIONs (opzionale)
 		const MY_ACTIONS = {
@@ -91,7 +95,51 @@ describe("NODE STATE", () => {
 		expect(ret).toEqual("ok-2")
 
 		// a questo punto lo `state` dovrebbe essere così
-		expect(myNode.state).toEqual({ val: 1, val2: 2 })
+		expect(myNode.state).toMatchObject({ val: 1, val2: 2 })
+	})
+
+	/**
+	 * 
+	 */
+	test("displatchTo", async () => {
+
+		const myState = new class extends NodeConf {
+
+			// definico lo STATE
+			get stateDefault() {
+				return {
+					...super.stateDefault,
+					text: "",
+				}
+			}
+
+			// le ACTION di questo NODE
+			get dispatchMap() {
+				return {
+					...super.dispatchMap,
+					["set-text"]: (state, payload) => this.setState({ text: payload })
+				}
+			}
+		}
+
+		// costruisco un albero di nodes
+		const root = await RootService.Start([{
+			name: "node",
+			children: [
+				{
+					class: myState,
+					name: "node.1"
+				}
+			]
+		}])
+
+
+		// chiamo la ACTION
+		root.dispatchTo("/node/node.1", { type: "set-text", payload: "hello" })
+
+		// lo STATE dovrebbe essere cambiato
+		const myNode = root.getChild("/node/node.1") as NodeState
+		expect(myNode.state.text).toEqual("hello")
 	})
 
 })

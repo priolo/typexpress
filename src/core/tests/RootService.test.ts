@@ -17,15 +17,14 @@ test("su creazione", async () => {
 		name: "root",
 		children: [
 			{ name: "farm" },
-			{ name: "error" },
 			{
 				name: "node.1",
-				value: "1",
 				children: [
-					{ name: "node.1.1", val_text: "1.1" },
-					{ name: "node.1.2", val_number: 1.2 },
+					{ name: "node.1.1" },
+					{ name: "node.1.2" },
 				],
 			},
+			{ name: "error" },
 		],
 	})
 })

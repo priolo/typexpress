@@ -6,7 +6,8 @@ import { Bus } from "../path/Bus.js"
 
 
 
-let root:RootService | null = null
+let root:RootService
+
 class TestNode extends NodeConf {
 
 	private tryError = 3

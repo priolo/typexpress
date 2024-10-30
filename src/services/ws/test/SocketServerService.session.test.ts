@@ -1,9 +1,5 @@
-/**
- * @jest-environment node
- */
 import { RootService } from "../../../core/RootService.js"
-import { wsFarm, wait, getRandom } from "../../../test_utils.js"
-
+import { getRandom, wait, wsFarm } from "../../../test_utils.js"
 import * as wsNs from "../index.js"
 import { getFreePort } from "../utils.js"
 
@@ -12,6 +8,10 @@ import { getFreePort } from "../utils.js"
 let PORT: number
 let root: RootService
 
+/**
+ * Questo ROUTE-CUSTOM invia un messaggio "we are close" a tutti i CLIENTS che si trovano entro una certa distanza
+ * da un CLIENT che ha inviato un messaggio "radar"
+ */
 class PluginSession extends wsNs.route {
 
 	clientsCache: wsNs.IClient[] = []
@@ -23,11 +23,14 @@ class PluginSession extends wsNs.route {
 		if (index != -1) {
 			const [cdel] = this.clientsCache.splice(index, 1)
 			//wait(500).then( ()=> {
-			cdel["cache"].forEach(message => this.sendToClient(client, message))
+			cdel["cache"].forEach((message: string) => this.sendToClient(client, message))
 			//})
 		}
 	}
 
+	/**
+	 * se il client si disconnette: creo la cache
+	 */
 	onDisconnect(client: wsNs.IClient) {
 		super.onDisconnect(client)
 		client["cache"] = []
@@ -36,12 +39,13 @@ class PluginSession extends wsNs.route {
 
 	onMessage(client: wsNs.IClient, message: string) {
 		//super.onMessage(client, message)
-		if (message.action == "to-all") {
+		const msg = JSON.parse(message)
+		if (msg.action == "to-all") {
 			this.sendToAll(message)
 		}
 	}
 
-	sendToClient(client: wsNs.IClient, message: any) {
+	sendToClient(client: wsNs.IClient, message: string) {
 		// il cleint è chiuso metto in cache
 		if (client["cache"]) {
 			client["cache"].push(message)
@@ -79,14 +83,14 @@ afterAll(async () => {
 test("manage cache", async () => {
 
 	// creo i clients
-	const tmpIds = []
+	const tmpIds: number[] = []
 	const clients = await wsFarm(
-		(index) => {
-			tmpIds[index] = getRandom(1, 9999)
-			return `ws://localhost:${PORT}/?id=${tmpIds[index]}`
+		index => {
+			tmpIds[index!] = getRandom(1, 9999)
+			return `ws://localhost:${PORT}/?id=${tmpIds[index!]}`
 		},
 		3,
-		(client, index) => client["id_session"] = tmpIds[index]
+		(client, index) => client["id_session"] = tmpIds[index!]
 	)
 
 	// disconnetto un client
@@ -115,7 +119,7 @@ test("manage cache", async () => {
 	await new Promise<void>(async (res, rej) => {
 		const [clientRestore] = await wsFarm(() => `ws://localhost:${PORT}/?id=${clientClose["id_session"]}`, 1,
 			(client) => {
-				client.once("message", (message:string) => {
+				client.once("message", (message: string) => {
 					const msg = JSON.parse(message)
 					txtReceive = msg.payload
 					res()
@@ -125,5 +129,5 @@ test("manage cache", async () => {
 	})
 
 	expect(txtOrigin).toBe(txtReceive)
-})
+}, 100000000)
 

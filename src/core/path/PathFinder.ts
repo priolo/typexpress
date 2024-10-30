@@ -7,7 +7,7 @@ import { PathFinderList } from "./PathFinderList.js"
 export class PathFinder {
 
 	// [facility]: restituisce un NODE
-	static Get<T>(node: INode, path: string): T {
+	static Get<T=INode>(node: INode, path: string): T {
 		return new PathFinder(node).getNode<T>(path)
 	}
 

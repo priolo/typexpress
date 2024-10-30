@@ -1,3 +1,4 @@
+import FarmService from "../../services/farm/FarmService.js";
 import { INode } from "../node/INode.js";
 import { NodeConf } from "../node/NodeConf.js";
 import { PathFinder } from "../path/PathFinder.js";
@@ -8,8 +9,8 @@ import { nodeMap, nodePath, nodeToJson } from "../utils.js";
 let root: NodeConf;
 
 beforeAll(async () => {
-	debugger
 	root = new NodeConf()
+	root.addChild(new FarmService())
 	root.buildByJson({
 		// sovrascrivo "root" con "root2"
 		name: "root2",
@@ -33,7 +34,6 @@ beforeAll(async () => {
 })
 
 test("nodeToJson", async () => {
-debugger
 	const json = nodeToJson(root)
 
 	expect(json).toEqual({
@@ -42,23 +42,18 @@ debugger
 		children: [
 			{
 				name: "farm",
-				children: [],
-			},
-			{
-				name: "error",
-				children: [],
 			},
 			{
 				name: "child1",
 				children: [
-					{ name: "child1.1", children: [] },
-					{ name: "child1.2", children: [] }
+					{ name: "child1.1" },
+					{ name: "child1.2" }
 				]
 			},
 			{
 				name: "child2",
 				children: [
-					{ name: "child2.1", children: [] }
+					{ name: "child2.1" }
 				]
 			}
 		]
@@ -78,10 +73,6 @@ test("nodeMap", async () => {
 		figli: [
 			{
 				nome: "farm",
-				figli: [],
-			},
-			{
-				nome: "error",
 				figli: [],
 			},
 			{

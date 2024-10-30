@@ -102,6 +102,7 @@ export class NodeConf extends NodeState {
 	 */
 	private async buildChildByJson(json: any): Promise<INode | null> {
 		const farm = new PathFinder(this).getNode<FarmService>("/farm")
+		if ( !farm) throw new Error("FarmService not found")
 		return await farm.build(json)
 	}
 

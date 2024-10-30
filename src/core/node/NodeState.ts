@@ -1,6 +1,7 @@
 import { log, LOG_TYPE } from "@priolo/jon-utils";
 import { IAction } from "./IAction.js";
 import { Node } from "./Node.js";
+import { Bus } from "../path/Bus.js";
 
 
 
@@ -29,6 +30,8 @@ export abstract class NodeState extends Node {
 		}
 	}
 
+	//#region STATE
+
 	/**
 	 * in "constructor" viene mergiato con lo STATE di istanza
 	 * determina il valore iniziale dello STATE
@@ -37,7 +40,6 @@ export abstract class NodeState extends Node {
 		return {
 			name: <string>null,
 			children: <any[]>null,
-
 		}
 	}
 
@@ -65,6 +67,20 @@ export abstract class NodeState extends Node {
 	 * [abstract] chiamato quando lo stato cambia
 	 */
 	protected onChangeState(old: any): void { }
+
+	//#endregion
+
+
+
+	//#region DISPATCH
+
+	/**
+	 * una mappa di possibili Actions 
+	 * che si possono eseguire in questo nodo
+	 */
+	protected get dispatchMap(): DispatchMap {
+		return {}
+	}
 
 	/**
 	 * permette di eseguire una Action
@@ -101,12 +117,13 @@ export abstract class NodeState extends Node {
 	}
 
 	/**
-	 * una mappa di possibili Actions 
-	 * che si possono eseguire in questo nodo
+	 * [facility] permette di eseguire un DISPATCH ad un CHILD
 	 */
-	protected get dispatchMap(): DispatchMap {
-		return {}
+	dispatchTo(path: string, action: IAction): any {
+		return new Bus(this, path).dispatch(action)
 	}
+
+	//#endregion
 }
 
 type DispatchMap = { [key: string]: Dispatch }
