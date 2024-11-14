@@ -1,13 +1,19 @@
-import { getFreePort } from "../ws/utils.js"
-import { PathFinder, RootService, ServiceBase } from "../../index.js"
-import HttpService from "./index.js"
+import axios from "axios";
+import path from "path";
+import { fileURLToPath } from "url";
+import { http as httpNs, PathFinder, RootService } from "../../index.js";
+import { getFreePort } from "../ws/utils.js";
+
+
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe("HTTP SERVICE", () => {
 
 	let PORT = 0
-	let root:RootService
+	let root: RootService
 
-	beforeAll( async ()=>{
+	beforeAll(async () => {
 		PORT = await getFreePort()
 	})
 
@@ -18,14 +24,14 @@ describe("HTTP SERVICE", () => {
 		 * per `HttpService` è `http`
 		 */
 		root = await RootService.Start(
-			{ class: "http", port: PORT }
+			<httpNs.conf>{ class: "http", port: PORT }
 		)
 
 		// quindi qui ho il `RootService` con un solo `child` di tipo `http`
 		// aperto su una porta libera.
 		// infatti lo cerco e lo trovo
-		const http = new PathFinder(root).getNode<HttpService>("/http")
-		expect(http instanceof HttpService).toBeTruthy()
+		const http = new PathFinder(root).getNode<httpNs.Service>("/http")
+		expect(http instanceof httpNs.Service).toBeTruthy()
 		expect(http.state.port).toBe(PORT)
 
 		// quando chiudo il `RootService` anche il server si chiude (naturalmente)
@@ -34,6 +40,38 @@ describe("HTTP SERVICE", () => {
 		// naturalmente un server del genere non serve a nulla 
 		// se non si inseriscono dei `route` al suo interno
 		// E' quello che fa `http-route`
+	})
+
+	test("handlebars", async () => {
+
+		await RootService.Start([
+			<httpNs.conf>{
+				class: "http",
+				port: 8080,
+				render: { name: "handlebars" },
+				options: { views: path.join(__dirname, "./views") },
+				children: [
+					{
+						class: "http-router",
+						path: "/",
+						routers: [
+							{
+								path: "/", verb: "get", method: async function (req, res, next) {
+									const items = [{ title: "title1" }, { title: "title2" }, { title: "title3" }]
+									res.render("list", { items })
+								}
+							},
+						],
+					},
+				]
+			}
+		])
+
+		const response = await axios.get('http://localhost:8080/');
+
+		expect(response.data)
+			.toEqual("<body><div>Item: </div><div>Item: </div><div>Item: </div></body>")
+
 	})
 
 })

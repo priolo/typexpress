@@ -1,9 +1,11 @@
 import WebSocket from "ws"
-import { PathFinder } from "../../../core/path/PathFinder.js.js"
-import { RootService } from "../../../core/RootService.js.js"
-import * as wsNs from "../index.js.js"
-import { SocketServerConf } from "../SocketServerService.js.js"
+import { PathFinder } from "../../../core/path/PathFinder.js"
+import { RootService } from "../../../core/RootService.js"
+import * as wsNs from "../index.js"
+import { SocketServerConf } from "../SocketServerService.js"
 import { time } from "@priolo/jon-utils"
+
+
 
 let PORT: number = 52
 let root: RootService
@@ -82,4 +84,4 @@ test("client connetc/send/close", async () => {
     { children: [{ text: "plo", }] },
   ])
 
-}, 100000)
+})

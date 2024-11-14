@@ -10,6 +10,7 @@ import { ServiceBase } from "../../core/service/ServiceBase.js"
 import ErrorService, { Actions as ActionsError } from "../error/index.js"
 import { HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
 import { Errors, IHttpRouter } from "./utils.js"
+import { engine as exphbs } from 'express-handlebars';
 
 
 
@@ -33,24 +34,27 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	get stateDefault() {
 		return {
 			...super.stateDefault,
+			/** il nome della CLASSE */
 			name: "http",
-			/** porta di ascolto del server */
+			/**  la porta su cui il server rimane in scolto */
 			port: 5000,
 			/** il render da utilizzare per il momento c'e' solo "handlebars"  */
 			render: <any>null,
-			/** opzioni di express
-			 * https://expressjs.com/en/4x/api.html#app.set
+			/** 
+			 * opzioni di express:  
+			 * @link https://expressjs.com/en/4x/api.html#app.set
 			 */
 			options: <{ [key: string]: any }>null,
-			/** se valorizzato creo un server https
+			/** 
+			 * se valorizzato creo un server `https`
 				@example
 				https: {
-				privkey: "privkey.pem", // file path
-				pubcert: "pubcert.pem",	// file path
+					privkey: "privkey.pem", // file path
+					pubcert: "pubcert.pem",	// file path
 				}
+				@link https://nodejs.org/api/https.html#httpscreateserveroptions-requestlistener
 			*/
-			https: <ServerOptions>null,
-
+			https: <ServerOptionsCustom>null,
 		}
 	}
 
@@ -131,9 +135,9 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	 * Costruisce il server EXPRESS
 	 */
 	private buildServer(): Server {
-		let { https: httpsConf } = this.state
+		const { https: httpsConf } = this.state as HttpServiceConf
 		let server: Server = null
-
+		// è un https
 		if (httpsConf) {
 			if (httpsConf.privkey) {
 				httpsConf.key = fs.readFileSync(httpsConf.privkey)
@@ -144,6 +148,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 				delete httpsConf.pubcert
 			}
 			server = https.createServer(httpsConf, this.app)
+			// è un http sempliciotto
 		} else {
 			server = http
 				.createServer(this.app)
@@ -172,7 +177,6 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	 */
 	private buildRender(): void {
 		if (!this.state.render) return
-		const exphbs = require('express-handlebars')
 
 		// https://github.com/express-handlebars/express-handlebars#api
 		const options = this.state.render.options ?? { extname: ".hbs" }
@@ -190,3 +194,5 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		Object.entries(this.state.options).forEach(([key, value]) => this.app.set(key, value))
 	}
 }
+
+type ServerOptionsCustom = ServerOptions & { privkey: string, pubcert: string }

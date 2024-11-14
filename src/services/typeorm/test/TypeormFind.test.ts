@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions.js";
+import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
 import { PathFinder } from "../../../core/path/PathFinder.js";
@@ -9,6 +10,7 @@ import * as typeormNs from "../index.js";
 
 
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.join(__dirname, "/database.sqlite")
 let root: RootService
 

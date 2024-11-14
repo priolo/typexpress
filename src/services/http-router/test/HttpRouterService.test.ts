@@ -2,12 +2,9 @@ import axios, { AxiosInstance } from "axios"
 import { Request, Response } from "express"
 import { getFreePort } from "../../ws/index.js"
 import { PathFinder, RootService, error, httpRouter, http, ConfActions } from "../../../index.js"
-import httpAdapter from 'axios/lib/adapters/http'
-
 
 const { Service: HttpRouterService } = httpRouter
 const { Service: HttpService } = http
-axios.defaults.adapter = httpAdapter;
 
 describe("Server HTTP e i suoi ROUTER", () => {
 

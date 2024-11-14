@@ -9,17 +9,17 @@
     "sourceMap": true,
     "preserveConstEnums": true,
     "allowArbitraryExtensions": true,
-    // "paths": {
-    //   "@/*": [
-    //     "./src/*"
-    //   ]
-    // },
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "declaration": true, 
+    "declaration": true,
     "declarationMap": true,
     "strictNullChecks": false,
     "noImplicitAny": false,

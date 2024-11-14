@@ -20,12 +20,11 @@ class PluginSession extends wsNs.route {
 		super.onConnect(client)
 		// se lo trovo tra quelli disconnessi allora gli mando i messaggi in cache
 		let index = this.clientsCache.findIndex(c => c.params.id == client.params.id)
-		if (index != -1) {
-			const [cdel] = this.clientsCache.splice(index, 1)
-			//wait(500).then( ()=> {
-			cdel["cache"].forEach((message: string) => this.sendToClient(client, message))
-			//})
-		}
+		if (index == -1) return
+		const [cdel] = this.clientsCache.splice(index, 1)
+		cdel["cache"].forEach((message: string) => this.sendToClient(client, message))
+		cdel["cache"] = null
+
 	}
 
 	/**
@@ -100,6 +99,9 @@ test("manage cache", async () => {
 		clientClose.close()
 	})
 
+	// // aspetto un po' altrimenti manda il messaggio prima di chiudere sul server
+	await wait(100)
+
 	// mando un messaggio a tutti
 	const clientSend = clients[1]
 	const txtOrigin = "messagge from: " + clientSend["id_session"]
@@ -112,7 +114,7 @@ test("manage cache", async () => {
 	})
 
 	// aspetto un po'
-	await wait(500)
+	await wait(100)
 
 	// riconnetto il client disconnesso precedentemente
 	let txtReceive
@@ -129,5 +131,5 @@ test("manage cache", async () => {
 	})
 
 	expect(txtOrigin).toBe(txtReceive)
-}, 100000000)
+})
 
