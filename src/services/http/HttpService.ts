@@ -34,7 +34,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 	get stateDefault() {
 		return {
 			...super.stateDefault,
-			/** il nome della CLASSE */
+			/** nome del NODE di default */
 			name: "http",
 			/**  la porta su cui il server rimane in scolto */
 			port: 5000,
@@ -49,8 +49,10 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			 * se valorizzato creo un server `https`
 				@example
 				https: {
-					privkey: "privkey.pem", // file path
-					pubcert: "pubcert.pem",	// file path
+					// file del certificato pubblico
+					privkey: "privkey.pem",
+					// file della chiave privata
+					pubcert: "pubcert.pem",
 				}
 				@link https://nodejs.org/api/https.html#httpscreateserveroptions-requestlistener
 			*/

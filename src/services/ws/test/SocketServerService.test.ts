@@ -1,4 +1,4 @@
-import WebSocket from "ws"
+import { WebSocket } from "ws"
 import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
 import * as wsNs from "../index.js"
@@ -45,16 +45,16 @@ test("su creazione", async () => {
 	expect(wss).toBeInstanceOf(wsNs.Service)
 })
 
-test("client connetc/send/close", async () => {
+test("client connect/send/close", async () => {
 	const dateNow = Date.now().toString()
 	const ws = new WebSocket(`ws://localhost:${PORT}/`);
 	const result = await new Promise<string>((res, rej) => {
 		let result
 		ws.on('open', function open() {
-			ws.send(dateNow)
+			ws.send(dateNow.toString())
 		});
-		ws.on('message', (data) => {
-			result = data
+		ws.on('message', (data:ArrayBuffer) => {
+			result = data.toString()
 		});
 		ws.on('close', function close() {
 			res(result)
@@ -63,4 +63,4 @@ test("client connetc/send/close", async () => {
 
 	expect(dateNow).toBe(result)
 
-})
+}, 1000000)

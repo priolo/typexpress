@@ -1,33 +1,29 @@
 
 import { LOG_TYPE, log } from "@priolo/jon-utils";
 import { Request, Response, Router } from "express";
-import { HttpRouterServiceBase, HttpRouterServiceBaseConf } from "./HttpRouterServiceBase.js";
+import { HttpRouterServiceBase } from "./HttpRouterServiceBase.js";
 
 
-
-// export interface HttpRouterServiceConf extends HttpRouterServiceBaseConf {
-// 	/** 
-// 	 * @example
-// 	{ path: "/hi", verb: "get", method: (req, res, next) => "HELLO WORLD" },
-// 	{ path: "/test", verb: "post", method: "myFunction" },
-// 	*/
-// 	routers: IRouteParam[]
-// 	/** wrap try--catch intorno al metodo */
-// 	handleErrors?: boolean
-// }
 
 export type HttpRouterServiceConf = Partial<HttpRouterService['stateDefault']> & { class: "http-router", children?: HttpRouterServiceConf[] }
 
 /**
- * Mappa una richiesta http con le funzioni della classe
+ * Generalmente figlio di un HttpServices
+ * Mappa una richiesta HTTP REST con le funzioni della classe
+ * Puo' essere annidato in altri RIUTERS per creare un albero di servizi REST
  */
 export class HttpRouterService extends HttpRouterServiceBase {
 
 	get stateDefault() {
 		return {
 			...super.stateDefault,
-			name: "route",
+			/** nome del NODE di default */
+			name: "router",
+			/** se true gestisce gli errori */
 			handleErrors: true,
+			/** 
+			 * lista di servizi REST per questo ROUTE 
+			 **/
 			routers: <IRouteParam[]>[]
 		}
 	}
@@ -40,7 +36,7 @@ export class HttpRouterService extends HttpRouterServiceBase {
 		this.state.routers.forEach((route: IRouteParam) => {
 
 			// prelevo il metodo da chiamare sulle request
-			let method: IRouteMethod = (typeof route.method === "string") ? this[route.method] : route.method
+			let method: IRouteMethod = (typeof route == "function")? route : (typeof route.method === "string") ? this[route.method] : route.method
 			if (!method) { log(`impossibile creare il nodo`, LOG_TYPE.ERROR, route.path); return; }
 			// prelevo il "verb"
 			const verb = (route.verb ?? "get").toLocaleLowerCase()
@@ -69,10 +65,26 @@ export class HttpRouterService extends HttpRouterServiceBase {
 
 }
 
-export interface IRouteParam {
+/**
+ * Definisce un ROUTER
+ */
+export type IRouteParam = {
+	/** 
+	 * path del ROUTER 
+	 * */
 	path?: string,
+	/** 
+	 * verbo HTTP 
+	 * */
 	verb?: string, //"get" | "post" | "update" | "delete",
+	/** 
+	 * metodo da chiamare quando invocato dal CLIENT
+	 * */
 	method: string | IRouteMethod,
 }
+
+/** 
+ * funzione chiamata quando il ROUTER viene invocato dal CLIENT
+ * */
 type IRouteMethod = (req: Request, res: Response, next: any) => any
 //type Verb = "get" | "post" | "update" | "delete"

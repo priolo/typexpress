@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import path from "path";
 import { fileURLToPath } from "url";
-import { http as httpNs, PathFinder, RootService } from "../../index.js";
+import { http as httpNs, httpRouter, PathFinder, RootService } from "../../index.js";
 import { getFreePort } from "../ws/utils.js";
 
 
@@ -12,9 +12,14 @@ describe("HTTP SERVICE", () => {
 
 	let PORT = 0
 	let root: RootService
+	let axiosIstance: AxiosInstance
 
 	beforeAll(async () => {
 		PORT = await getFreePort()
+		axiosIstance = axios.create({ 
+			baseURL: `http://localhost:${PORT}`, 
+			withCredentials: true 
+		})
 	})
 
 	test("su creazione", async () => {
@@ -42,6 +47,28 @@ describe("HTTP SERVICE", () => {
 		// E' quello che fa `http-route`
 	})
 
+	test("example", async () => {
+
+		await RootService.Start([
+			<httpNs.conf>{
+				class: "http",
+				port: PORT,
+				children: [
+					<httpRouter.conf>{
+						class: "http-router",
+						routers: [
+							{ method: (req, res, next) => res.send("HELLO WORLD") }
+						],
+					},
+				]
+			}
+		])
+
+		const response = await axiosIstance.get('/');
+
+		expect(response.data).toEqual("HELLO WORLD")
+	})
+
 	test("handlebars", async () => {
 
 		await RootService.Start([
@@ -51,7 +78,7 @@ describe("HTTP SERVICE", () => {
 				render: { name: "handlebars" },
 				options: { views: path.join(__dirname, "./views") },
 				children: [
-					{
+					<httpRouter.conf>{
 						class: "http-router",
 						path: "/",
 						routers: [
@@ -67,7 +94,7 @@ describe("HTTP SERVICE", () => {
 			}
 		])
 
-		const response = await axios.get('http://localhost:8080/');
+		const response = await axiosIstance.get('/');
 
 		expect(response.data)
 			.toEqual("<body><div>Item: </div><div>Item: </div><div>Item: </div></body>")

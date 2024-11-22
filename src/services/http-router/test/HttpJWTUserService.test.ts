@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import httpAdapter from 'axios/lib/adapters/http';
 import fs from "fs";
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,7 +13,6 @@ import * as jwt from "../jwt/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-axios.defaults.adapter = httpAdapter;
 let PORT:number
 let axiosIstance: AxiosInstance
 const dbPath = `${__dirname}/database.sqlite`

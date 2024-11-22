@@ -1,7 +1,7 @@
 /**
  * ACTION per oggetti REPO-BASE
  */
- export enum RepoStructActions {
+export enum RepoStructActions {
 	/** permette di specificare un array di action dirette al repository */
 	SEED = "seed",
 	/** cancella i dati di una tabella disattivando le foregn keys */
@@ -13,8 +13,8 @@
  * identifica un set di DISPATCH per un oggetto REPO
  * per esempio "TypeormRepoBaseService"
  */
- export interface IRepoStructActions<T> {
-	[RepoStructActions.SEED]: (state:any, values:T[]) => Promise<void>,
+export interface IRepoStructActions<T> {
+	[RepoStructActions.SEED]: (state: any, values: T[]) => Promise<void>,
 }
 
 /**
@@ -29,22 +29,22 @@ export enum RepoRestActions {
 }
 /**
  * identifica un set di DISPATCH per un oggetto REST
- * adatto all'aoggetto "TypeormRepoService"
+ * adatto all'oggetto "TypeormRepoService"
  */
- export interface IRepoRestDispatch<T> {
-	[RepoRestActions.ALL]: (state:any) => Promise<T[]>,
+export interface IRepoRestDispatch<T> {
+	[RepoRestActions.ALL]: (state: any) => Promise<T[]>,
 
-	[RepoRestActions.GET_BY_ID]: (state:any, id:string|number) => Promise<T>,
+	[RepoRestActions.GET_BY_ID]: (state: any, id: string | number) => Promise<T>,
 
-	[RepoRestActions.SAVE]: (state:any, entity:any) => Promise<T>,
+	[RepoRestActions.SAVE]: (state: any, entity: any) => Promise<T>,
 
-	[RepoRestActions.DELETE]: (state:any, id:string|number) => Promise<any>,
+	[RepoRestActions.DELETE]: (state: any, id: string | number) => Promise<any>,
 }
 
 /**
  * ACTIONS per oggetti REPO-TREE
  */
- export enum RepoTreeActions {
+export enum RepoTreeActions {
 	GET_CHILDREN = "get-children",
 	GET_ROOTS = "get-roots"
 }

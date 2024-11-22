@@ -36,7 +36,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
         router.use(async (req: Request, res: Response, next) => {
             const { jwt, strategy } = this.state
 
-            // prelevo il token
+            // prelevo il token in base alla strategia scelta
             const token = await strategy.getToken(req)
 
             // se non c'e' il token emetto un errore

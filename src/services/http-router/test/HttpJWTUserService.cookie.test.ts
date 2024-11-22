@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios"
-import httpAdapter from 'axios/lib/adapters/http'
 import fs from "fs"
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -17,8 +16,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let PORT: number
 const dbPath = `${__dirname}/database.sqlite`
 let root:RootService
-
-axios.defaults.adapter = httpAdapter;
 let axiosIstance: AxiosInstance
 
 beforeAll(async () => {

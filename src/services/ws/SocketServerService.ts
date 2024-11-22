@@ -1,6 +1,6 @@
 import { Request } from "express"
 import url from 'url'
-import WebSocket from "ws"
+import { WebSocketServer, WebSocket } from "ws"
 import { Bus } from "../../core/path/Bus.js"
 import * as errorNs from "../error/index.js"
 import * as http from "../http/index.js"
@@ -44,7 +44,7 @@ export class SocketServerService extends SocketCommunicator {
 	/**
 	 * Semplicemente il server WEB-SOCKET
 	 */
-	private server: WebSocket.Server = null
+	private server: WebSocketServer = null
 
 	protected async onInit() {
 		super.onInit()
@@ -82,7 +82,7 @@ export class SocketServerService extends SocketCommunicator {
 	private async buildServer(): Promise<void> {
 		return new Promise((res, rej) => {
 			if (!this.state.port) rej("no port")
-			this.server = new WebSocket.Server(
+			this.server = new WebSocketServer(
 				{ port: this.state.port },
 				() => res()
 			)
@@ -96,7 +96,7 @@ export class SocketServerService extends SocketCommunicator {
 		const parentHttp = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
 		if (!parentHttp) throw new Error("non c'e' il server http")
 
-		this.server = new WebSocket.Server({ noServer: true })
+		this.server = new WebSocketServer({ noServer: true })
 		parentHttp.on('upgrade', this.onUpgrade)
 		LogService.Send(this, "attached")
 	}
@@ -173,6 +173,7 @@ export class SocketServerService extends SocketCommunicator {
 				params: getUrlParams(req),
 				jwtPayload
 			}
+			cws.binaryType = "nodebuffer"
 			this.buildEventsClient(cws)
 			this.addClient(client) //this.updateClients()
 			this.onConnect(client)
@@ -188,6 +189,9 @@ export class SocketServerService extends SocketCommunicator {
 	private buildEventsClient(cws: WebSocket) {
 
 		cws.on('message', (message: string) => {
+			// const msg: string = typeof message === 'string' 
+			// 	? message 
+			// 	: Buffer.from(message).toString()
 			const client = this.findClientByCWS(cws)
 			this.onMessage(client, message)
 		})
@@ -286,7 +290,7 @@ export class SocketServerService extends SocketCommunicator {
 	 */
 	sendToAll(message: any) {
 		this.server.clients.forEach(cws => {
-			this.sendToCWS(cws, message)
+			this.sendToCWS(cws as any, message)
 		})
 	}
 

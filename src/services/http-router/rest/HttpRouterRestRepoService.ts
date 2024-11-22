@@ -22,7 +22,9 @@ export class HttpRouterRestRepoService extends HttpRouterRestServiceBase {
     get stateDefault() {
         return {
             ...super.stateDefault,
+            /** nome del NODE di default */
             name: "route-rest-repo",
+            /** la path al NODE che contiene il REPOSITORY */
             repository: "",
         }
     }
