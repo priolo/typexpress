@@ -1,8 +1,11 @@
 {
+  "extends": "@tsconfig/node22",
+
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    //"target": "ESNext",
+    //"module": "NodeNext",
+    //"moduleResolution": "NodeNext",
+
     "outDir": "./dist",
     "rootDir": "./src",
     "forceConsistentCasingInFileNames": true,

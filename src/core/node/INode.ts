@@ -12,14 +12,29 @@
 	 */
 	name:string
 
+	/**
+	 * NODE che contiene questo NODE. Se null è alla radice dell'albero
+	 */
 	parent:INode | null
 
+	/**
+	 * NODES contenuti da questo NODE
+	 */
 	readonly children:INode[]
 
+	/**
+	 * Aggiunge un NODE come figlio di questo NODE
+	 */
 	addChild(child: INode): void
 
+	/**
+	 * Rimuove un NODE figlio di questo NODE
+	 */
 	removeChild(child: INode): void
 
-	indexChild(child: INode): number
+	// /**
+	//  * Restituisce l'indice del NODE figlio
+	//  */
+	// indexChild(child: INode): number
 	
 }

@@ -35,12 +35,12 @@ export class Node implements INode {
 			.forEach(n=>n.parent=null)
 	}
 
-	indexChild(child: INode): number {
+	private indexChild(child: INode): number {
 		if (child == null) return -1
 		return this._children.indexOf(child)
 	}
 
-	// [facility]: restituisce un nodeCHILD tramite la path
+	// [facility]: restituisce un NODE-CHILD tramite la PATH
 	getChild(path: string): INode | null {
 		return new PathFinder(this).getNode(path)
 	}

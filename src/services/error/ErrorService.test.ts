@@ -1,11 +1,11 @@
 import axios, { AxiosInstance } from "axios"
-import httpAdapter from 'axios/lib/adapters/http'
+//import httpAdapter from 'axios/lib/adapters/http'
 import { error as errorNs, RootService } from "../../index.js"
 import { getFreePort } from "../ws/index.js"
 
 
 
-axios.defaults.adapter = httpAdapter
+//axios.defaults.adapter = httpAdapter
 let PORT:number
 let axiosIstance: AxiosInstance
 let root:RootService

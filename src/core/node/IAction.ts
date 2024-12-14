@@ -20,7 +20,7 @@
 	 */
 	wait?: number,
 	/**
-	 * inserito dal sistema indica quando è stato spedito il messaggio
+	 * inserito dal sistema. Indica quando è stato spedito il messaggio
 	 */
 	sendTime?: number,
 	/**

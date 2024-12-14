@@ -5,11 +5,6 @@ import { Bus } from "../path/Bus.js";
 
 
 
-// export interface NodeStateConf {
-// 	name?: string
-// 	children?: NodeStateConf[]
-// }
-
 export type NodeStateConf = Partial<NodeState['stateDefault']>
 
 /**
@@ -33,7 +28,7 @@ export abstract class NodeState extends Node {
 	//#region STATE
 
 	/**
-	 * in "constructor" viene mergiato con lo STATE di istanza
+	 * insieme allo STATO DI ISTANZA del NODE (con i lquale viene mergiato)
 	 * determina il valore iniziale dello STATE
 	 */
 	get stateDefault() {
@@ -53,8 +48,7 @@ export abstract class NodeState extends Node {
 
 	/**
 	 * Modifica lo stato
-	 * notare che si tratta sempre di un MERGE
-	 * @param state 
+	 * si tratta sempre di un MERGE con lo stato precedente
 	 */
 	public setState(state: any): void {
 		if (this._state == state) return
@@ -72,7 +66,7 @@ export abstract class NodeState extends Node {
 
 
 
-	//#region DISPATCH
+	//#region EXECUTE
 
 	/**
 	 * una mappa di possibili Actions 
@@ -83,7 +77,7 @@ export abstract class NodeState extends Node {
 	}
 
 	/**
-	 * permette di eseguire una Action
+	 * permette di eseguire una ACTION
 	 * @param action 
 	 */
 	dispatch(action: IAction): any {
@@ -126,6 +120,9 @@ export abstract class NodeState extends Node {
 	//#endregion
 }
 
+/**
+ * una mappa di possibili ACTIONS
+ */
 type DispatchMap = { [key: string]: Dispatch }
 
 /**
