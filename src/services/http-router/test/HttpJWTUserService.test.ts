@@ -13,11 +13,11 @@ import * as jwt from "../jwt/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-let PORT:number
+let PORT: number
 let axiosIstance: AxiosInstance
 const dbPath = `${__dirname}/database.sqlite`
-let root:RootService
-let user1, user2, token:string
+let root: RootService
+let user1, user2, token: string
 
 beforeAll(async () => {
 	PORT = await getFreePort()
@@ -43,7 +43,7 @@ beforeAll(async () => {
 									payload: userId,
 								})
 
-								const jwtService = new PathFinder(root).getNode<jwt.Service>("/http/route-jwt")
+								const jwtService = PathFinder.Get<jwt.Service>(root, "/http/route-jwt")
 								const token = await jwtService.putPayload(user, res)
 
 								res.json({ token })
@@ -115,7 +115,7 @@ test("crea due USER", async () => {
 })
 
 test("se accedo SENZA il token ... mi dovrebbe dare errore", async () => {
-	let err:any = null
+	let err: any = null
 	try {
 		await axiosIstance.get(`/user`)
 	} catch (e) {
@@ -135,5 +135,5 @@ test("se accedo con il token nei cookies non mi da errore", async () => {
 		`/user`,
 		{ headers: { Authorization: `Bearer ${token}` } }
 	)
-	expect(reuser2).toEqual(expect.objectContaining(user2)) 
+	expect(reuser2).toEqual(expect.objectContaining(user2))
 })

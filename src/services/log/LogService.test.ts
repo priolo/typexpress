@@ -49,14 +49,14 @@ test("log", async () => {
 	// ottenuto il servizio...
 	const log = new PathFinder(root).getNode<logNs.Service>("/log")
 	// ...quindi posso generare un log
-	log.dispatch({ type: Actions.LOG, payload: { message: "test log!" } })
+	log.execute({ type: Actions.LOG, payload: { message: "test log!" } })
 })
 
 test("log base", async () => {
 	// ottenuto il servizio...
 	const log = new PathFinder(root).getNode<logNs.Service>("/logbase")
 	// ...quindi posso generare un log
-	log.dispatch({ type: Actions.LOG, payload: { level: LogLevel.WARN,  message: "test log!" } })
+	log.execute({ type: Actions.LOG, payload: { level: LogLevel.WARN,  message: "test log!" } })
 })
 
 test("log base without level", async () => {

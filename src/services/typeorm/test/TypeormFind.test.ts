@@ -104,13 +104,13 @@ test("Find item with WHERE", async () => {
 
 	let results
 
-	results = await rep.dispatch({
+	results = await rep.execute({
 		type: typeormNs.Actions.FIND,
 		payload: { where: { text: "message 3" } }
 	})
 	expect(results[0]).toMatchObject({ x: 100, y: 67 })
 
-	results = await rep.dispatch({
+	results = await rep.execute({
 		type: typeormNs.Actions.FIND,
 		payload: { where: { 
 			x: { type: "raw", sql:`{*} BETWEEN 0 AND 10` }, 
@@ -123,18 +123,18 @@ test("Find item with WHERE", async () => {
 	])
 
 
-	// results = await rep.dispatch({
+	// results = await rep.execute({
 	// 	type: orm.Actions.FIND,
 	// 	payload: { where: { x: Between(0, 10), y: Between(0, 10) } }
 	// })
 
-	// results = await rep.dispatch({
+	// results = await rep.execute({
 	// 	type: orm.Actions.FIND,
 	// 	payload: { where: { x: Raw(alias=>`${alias} BETWEEN 0 AND 10`), y: Raw(alias=>`${alias} BETWEEN 0 AND 10`) } }
 	// })
 
 	// rep = new PathFinder(root).getNode<typeormNs.repo>("/typeorm/doc")
-	// let docs = await rep.dispatch({ type: RepoRestActions.ALL })
+	// let docs = await rep.execute({ type: RepoRestActions.ALL })
 	// expect(docs.length).toBe(1)
 
 	

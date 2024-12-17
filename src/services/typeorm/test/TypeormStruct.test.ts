@@ -118,7 +118,7 @@ test("Check seed create", async () => {
 
 	// creo gli user con un SEED
 	const rep = new PathFinder(root).getNode<orm.repo>("/typeorm/user")
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoStructActions.SEED,
 		payload: [
 			`INSERT INTO User (firstName, lastName, age) VALUES ("Ivano", "Iorio", 45);`,
@@ -133,7 +133,7 @@ test("Check seed create", async () => {
 	})
 
 	// CONTROLLO GLI USER
-	let users = await rep.dispatch({ type: RepoRestActions.ALL })
+	let users = await rep.execute({ type: RepoRestActions.ALL })
 	expect(users).toMatchObject([
 		{ firstName: 'Ivano', lastName: 'Iorio', age: 45 },
 		{
@@ -146,14 +146,14 @@ test("Check seed create", async () => {
 	])
 
 	// ELIMINO GLI USER CON UN SEED
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoStructActions.SEED, payload: [
 			{ type: RepoStructActions.CLEAR },
 		]
 	})
 
 	// CONTROLLO CHE NON CI SIANO PIU'
-	users = await rep.dispatch({ type: RepoRestActions.ALL })
+	users = await rep.execute({ type: RepoRestActions.ALL })
 	expect(users.length).toEqual(0)
 })
 
@@ -161,7 +161,7 @@ test("Check seed config", async () => {
 
 	// ESEGUO UN SEED DA CONFIG
 	const rep = new PathFinder(root).getNode<orm.repo>("/typeorm/item")
-	let items = await rep.dispatch({ type: RepoRestActions.ALL })
+	let items = await rep.execute({ type: RepoRestActions.ALL })
 	expect(items[0].label).toBe("primo")
 	expect(items[1].label).toBe("secondo")
 	expect(items[5].label).toBe("sesto")
@@ -170,7 +170,7 @@ test("Check seed config", async () => {
 test("Check delete cascade", async () => {
 	// creo gli user con un SEED
 	let rep = new PathFinder(root).getNode<orm.repo>("/typeorm/user")
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoStructActions.SEED,
 		payload: [
 			{
@@ -188,13 +188,13 @@ test("Check delete cascade", async () => {
 		]
 	})
 
-	let users = await rep.dispatch({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
-	await rep.dispatch({ type: RepoRestActions.DELETE, payload: users[0].id})
+	let users = await rep.execute({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
+	await rep.execute({ type: RepoRestActions.DELETE, payload: users[0].id})
 
-	users = await rep.dispatch({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
+	users = await rep.execute({ type: orm.Actions.FIND, payload: { where: { firstName: "Marina" }} })
 	expect(users.length).toBe(0)
 
 	rep = new PathFinder(root).getNode<orm.repo>("/typeorm/doc")
-	let docs = await rep.dispatch({ type: RepoRestActions.ALL})
+	let docs = await rep.execute({ type: RepoRestActions.ALL})
 	expect(docs.length).toBe(1)
 })

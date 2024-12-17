@@ -62,8 +62,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
      * @returns 
      */
     protected async generateToken(payload: any): Promise<string> {
-        const { jwt } = this.state
-        return new Bus(this, jwt).dispatch({
+        return new Bus(this, this.state.jwt).dispatch({
             type: jwtNs.Actions.ENCODE,
             payload: { payload, options: { expiresIn: "1h" } },
         })
@@ -75,9 +74,8 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
      * e ricevo il TOKEN JWT
      */
     public async putPayload(payload: any, res: Response): Promise<string> {
-        const { strategy } = this.state
         const token = await this.generateToken(payload)
-        strategy.putToken(token, res)
+        this.state.strategy.putToken(token, res)
         return token
     }
 

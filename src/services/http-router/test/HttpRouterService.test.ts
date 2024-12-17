@@ -148,7 +148,7 @@ describe("Server HTTP e i suoi ROUTER", () => {
 				}]
 			})
 			http.addChild(route)
-			await http.dispatch({ type: ConfActions.INIT })
+			await http.execute({ type: ConfActions.INIT })
 
 			const { data } = await axiosIstance.get(`/test`)
 			expect(data).toEqual({ response: "test-ok" })

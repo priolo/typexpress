@@ -39,7 +39,7 @@ test("invio email", async () => {
 		res = true
 	})
 	// invio l'email
-	await email.dispatch({
+	await email.execute({
 		type: emailNs.Actions.SEND,
 		payload: <emailNs.IEmail>{
 			from: "from@test.com",
@@ -54,7 +54,7 @@ test("invio email", async () => {
 
 
 	// controllo esista un email
-	res = await email.dispatch({
+	res = await email.execute({
 		type: emailNs.Actions.CHECK,
 		payload: "iorioivano@gmail.com"
 	})
@@ -62,7 +62,7 @@ test("invio email", async () => {
 
 
 	// controllo esista un email
-	res = await email.dispatch({
+	res = await email.execute({
 		type: emailNs.Actions.CHECK,
 		payload: "pippojksdfhlghsjkfsd@gmail.com"
 	})

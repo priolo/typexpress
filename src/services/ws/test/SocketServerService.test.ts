@@ -20,11 +20,11 @@ beforeAll(async () => {
 				{
 					class: "ws/route",
 					onMessage: async function (client, message) {
-						await this.dispatch({
+						await this.execute({
 							type: SocketRouteActions.SEND,
 							payload: { client, message }
 						})
-						await this.dispatch({
+						await this.execute({
 							type: SocketRouteActions.DISCONNECT,
 							payload: client
 						})

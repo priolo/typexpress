@@ -90,7 +90,7 @@ test("USER", async () => {
 	expect(rep).toBeInstanceOf(typeormNs.repo)
 
 	// crea due USER
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoRestActions.SAVE,
 		payload: {
 			firstName: "Ivano",
@@ -98,7 +98,7 @@ test("USER", async () => {
 			age: 45,
 		}
 	})
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoRestActions.SAVE,
 		payload: {
 			firstName: "Marina",
@@ -108,7 +108,7 @@ test("USER", async () => {
 	})
 
 	// preleva uno specifico USER
-	let user = await rep.dispatch({
+	let user = await rep.execute({
 		type: typeormNs.Actions.FIND,
 		payload: { where: { firstName: "Marina" } }
 	})
@@ -117,14 +117,14 @@ test("USER", async () => {
 	])
 
 	// preleva tutti gli USER
-	let users = await rep.dispatch({ type: RepoRestActions.ALL })
+	let users = await rep.execute({ type: RepoRestActions.ALL })
 	expect(users).toMatchObject([
 		{ firstName: 'Ivano', lastName: 'Iorio', age: 45 },
 		{ firstName: 'Marina', lastName: 'Bossi', age: 32 }
 	])
 
 	// modifica lo USER con id = 2
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoRestActions.SAVE,
 		payload: <User>{
 			id: 2, // ATTENZIONE deve essere un id in questo caso!
@@ -133,26 +133,26 @@ test("USER", async () => {
 	})
 
 	// preleva lo USER con id = 2
-	user = await rep.dispatch({ type: RepoRestActions.GET_BY_ID, payload: 2 })
+	user = await rep.execute({ type: RepoRestActions.GET_BY_ID, payload: 2 })
 	expect(user).toEqual(
 		{ id: 2, firstName: 'Marino', lastName: 'Bossi', age: 32 }
 	)
 
 	// elimina lo USER con id = 2
-	await rep.dispatch({ type: RepoRestActions.DELETE, payload: 2 })
-	users = await rep.dispatch({ type: RepoRestActions.ALL })
+	await rep.execute({ type: RepoRestActions.DELETE, payload: 2 })
+	users = await rep.execute({ type: RepoRestActions.ALL })
 	expect(users).toEqual([
 		{ id: 1, firstName: 'Ivano', lastName: 'Iorio', age: 45 },
 	])
 
 	// elimina lo USER con "firstName" uguale a "XXX" (che non c'e')
-	await rep.dispatch({ type: RepoRestActions.DELETE, payload: { firstName: "XXX" } })
-	users = await rep.dispatch({ type: RepoRestActions.ALL })
+	await rep.execute({ type: RepoRestActions.DELETE, payload: { firstName: "XXX" } })
+	users = await rep.execute({ type: RepoRestActions.ALL })
 	expect(users).toHaveLength(1)
 
 	// elimina lo USER con "firstName" uguale a "Ivano"
-	await rep.dispatch({ type: RepoRestActions.DELETE, payload: { firstName: "Ivano" } })
-	users = await rep.dispatch({ type: RepoRestActions.ALL })
+	await rep.execute({ type: RepoRestActions.DELETE, payload: { firstName: "Ivano" } })
+	users = await rep.execute({ type: RepoRestActions.ALL })
 	expect(users).toHaveLength(0)
 })
 
@@ -162,13 +162,13 @@ test("ACCOUNT", async () => {
 	expect(rep).toBeInstanceOf(typeormNs.repo)
 
 	// crea due ACCOUNT
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoRestActions.SAVE,
 		payload: {
 			username: "priolo",
 		}
 	})
-	let account = await rep.dispatch({
+	let account = await rep.execute({
 		type: RepoRestActions.SAVE,
 		payload: {
 			username: "huetotolin",
@@ -176,7 +176,7 @@ test("ACCOUNT", async () => {
 	})
 
 	// preleva uno specifico ACCOUNT
-	let [account2] = await rep.dispatch({
+	let [account2] = await rep.execute({
 		type: typeormNs.Actions.FIND,
 		payload: { where: { username: "huetotolin" } }
 	})
@@ -189,13 +189,13 @@ test("ITEMS", async () => {
 	expect(rep).toBeInstanceOf(typeormNs.repo)
 
 	// crea due ITEM
-	await rep.dispatch({
+	await rep.execute({
 		type: RepoRestActions.SAVE,
 		payload: {
 			name: "scarpa",
 		}
 	})
-	let item = await rep.dispatch({
+	let item = await rep.execute({
 		type: RepoRestActions.SAVE,
 		payload: {
 			name: "barattolo",
@@ -203,7 +203,7 @@ test("ITEMS", async () => {
 	})
 
 	// preleva uno specifico ITEM
-	let [item2] = await rep.dispatch({
+	let [item2] = await rep.execute({
 		type: typeormNs.Actions.FIND,
 		payload: { where: { name: "barattolo" } }
 	})

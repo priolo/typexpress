@@ -45,7 +45,7 @@ describe("NODE STATE", () => {
 	Inoltre posso definire un set (`dispatchMap`) di `dispatcher`  
 	Questi `dispatcher` solitamente sono funzioni pure e applicano delle modifiche allo `state`  
 	 */
-	test("dispatch", async () => {
+	test("execute", async () => {
 
 		// definisco la KEY delle ACTIONs (opzionale)
 		const MY_ACTIONS = {
@@ -57,12 +57,12 @@ describe("NODE STATE", () => {
 		const myNode = new class extends NodeState {
 
 			// qua sono definite le ACTIONs
-			get dispatchMap(): any {
+			get executablesMap(): any {
 				return {
 
 					// questa riga serve se si vogliono ereditare i "dispatcher" dal "parent"
 					// (in questo caso non eredita nulla da `NodeState`)
-					...super.dispatchMap,
+					...super.executablesMap,
 
 					// questa è semplicemente una funzione che setta un valore al NODE
 					[MY_ACTIONS.SET_STATE]: (state, payload: any) => {
@@ -81,14 +81,14 @@ describe("NODE STATE", () => {
 		}
 
 		// chiamo il `dispatch` con nome `set_state1` e gli passo un `payload`
-		let ret = myNode.dispatch({
+		let ret = myNode.execute({
 			type: MY_ACTIONS.SET_STATE,
 			payload: { val: 1 }
 		})
 		expect(ret).toEqual("ok-1")
 
 		// chiamo il `dispatch` asincrono
-		ret = await myNode.dispatch({
+		ret = await myNode.execute({
 			type: MY_ACTIONS.SET_STATE_ASYNC,
 			payload: { val2: 2 }
 		})
@@ -114,9 +114,9 @@ describe("NODE STATE", () => {
 			}
 
 			// le ACTION di questo NODE
-			get dispatchMap() {
+			get executablesMap() {
 				return {
-					...super.dispatchMap,
+					...super.executablesMap,
 					["set-text"]: (state, payload) => this.setState({ text: payload })
 				}
 			}

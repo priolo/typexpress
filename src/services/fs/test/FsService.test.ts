@@ -28,7 +28,7 @@ test("create dir and files", async () => {
 	const fss = new PathFinder(root).getNode<fsService.Service>("/fs")
 	expect(fss).toBeInstanceOf(fsService.Service)
 
-	let res = await fss.dispatch({
+	let res = await fss.execute({
 		type: fsService.Actions.NEW_DIR,
 		payload: "./testDir",
 	})
