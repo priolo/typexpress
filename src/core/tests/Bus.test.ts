@@ -6,20 +6,20 @@ import { Bus } from "../path/Bus.js"
 
 
 
-let root:RootService
+let root: RootService
 
 class TestNode extends NodeConf {
 
 	private tryError = 3
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return {
-			...super.dispatchMap,
-			SetState: async (state, payload) => {
-				await this.setState({ value: payload })
+			...super.executablesMap,
+			SetState: (payload: any) => {
+				this.setState({ value: payload })
 				return "pluto"
 			},
-			TryError: async (state, _) => {
+			TryError: async () => {
 				if (this.tryError > 0) {
 					this.tryError--
 					throw `error ${this.tryError}`
@@ -55,7 +55,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-	root?.dispatch({ type: ConfActions.DESTROY })
+	root?.execute({ type: ConfActions.DESTROY })
 })
 
 
@@ -70,7 +70,7 @@ test("send action", async () => {
 		payload: "topolino",
 	})
 	expect(ret).toBe("pluto")
-	const node:NodeState = root?.children.find(n => n.name == "child1")?.children.find(n => n.name == "child1.2") as  NodeState
+	const node: NodeState = root?.children.find(n => n.name == "child1")?.children.find(n => n.name == "child1.2") as NodeState
 	expect(node.state.value).toBe("topolino")
 })
 

@@ -25,17 +25,17 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return <IRepoStructActions<any>>{
-			...super.dispatchMap,
-			[Actions.FIND]: async (_, query) => await this.find(query),
-			[Actions.FIND_ONE]: async (_, query) => await this.findOne(query),
-			[RepoStructActions.SEED]: async (state, seeds) => await this.seed(seeds ?? state.seeds),
-			[RepoStructActions.TRUNCATE]: async _ => await this.truncate(),
-			[RepoStructActions.CLEAR]: async _ => await this.clear(),
+			...super.executablesMap,
+			[Actions.FIND]: async (query: any) => await this.find(query),
+			[Actions.FIND_ONE]: async (query: any) => await this.findOne(query),
+			[RepoStructActions.SEED]: async (seeds) => await this.seed(seeds ?? this.state.seeds),
+			[RepoStructActions.TRUNCATE]: async () => await this.truncate(),
+			[RepoStructActions.CLEAR]: async () => await this.clear(),
 
-			[Actions.TRANSACTION_START]: async _ => await this.transactionStart(),
-			[Actions.TRANSACTION_END]: async _ => await this.transactionEnd(),
+			[Actions.TRANSACTION_START]: async () => await this.transactionStart(),
+			[Actions.TRANSACTION_END]: async () => await this.transactionEnd(),
 		}
 	}
 
@@ -134,7 +134,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 			// is a Action ti dispatch
 			// { type: RepoStructActions.TRUNCATE }, 
 			if (seed.type) {
-				await this.dispatch(seed)
+				await this.execute(seed)
 				continue
 			}
 

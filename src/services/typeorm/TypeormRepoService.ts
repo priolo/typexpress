@@ -19,23 +19,22 @@ export class TypeormRepoService extends TypeormRepoBaseService {
 		}
 	}
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return <IRepoRestDispatch<any>>{
-			...super.dispatchMap,
-			[RepoRestActions.SAVE]: async (_, entity) => {
+			...super.executablesMap,
+			[RepoRestActions.SAVE]: async (entity) => {
 				const repo = this.getRepo()
 				return await repo.save(entity);
 			},
-			[RepoRestActions.ALL]: async (state) => {
-				const { findOptions } = state
+			[RepoRestActions.ALL]: async () => {
 				const repo = this.getRepo()
-				return await repo.find(findOptions);
+				return await repo.find(this.state.findOptions);
 			},
-			[RepoRestActions.GET_BY_ID]: async (_, id) => {
+			[RepoRestActions.GET_BY_ID]: async (id) => {
 				const repo = this.getRepo()
 				return await repo.findOne({ where: { id } }) ?? null;
 			},
-			[RepoRestActions.DELETE]: async (_, id) => {
+			[RepoRestActions.DELETE]: async (id) => {
 				const repo = this.getRepo()
 				//await this.connection.query('PRAGMA foreign_keys=OFF');
 				const ret = await repo.delete(id);

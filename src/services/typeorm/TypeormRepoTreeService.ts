@@ -11,15 +11,15 @@ import { TypeormRepoService } from "./TypeormRepoService.js";
  * https://typeorm.io/#/tree-entities/working-with-tree-entities
  */
 export class TypeormRepoTreeService extends TypeormRepoService {
-	
-	get dispatchMap(): any {
+
+	get executablesMap(): any {
 		return {
-			...super.dispatchMap,
-			[RepoTreeActions.GET_CHILDREN]: async (state, entity) => {
+			...super.executablesMap,
+			[RepoTreeActions.GET_CHILDREN]: async (entity: any) => {
 				const repo = this.getTree().findDescendantsTree(entity)
 				return await repo
 			},
-			[RepoTreeActions.GET_ROOTS]: async (state, entity) => {
+			[RepoTreeActions.GET_ROOTS]: async () => {
 				const repo = this.getTree().findRoots()
 				return await repo
 			},
@@ -31,7 +31,7 @@ export class TypeormRepoTreeService extends TypeormRepoService {
 	 * @param model 
 	 * @returns 
 	 */
-	 protected getTree(model?: string): TreeRepository<unknown> {
+	protected getTree(model?: string): TreeRepository<unknown> {
 		const repo = this.connection.getTreeRepository(model ?? this.model)
 		return repo
 	}

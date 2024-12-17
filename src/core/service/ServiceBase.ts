@@ -40,12 +40,12 @@ export class ServiceBase extends NodeConf {
 		}
 	}
 
-	get dispatchMap() {
+	get executablesMap() {
 		return {
-			...super.dispatchMap,
-			[ServiceBaseActions.REGISTER]: async (_: void, name: string, sender: string) => this.register({ event: name, path: sender }),
-			[ServiceBaseActions.UNREGISTER]: async (_: void, name: string, sender: string) => this.unregister({ event: name, path: sender }),
-			[ServiceBaseActions.EVENT]: async (state, payload) => this.onEvent(payload),
+			...super.executablesMap,
+			[ServiceBaseActions.REGISTER]: async (name: string, sender: string) => this.register({ event: name, path: sender }),
+			[ServiceBaseActions.UNREGISTER]: async (name: string, sender: string) => this.unregister({ event: name, path: sender }),
+			[ServiceBaseActions.EVENT]: async (payload: IEvent) => this.onEvent(payload),
 		}
 	}
 
@@ -99,8 +99,8 @@ export class ServiceBase extends NodeConf {
 	 * emette un ACTION a tutti i "listeners"
 	 * @param action 
 	 */
-	async dispatch(action: IAction): Promise<any> {
-		const res = await super.dispatch(action)
+	async execute(action: IAction): Promise<any> {
+		const res = await super.execute(action)
 		this._emitter.emit(ServiceBaseEvents.DISPATCH, action)
 		return res
 	}

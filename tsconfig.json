@@ -2,9 +2,9 @@
   "extends": "@tsconfig/node22",
 
   "compilerOptions": {
-    //"target": "ESNext",
-    //"module": "NodeNext",
-    //"moduleResolution": "NodeNext",
+    // "target": "ESNext",
+    // "module": "NodeNext",
+    // "moduleResolution": "NodeNext",
 
     "outDir": "./dist",
     "rootDir": "./src",
@@ -12,11 +12,6 @@
     "sourceMap": true,
     "preserveConstEnums": true,
     "allowArbitraryExtensions": true,
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strict": false,
@@ -26,6 +21,7 @@
     "declarationMap": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
+    "baseUrl": "./"
   },
   "include": [
     "src"

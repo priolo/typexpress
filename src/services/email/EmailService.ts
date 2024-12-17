@@ -1,6 +1,6 @@
+import { ServiceBase } from "../../core/service/ServiceBase.js"
 import emailCheck from "email-check"
 import nodemailer, { Transporter } from "nodemailer"
-import { ServiceBase } from "../../core/service/ServiceBase.js"
 import { Actions, IAccount, IEmail } from "./utils.js"
 
 
@@ -22,22 +22,22 @@ export default class EmailService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return {
-			...super.dispatchMap,
+			...super.executablesMap,
 
-			[Actions.CREATE_TEST_ACCOUNT]: async (state) => {
+			[Actions.CREATE_TEST_ACCOUNT]: async () => {
 				const account = await nodemailer.createTestAccount()
 				this.setState( {account} )
 			},
 
-			[Actions.CREATE_ACCOUNT]: (state, account:IAccount) => {
+			[Actions.CREATE_ACCOUNT]: (account:IAccount) => {
 				this.setState( {account} )
 			},
-			[Actions.SEND]: async (state, email:IEmail) => {
+			[Actions.SEND]: async (email:IEmail) => {
 				await this.transporter.sendMail(email)
 			},
-			[Actions.CHECK]: async (state, address:string) => {
+			[Actions.CHECK]: async (address:string) => {
 				let res = false
 				try {
 					res = await emailCheck(address)

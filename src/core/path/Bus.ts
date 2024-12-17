@@ -52,14 +52,10 @@ export class Bus {
 	/**
 	 * try to send an action
 	 * if it fails, try again
-	 * @param dest 
-	 * @param action 
-	 * @param attempt 
-	 * @returns 
 	 */
 	private async tryDispatch(dest: NodeState, action: IAction, attempt: number = 0): Promise<any> {
 		try {
-			return await dest.dispatch(action)
+			return await dest.execute(action)
 		} catch (err) {
 			if (action?.error && attempt > 0) {
 				await new Promise(resolve => setTimeout(resolve, action.error.wait))

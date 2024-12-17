@@ -2,8 +2,7 @@ import { INode } from "../../core/node/INode.js";
 import { Bus } from "../../core/path/Bus.js";
 import { ServiceBase } from "../../core/service/ServiceBase.js";
 import { ErrorNotify } from "./ErrorNotify.js";
-import { ErrorLevel } from "./utils.js";
-import { Actions, NotifyAction } from "./utils.js";
+import { Actions, ErrorLevel, NotifyAction } from "./utils.js";
 
 
 
@@ -36,11 +35,11 @@ export default class ErrorService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap() {
+	get executablesMap() {
 		return {
-			...super.dispatchMap,
+			...super.executablesMap,
 			/** quando viene generato un errore */
-			[Actions.NOTIFY]: async (state: any, error: ErrorNotify, sender: string) => {
+			[Actions.NOTIFY]: async (error: ErrorNotify, sender: string) => {
 				this.onNotify(error, sender)
 			},
 		}

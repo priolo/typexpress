@@ -1,6 +1,6 @@
 import { Request } from "express"
 import url from 'url'
-import { WebSocketServer, WebSocket } from "ws"
+import { WebSocket, WebSocketServer } from "ws"
 import { Bus } from "../../core/path/Bus.js"
 import * as errorNs from "../error/index.js"
 import * as http from "../http/index.js"
@@ -13,7 +13,7 @@ import { Errors, IClient, SocketServerActions, clientIsEqual, getUrlParams } fro
 
 
 export type SocketServerConf = Partial<SocketServerService['stateDefault']> & { class: "ws", children?: SocketRouteConf[] }
-export type SocketServerAct = SocketServerService['dispatchMap']
+export type SocketServerAct = SocketServerService['executablesMap']
 
 export class SocketServerService extends SocketCommunicator {
 
@@ -29,15 +29,11 @@ export class SocketServerService extends SocketCommunicator {
 		}
 	}
 
-	get dispatchMap() {
+	get executablesMap() {
 		return {
-			...super.dispatchMap,
-			[SocketServerActions.START]: async (state) => {
-				await this.startListener()
-			},
-			[SocketServerActions.STOP]: async (state) => {
-				await this.stopListener()
-			},
+			...super.executablesMap,
+			[SocketServerActions.START]: async () => await this.startListener(),
+			[SocketServerActions.STOP]: async () => await this.stopListener(),
 		}
 	}
 

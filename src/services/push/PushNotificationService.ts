@@ -19,13 +19,11 @@ export class PushNotificationService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return {
-			...super.dispatchMap,
+			...super.executablesMap,
 			// https://firebase.google.com/docs/cloud-messaging/send-message
-			[Actions.SEND]: async (state, message) => {
-				return await this.sendNotify(message)
-			},
+			[Actions.SEND]: async (message: any) => await this.sendNotify(message),
 
 		}
 	}

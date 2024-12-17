@@ -20,21 +20,21 @@ export default class FsService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return {
-			...super.dispatchMap,
+			...super.executablesMap,
 
-			[Actions.LIST]: (state, dir: string) => this.getList(dir),
+			[Actions.LIST]: (dir: string) => this.getList(dir),
 
-			[Actions.NEW_DIR]: async (state, dir: string) => this.makeNewDir(dir),
+			[Actions.NEW_DIR]: async (dir: string) => this.makeNewDir(dir),
 
-			[Actions.RENAME]: async (state, { dirOld, dirNew }) => this.rename(dirOld, dirNew),
+			[Actions.RENAME]: async ({ dirOld, dirNew }) => this.rename(dirOld, dirNew),
 
-			[Actions.DELETE]: async (state, dir: string) => this.makeDelete(dir),
+			[Actions.DELETE]: async (dir: string) => this.makeDelete(dir),
 
-			[Actions.NEW_TEXT]: async (state, { dir, data }) => { },
+			[Actions.NEW_TEXT]: async ({ dir, data }) => { },
 
-			[Actions.GET_TEXT]: async (state, dir: string) => { },
+			[Actions.GET_TEXT]: async (dir: string) => { },
 		}
 	}
 

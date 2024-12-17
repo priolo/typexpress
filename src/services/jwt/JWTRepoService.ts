@@ -14,11 +14,11 @@ export class JWTRepoService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return {
-			...super.dispatchMap,
-			[Actions.ENCODE]: (state, { payload, options }) => this.encode(payload, options),
-			[Actions.DECODE]: async (state, payload) => this.decode(payload),
+			...super.executablesMap,
+			[Actions.ENCODE]: ({ payload, options }) => this.encode(payload, options),
+			[Actions.DECODE]: async (payload: string) => this.decode(payload),
 		}
 	}
 

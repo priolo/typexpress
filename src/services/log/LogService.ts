@@ -1,8 +1,9 @@
 import { INode } from "../../core/node/INode.js";
 import winston from "winston";
-import { Bus, ServiceBase } from "../../index.js";
 import TransportService from "./transport/TransportService.js";
 import { Actions, LogLevel, LogNotify } from "./utils.js";
+import { ServiceBase } from "../../core/service/ServiceBase.js";
+import { Bus } from "../../core/path/Bus.js";
 
 
 
@@ -43,10 +44,10 @@ export default class LogService extends ServiceBase {
 		}
 	}
 
-	get dispatchMap(): any {
+	get executablesMap(): any {
 		return {
-			...super.dispatchMap,
-			[Actions.LOG]: (state: any, log: LogNotify, sender: string) => this.onNotify(log, sender),
+			...super.executablesMap,
+			[Actions.LOG]: (log: LogNotify, sender: string) => this.onNotify(log, sender),
 		}
 	}
 

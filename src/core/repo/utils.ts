@@ -14,7 +14,7 @@ export enum RepoStructActions {
  * per esempio "TypeormRepoBaseService"
  */
 export interface IRepoStructActions<T> {
-	[RepoStructActions.SEED]: (state: any, values: T[]) => Promise<void>,
+	[RepoStructActions.SEED]: (values: T[]) => Promise<void>,
 }
 
 /**
@@ -32,13 +32,13 @@ export enum RepoRestActions {
  * adatto all'oggetto "TypeormRepoService"
  */
 export interface IRepoRestDispatch<T> {
-	[RepoRestActions.ALL]: (state: any) => Promise<T[]>,
+	[RepoRestActions.ALL]: () => Promise<T[]>,
 
-	[RepoRestActions.GET_BY_ID]: (state: any, id: string | number) => Promise<T>,
+	[RepoRestActions.GET_BY_ID]: (id: string | number) => Promise<T>,
 
-	[RepoRestActions.SAVE]: (state: any, entity: any) => Promise<T>,
+	[RepoRestActions.SAVE]: (entity: any) => Promise<T>,
 
-	[RepoRestActions.DELETE]: (state: any, id: string | number) => Promise<any>,
+	[RepoRestActions.DELETE]: (id: string | number) => Promise<any>,
 }
 
 /**

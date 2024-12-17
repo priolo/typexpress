@@ -15,21 +15,21 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
     get stateDefault() {
         return {
             ...super.stateDefault,
-            name: "route-jwt", 
+            name: "route-jwt",
             // la path del jwt che si occupa di codificare/decodificare
             jwt: "",                    // path-jwt:request
             strategy: CookieStrategy,   // strategia da attuare per il login
         }
     }
 
-    get dispatchMap() {
+    get executablesMap() {
         return {
-            ...super.dispatchMap,
-            [RouteJWTUserActions.GENERATE_TOKEN]: (state, payload) => this.generateToken(payload),
+            ...super.executablesMap,
+            [RouteJWTUserActions.GENERATE_TOKEN]: (payload: any) => this.generateToken(payload),
         }
     }
 
-    
+
     protected onBuildRouter(): Router {
         const router = super.onBuildRouter()
 
@@ -61,7 +61,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
      * @param payload 
      * @returns 
      */
-    protected async generateToken(payload:any) : Promise<string> {
+    protected async generateToken(payload: any): Promise<string> {
         const { jwt } = this.state
         return new Bus(this, jwt).dispatch({
             type: jwtNs.Actions.ENCODE,
@@ -74,7 +74,7 @@ export class HttpJWTUserService extends HttpRouterServiceBase {
      * valorizzo il parametro "payload" (generalmente l'user loggato)
      * e ricevo il TOKEN JWT
      */
-    public async putPayload(payload:any, res:Response) : Promise<string> {
+    public async putPayload(payload: any, res: Response): Promise<string> {
         const { strategy } = this.state
         const token = await this.generateToken(payload)
         strategy.putToken(token, res)

@@ -1,7 +1,8 @@
-import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { IAction } from "./IAction.js";
-import { Node } from "./Node.js";
+import ErrorService from "../../services/error/ErrorService.js";
 import { Bus } from "../path/Bus.js";
+import { IAction } from "./IAction.js";
+import { INode } from "./INode.js";
+import { Node } from "./Node.js";
 
 
 
@@ -28,7 +29,7 @@ export abstract class NodeState extends Node {
 	//#region STATE
 
 	/**
-	 * insieme allo STATO DI ISTANZA del NODE (con i lquale viene mergiato)
+	 * insieme allo STATO DI ISTANZA del NODE (con il quale viene mergiato)
 	 * determina il valore iniziale dello STATE
 	 */
 	get stateDefault() {
@@ -69,44 +70,35 @@ export abstract class NodeState extends Node {
 	//#region EXECUTE
 
 	/**
-	 * una mappa di possibili Actions 
-	 * che si possono eseguire in questo nodo
+	 * una mappa di ESECUTORI di ACTIONS per questo NODE
 	 */
-	protected get dispatchMap(): DispatchMap {
+	protected get executablesMap(): ExecutablesMap {
 		return {}
 	}
 
 	/**
-	 * permette di eseguire una ACTION
-	 * @param action 
+	 * permette di eseguire una ACTION di questo NODE
 	 */
-	dispatch(action: IAction): any {
-		log(`${this.name}:${action.type}`, LOG_TYPE.DEBUG, action.payload)
-
-		// [II] GESTIONE LOG
-
-		// [II] buffering
-		// [II] spostare gli arguments della funzione in: playload, state, sender
-
-		const fnc = this.dispatchMap[action.type]
-
+	async execute(action: IAction): Promise<any> {
+		// non si puo' eseguire LogService perche' import loop infinito
+		const fnc = this.executablesMap[action.type]
 		try {
+			// se è ASYNC ritorna una PROMISE
 			if (fnc.constructor.name === "AsyncFunction") {
 				return new Promise(async (res, rej) => {
 					try {
-						//const ret = await this.dispatchMap[action.type](this.state, action.payload, action.sender)
-						const ret = await fnc(this.state, action.payload, action.sender)
+						const ret = await fnc(action.payload, action.sender, this)
 						res(ret)
 					} catch (e) {
 						rej(e)
 					}
 				})
+				// altrimenti ritorna il valore
 			} else {
-				//return this.dispatchMap[action.type](this.state, action.payload, action.sender)
-				return fnc(this.state, action.payload, action.sender)
+				return fnc(action.payload, action.sender, this)
 			}
 		} catch (error) {
-			// [II] GESTIONE ERRORI
+			ErrorService.Send(this, error, "node-state:execute")
 		}
 	}
 
@@ -121,14 +113,14 @@ export abstract class NodeState extends Node {
 }
 
 /**
- * una mappa di possibili ACTIONS
+ * una mappa di ACTIONS eseguiili
  */
-type DispatchMap = { [key: string]: Dispatch }
+export type ExecutablesMap = { [key: string]: Executor }
 
 /**
- * la funzione eseguita quand arriva un DISPATCH al NODE
- * @param state lo stato attuale del NODE
- * @param payload i dati inviati con il DISPATCH
+ * la funzione eseguita tramite un ACTION
+ * @param payload i dati delll'ACTION
+ * @param target il NODE che ha ricevuto eseguito 
  * @param sender la path del NODE che ha inviato il DISPATCH
  */
-type Dispatch = (state: any, payload: any, sender: string) => any
+type Executor = (payload?: any, sender?: string, target?: INode) => any

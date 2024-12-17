@@ -1,9 +1,9 @@
-import { NodeState } from "./NodeState.js";
 import FarmService from "../../services/farm/index.js";
 import { PathFinder } from "../path/PathFinder.js";
-import { ConfActions } from "./utils.js";
-import { INode } from "./INode.js"
 import { nodeForeach } from "../utils.js";
+import { INode } from "./INode.js";
+import { NodeState } from "./NodeState.js";
+import { ConfActions } from "./utils.js";
 
 
 
@@ -17,9 +17,9 @@ export class NodeConf extends NodeState {
 	/**
 	 * Contiene le ACTIONs
 	 */
-	get dispatchMap() {
+	get executablesMap() {
 		return {
-			...super.dispatchMap,
+			...super.executablesMap,
 			[ConfActions.INIT]: async () => await this.init(),
 			[ConfActions.DESTROY]: async () => await this.nodeDestroy(),
 		}
@@ -32,7 +32,7 @@ export class NodeConf extends NodeState {
 		await this.onInit()
 
 		for (const child of this.children) {
-			if (child instanceof NodeConf) await child.dispatch({
+			if (child instanceof NodeConf) await child.execute({
 				type: ConfActions.INIT,
 			})
 		}
@@ -93,7 +93,10 @@ export class NodeConf extends NodeState {
 			const child = await this.buildChildByJson(confChild)
 			if (child == null) continue
 			this.addChild(child);
-			if (child instanceof NodeConf) await child.buildByJson(confChild)
+			//if (child.constructor.name === 'NodeConf') await (<NodeConf>child).buildByJson(confChild)
+			if (typeof (child as any).buildByJson === 'function') {
+				await (<NodeConf>child).buildByJson(confChild);
+			}
 		}
 	}
 
@@ -102,7 +105,7 @@ export class NodeConf extends NodeState {
 	 */
 	private async buildChildByJson(json: any): Promise<INode | null> {
 		const farm = new PathFinder(this).getNode<FarmService>("/farm")
-		if ( !farm) throw new Error("FarmService not found")
+		if (!farm) throw new Error("FarmService not found")
 		return await farm.build(json)
 	}
 
@@ -114,7 +117,7 @@ export class NodeConf extends NodeState {
 	private async nodeDestroy(): Promise<void> {
 		const children = [...this.children]
 		for (const child of children) {
-			if (child instanceof NodeConf) await child.dispatch({
+			if (child instanceof NodeConf) await child.execute({
 				type: ConfActions.DESTROY
 			})
 		}

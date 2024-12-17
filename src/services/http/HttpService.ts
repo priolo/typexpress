@@ -95,7 +95,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 			// se c'e' un gestore di errore come figlio inoltra l'errore pure li
 			const errorSrv = new PathFinder(this).getNode<ErrorService>("error")
 			if (errorSrv) {
-				errorSrv.dispatch({
+				errorSrv.execute({
 					type: ActionsError.NOTIFY,
 					payload: err
 				})

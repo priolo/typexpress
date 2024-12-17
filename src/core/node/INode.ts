@@ -31,10 +31,5 @@
 	 * Rimuove un NODE figlio di questo NODE
 	 */
 	removeChild(child: INode): void
-
-	// /**
-	//  * Restituisce l'indice del NODE figlio
-	//  */
-	// indexChild(child: INode): number
 	
 }

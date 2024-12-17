@@ -19,20 +19,16 @@ export abstract class SocketCommunicator extends ServiceBase {
 		}
 	}
 
-	get dispatchMap() {
+	get executablesMap() {
 		return {
-			...super.dispatchMap,
+			...super.executablesMap,
 
-			[SocketRouteActions.SEND]: (state, payload: { client: IClient, message: any }) => {
-				const { client, message } = payload
-				this.sendToClient(client, message)
-			},
-			[SocketRouteActions.BROADCAST]: (state, message: any) => {
-				this.sendToAll(message)
-			},
-			[SocketRouteActions.DISCONNECT]: (state, client: IClient) => {
-				this.disconnectClient(client)
-			},
+			[SocketRouteActions.SEND]: (payload: { client: IClient, message: any }) => 
+				this.sendToClient(payload.client, payload.message),
+			[SocketRouteActions.BROADCAST]: (message: any) => 
+				this.sendToAll(message),
+			[SocketRouteActions.DISCONNECT]: (client: IClient) => 
+				this.disconnectClient(client),
 		}
 	}
 
