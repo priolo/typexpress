@@ -4,11 +4,11 @@
  export interface INode {
 
 	/**
-	 * random identifier of the node
+	 * identifier of the NODE
 	 */
 	id:string
 	/**
-	 * node name. It is also used by the pathfiend
+	 * NODE name. It is also used by the PATHFIEND
 	 */
 	name:string
 

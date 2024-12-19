@@ -3,6 +3,7 @@ import { NodeConf } from "../node/NodeConf.js"
 import { PathFinder } from "../path/PathFinder.js"
 
 
+
 describe("PathFinder", () => {
 
 	let root:RootService

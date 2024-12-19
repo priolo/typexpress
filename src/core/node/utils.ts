@@ -1,9 +1,10 @@
 
-// 
+/**
+ * ./NodeConf ACTIONS
+ */
 export enum ConfActions {
-	/** Questo action genera tutta la struttura dei nodi da una `payload` di configurazione */
-	//CREATE = "create",
+	/** genera tutta la struttura dei NODES da una `payload` di configurazione */
 	INIT = "init",
-	/** Distrugge il nodo chiamando anche gli opportuni metodi */
+	/** Distrugge il NODE chiamando anche gli opportuni metodi */
 	DESTROY = "destroy",
 }

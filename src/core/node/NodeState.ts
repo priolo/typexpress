@@ -79,29 +79,21 @@ export abstract class NodeState extends Node {
 	 * permette di eseguire una ACTION di questo NODE
 	 */
 	execute(action: IAction): Promise<any> {
-
-		// non si puo' eseguire LogService perche' import loop infinito
 		const fnc = this.executablesMap[action.type]
-		try {
-			// se è ASYNC ritorna una PROMISE
-			if (fnc.constructor.name === "AsyncFunction") {
-				return new Promise(async (res, rej) => {
-					try {
-						const ret = await fnc(action.payload, action.sender, this)
-						res(ret)
-					} catch (e) {
-						rej(e)
-					}
-				})
-				// altrimenti ritorna il valore
-			} else {
-				return fnc(action.payload, action.sender, this)
-			}
-		} catch (error) {
-			// import dinamico per evitare loop infinito
-			import("../../services/error/ErrorService.js").then((module) => {
-				module.default.Send(this, error, "node-state:execute")
+
+		// se è ASYNC ritorna una PROMISE
+		if (fnc.constructor.name === "AsyncFunction") {
+			return new Promise(async (res, rej) => {
+				try {
+					const ret = await fnc(action.payload, action.sender, this)
+					res(ret)
+				} catch (e) {
+					rej(e)
+				}
 			})
+			// altrimenti ritorna il valore
+		} else {
+			return fnc(action.payload, action.sender, this)
 		}
 	}
 

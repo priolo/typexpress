@@ -2,6 +2,8 @@ import { PathFinder } from "../path/PathFinder.js";
 import { nodeId } from "../utils.js";
 import { INode } from "./INode.js";
 
+
+
 /**
  * Classe responsabile di mantenere la struttura ad albero
  */
@@ -40,7 +42,9 @@ export class Node implements INode {
 		return this._children.indexOf(child)
 	}
 
-	// [facility]: restituisce un NODE-CHILD tramite la PATH
+	/**
+	 * [facility]: restituisce un NODE-CHILD tramite la PATH
+	 * */
 	getChild(path: string): INode | null {
 		return new PathFinder(this).getNode(path)
 	}

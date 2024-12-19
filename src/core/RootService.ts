@@ -16,12 +16,18 @@ export class RootService extends ServiceBase {
 	static async Start(config: any): Promise<RootService> {
 		if (!Array.isArray(config)) config = [config]
 		const root = new RootService()
-		await root.buildByJson({ children: config })
+		try {
+			await root.buildByJson({ children: config })
+		} catch (e) {
+			ErrorService.Send(root, e, "root-service:start")
+		}
 		await root.execute({ type: ConfActions.INIT })
 		return root
 	}
 
-	// [facility] ferma un servizio
+	/**
+	 * [facility] ferma un servizio
+	 */
 	static async Stop(service: ServiceBase) {
 		if (service) await service.execute({ type: ConfActions.DESTROY })
 	}
@@ -67,4 +73,3 @@ export class RootService extends ServiceBase {
 	}
 
 }
- 

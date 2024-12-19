@@ -85,11 +85,5 @@ describe("NODE CONF", () => {
 		root.addChild(node1)
 		node1.addChild(node1_1)
 		root.addChild(node2)
-
-
-
-
-
 	})
-
 })

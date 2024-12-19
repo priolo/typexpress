@@ -9,15 +9,16 @@ import { Actions, ErrorLevel, NotifyAction } from "./utils.js";
 export type ErrorServiceConf = Partial<ErrorService['stateDefault']> & { class: "error" }
 
 /**
- * Si occupa di ricevere gli errori dei nodi e intervenire
+ * [lib base] Si occupa di ricevere gli errori dei nodi e intervenire
  */
 export default class ErrorService extends ServiceBase {
 
 	/**
 	 * [facility] manda un error al gestore degli errori
-	 * @param node 
-	 * @param code 
-	 * @param error 
+	 * @param node il NODE che ha generato l'errore
+	 * @param error l'errore
+	 * @param code il codice dell'errore
+	 * @param level il livello dell'errore
 	 */
 	static Send(node: INode, error: Error | string, code?: string, level?: ErrorLevel) {
 		const e = new ErrorNotify(error, code, level)

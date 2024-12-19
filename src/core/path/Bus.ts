@@ -10,7 +10,7 @@ import { time } from "@priolo/jon-utils"
 /**
  * Permette di consegnare un ACTION ad un NODE
  * tramite il suo PATH
- * e quindi chiama il "execute"
+ * e quindi chiama "execute"
  */
 export class Bus {
 	constructor(sender: INode, path: string) {
@@ -29,7 +29,7 @@ export class Bus {
 	async dispatch(action: IAction | string): Promise<any> {
 		if (!action) throw "errore parametro action"
 		if (typeof action == "string") action = { type: action } as IAction
-		const dest = new PathFinder(this.sender).getNode<NodeState>(this.path)
+		const dest = PathFinder.Get<NodeState>(this.sender, this.path)
 		let res = null
 
 		if (!action.sender) action.sender = nodePath(this.sender)
@@ -42,7 +42,9 @@ export class Bus {
 			// ed è presente l'opzione [await:millisec] 
 			// il messaggio viene bufferizzato e riproposto fino a che non scade il tempo massimo wait
 		} else {
-			this.bufferWaitPush(action)
+			log(`bus:path:[${this.path}]:not_found`, LOG_TYPE.ERROR)
+			if (!action.wait || action.wait == 0) return
+			this.bufferWait.push(action)
 		}
 
 		this.bufferWaitDebounce()
@@ -85,16 +87,6 @@ export class Bus {
 				this.dispatch(action)
 			}
 		}
-	}
-
-	/**
-	 * Inserisce un action nel buffer
-	 * @param action 
-	 */
-	private bufferWaitPush(action: IAction): void {
-		log(`bus:path:[${this.path}]:not_found`, LOG_TYPE.ERROR)
-		if (!action.wait || action.wait == 0) return
-		this.bufferWait.push(action)
 	}
 
 	/**

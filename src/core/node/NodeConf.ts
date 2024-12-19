@@ -9,7 +9,8 @@ import { ConfActions } from "./utils.js";
 
 /**
  * Classe responsabile di:  
- * - memorizzare il CONF  
+ * - inizializzare il NODE
+ * - distruggere il NODE
  * - costruire i CHILDREN attraverso il CONF   
  */
 export class NodeConf extends NodeState {
@@ -26,10 +27,11 @@ export class NodeConf extends NodeState {
 	}
 
 	/**
-	 * Inizializza il nodo e i suoi children
+	 * Inizializza il NODE e i suoi children
 	 * */
 	private async init(): Promise<void> {
-		// inizializzo questo nodo prima di creare i child
+
+		// inizializzo questo NODE prima di creare i child
 		await this.onInit()
 
 		for (const child of this.children) {
@@ -79,7 +81,7 @@ export class NodeConf extends NodeState {
 		if (config.name) this.name = config.name
 
 		// prendo tutti i children presenti nel json e li creo
-		const confChildren: any[] = (json.children ?? []).filter(child => child != null)
+		const confChildren: any[] = (json.children ?? []).filter((child: any) => child != null)
 		await this.buildChildrenByJson(confChildren)
 	}
 
@@ -87,11 +89,19 @@ export class NodeConf extends NodeState {
 	 * Creo i children e ricorsivamente chiamo "buildByJson"
 	 */
 	private async buildChildrenByJson(jsonChildren: Array<any>): Promise<void> {
+		const errors: Error[] = [];
 		for (const confChild of jsonChildren) {
-			const child = await this.buildChildByJson(confChild)
-			if (child == null) continue
-			this.addChild(child);
-			await (<NodeConf>child).buildByJson?.(confChild);
+			try {
+				const child = await this.buildChildByJson(confChild);
+				if (child == null) continue;
+				this.addChild(child);
+				await (<NodeConf>child).buildByJson?.(confChild);
+			} catch (error) {
+				errors.push(error);
+			}
+		}
+		if (errors.length > 0) {
+			throw new AggregateError(errors, "Errors occurred while building children");
 		}
 	}
 

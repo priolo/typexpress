@@ -1,7 +1,6 @@
 import { RootService } from "../RootService.js"
 import { NodeConf } from "../node/NodeConf.js"
 import { NodeState } from "../node/NodeState.js"
-import { ConfActions } from "../node/utils.js"
 import { Bus } from "../path/Bus.js"
 
 
@@ -30,7 +29,7 @@ class TestNode extends NodeConf {
 	}
 }
 
-describe('Bus Tests', () => {
+describe('*** Bus ***', () => {
 
     beforeAll(async () => {
         root = await RootService.Start([
@@ -55,7 +54,7 @@ describe('Bus Tests', () => {
     })
 
     afterAll(async () => {
-        root?.execute({ type: ConfActions.DESTROY })
+        RootService.Stop(root)
     })
 
     test("setup", async () => {
