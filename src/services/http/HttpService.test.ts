@@ -21,6 +21,9 @@ describe("HTTP SERVICE", () => {
 			withCredentials: true 
 		})
 	})
+	afterAll(async () => {
+		await RootService.Stop(root)
+	})
 
 	test("su creazione", async () => {
 
@@ -74,7 +77,7 @@ describe("HTTP SERVICE", () => {
 		await RootService.Start([
 			<httpNs.conf>{
 				class: "http",
-				port: 8080,
+				port: PORT,  // Changed from 4500 to PORT
 				render: { name: "handlebars" },
 				options: { views: path.join(__dirname, "./views") },
 				children: [

@@ -35,7 +35,7 @@ describe("Server HTTP e i suoi ROUTER", () => {
 	beforeAll(async () => {
 		PORT = await getFreePort()
 		axiosIstance = axios.create({
-			baseURL: `http://localhost:${PORT}`,
+			baseURL: `http://localhost:${4599}`,
 			withCredentials: true
 		})
 
@@ -138,7 +138,7 @@ describe("Server HTTP e i suoi ROUTER", () => {
 		test("evvai", async () => {
 
 			const http = new HttpService("http", {
-				port: PORT,
+				port: 4599,
 			})
 			const route = new HttpRouterService("route", {
 				routers: [{

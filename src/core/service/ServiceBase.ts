@@ -7,7 +7,6 @@ import { Errors, IEvent, IListener, ServiceBaseActions, ServiceBaseEvents } from
 
 // bisogna importarlo direttamente da "utils" altrimenti c'e' un import-circolare
 import { Actions as ErrorActions } from "../../services/error/utils.js"
-import ErrorService from "../../services/error/ErrorService.js"
 
 
 
@@ -102,12 +101,12 @@ export class ServiceBase extends NodeConf {
 	 */
 	async execute(action: IAction): Promise<any> {
 		try {
-
 			const res = await super.execute(action)
 			this._emitter.emit(ServiceBaseEvents.DISPATCH, action)
 			return res
-
-		} catch (error) { ErrorService.Send(this, error) }
+		} catch (error) { 
+			(await import("../../services/error/ErrorService.js")).default?.Send(this, error)
+		}
 	}
 
 	/**
