@@ -4,6 +4,10 @@ import { nodeFind } from "../utils.js"
 import { fnNodePattern } from "../utils.js"
 
 
+/**
+ * Permette di selezionare un nodo da una lista di nodi
+ * tramite un pattern
+ */
 export class PathFinderList {
 	constructor(nodes: INode[]) {
 		this.nodes = nodes;

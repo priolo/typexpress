@@ -10,7 +10,7 @@ import { time } from "@priolo/jon-utils"
 /**
  * Permette di consegnare un ACTION ad un NODE
  * tramite il suo PATH
- * e quindi chiama il dispatch
+ * e quindi chiama il "execute"
  */
 export class Bus {
 	constructor(sender: INode, path: string) {

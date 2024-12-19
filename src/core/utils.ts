@@ -5,8 +5,6 @@ import { obj } from "@priolo/jon-utils"
 
 /**
  * Cicla ricorsivamente tutti i nodi e chiama per ognuno il "callback"
- * @param nodes 
- * @param callback 
  */
 export async function nodeForeach(nodes: INode | INode[], callback: (n: INode) => Promise<void>): Promise<void> {
 	if (nodes == null) return
@@ -20,8 +18,6 @@ export async function nodeForeach(nodes: INode | INode[], callback: (n: INode) =
 /**
  * cicla ricorsivamente tutti i nodi e chiama per ognuno il "callback"
  * se il callback restituisce true il ciclo si conclude e restituisce quel nodo
- * @param nodes 
- * @param callback 
  */
 export function nodeFind(nodes: INode | INode[], callback: (n: INode) => boolean): INode | null {
 	if (nodes == null) return
@@ -63,9 +59,6 @@ export function nodeParents(node: INode, callback: (n: INode) => any): INode | n
  * cicla tutti i parent di "node"
  * se "callback" return un risultato allora termina con il risultato
  * se "callback" è sempre "null" termina con "null"
- * @param node 
- * @param callback 
- * @returns 
  */
 export function nodeParentsFind(node: INode, callback: (n: INode) => INode | null): INode | null {
 	let current = node
@@ -80,7 +73,6 @@ export function nodeParentsFind(node: INode, callback: (n: INode) => INode | nul
  * Dato un node
  * restituisce la path (assoluta) della sua posizione
  * ATTENZIONE: non è presente il nome del nodo "root"
- * @param node 
  */
 export function nodePath(node: INode): string {
 	if (!node) return null
@@ -94,7 +86,6 @@ export function nodePath(node: INode): string {
 /**
  * Trasforma un node in un json 
  * usato per il debug
- * @param node 
  */
 export function nodeToJson(node: INode): object {
 	if (!node) return {}
@@ -111,9 +102,6 @@ export function nodeToJson(node: INode): object {
  * Chiama ricorsivamente tutti i nodi partendo da "node"
  * Per ogni nodo chiama il "callback" 
  * e restituisce un valore che viene costruito ad albero
- * @param node 
- * @param callback 
- * @returns 
  */
 export function nodeMap(node: INode, callback: CallbackNodeMap): any {
 	return callback(node, () => node.children?.map(n => nodeMap(n, callback)))
@@ -133,8 +121,6 @@ export function nodeId(): string {
  * Data una stringa path 
  * restituisce la funzione di uguaglianza 
  * da utilizzare per quello stesso path
- * @param pattern 
- * @returns 
  */
 export function fnNodePattern(pattern: string): CallbackFnPattern {
 

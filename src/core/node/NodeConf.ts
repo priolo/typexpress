@@ -1,8 +1,8 @@
+import { NodeState } from "./NodeState.js";
 import FarmService from "../../services/farm/index.js";
 import { PathFinder } from "../path/PathFinder.js";
 import { nodeForeach } from "../utils.js";
 import { INode } from "./INode.js";
-import { NodeState } from "./NodeState.js";
 import { ConfActions } from "./utils.js";
 
 
@@ -15,7 +15,7 @@ import { ConfActions } from "./utils.js";
 export class NodeConf extends NodeState {
 
 	/**
-	 * Contiene le ACTIONs
+	 * Contiene le ACTIONs eseguibili
 	 */
 	get executablesMap() {
 		return {
@@ -25,16 +25,15 @@ export class NodeConf extends NodeState {
 		}
 	}
 
-
-
+	/**
+	 * Inizializza il nodo e i suoi children
+	 * */
 	private async init(): Promise<void> {
 		// inizializzo questo nodo prima di creare i child
 		await this.onInit()
 
 		for (const child of this.children) {
-			if (child instanceof NodeConf) await child.execute({
-				type: ConfActions.INIT,
-			})
+			await (<NodeConf>child).execute?.({ type: ConfActions.INIT })
 		}
 
 		await this.onInitAfter()
@@ -43,7 +42,7 @@ export class NodeConf extends NodeState {
 		// per chiamare l'evento onInitFinish
 		if (this.parent == null) {
 			await nodeForeach(this, async (n) => {
-				if (n instanceof NodeConf) await (<NodeConf>n).onInitFinish()
+				await (<NodeConf>n).onInitFinish?.();
 			})
 		}
 	}
@@ -67,7 +66,6 @@ export class NodeConf extends NodeState {
 
 	/**
 	 * Valorizza questo NODE e costruisce tutti i children tramite il parametro JSON
-	 * @param json 
 	 */
 	async buildByJson(json: any = {}): Promise<void> {
 
@@ -93,10 +91,7 @@ export class NodeConf extends NodeState {
 			const child = await this.buildChildByJson(confChild)
 			if (child == null) continue
 			this.addChild(child);
-			//if (child.constructor.name === 'NodeConf') await (<NodeConf>child).buildByJson(confChild)
-			if (typeof (child as any).buildByJson === 'function') {
-				await (<NodeConf>child).buildByJson(confChild);
-			}
+			await (<NodeConf>child).buildByJson?.(confChild);
 		}
 	}
 
@@ -109,17 +104,13 @@ export class NodeConf extends NodeState {
 		return await farm.build(json)
 	}
 
-
-
 	/**
 	 * Quando questo NODE deve essere distrutto
 	 */
 	private async nodeDestroy(): Promise<void> {
 		const children = [...this.children]
 		for (const child of children) {
-			if (child instanceof NodeConf) await child.execute({
-				type: ConfActions.DESTROY
-			})
+			await (<NodeConf>child).execute?.({ type: ConfActions.DESTROY })
 		}
 		await this.onDestroy()
 		this.parent?.removeChild(this)

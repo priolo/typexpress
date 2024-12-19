@@ -1,4 +1,3 @@
-import ErrorService from "../../services/error/ErrorService.js";
 import { Bus } from "../path/Bus.js";
 import { IAction } from "./IAction.js";
 import { INode } from "./INode.js";
@@ -79,7 +78,8 @@ export abstract class NodeState extends Node {
 	/**
 	 * permette di eseguire una ACTION di questo NODE
 	 */
-	async execute(action: IAction): Promise<any> {
+	execute(action: IAction): Promise<any> {
+
 		// non si puo' eseguire LogService perche' import loop infinito
 		const fnc = this.executablesMap[action.type]
 		try {
@@ -98,7 +98,10 @@ export abstract class NodeState extends Node {
 				return fnc(action.payload, action.sender, this)
 			}
 		} catch (error) {
-			ErrorService.Send(this, error, "node-state:execute")
+			// import dinamico per evitare loop infinito
+			import("../../services/error/ErrorService.js").then((module) => {
+				module.default.Send(this, error, "node-state:execute")
+			})
 		}
 	}
 

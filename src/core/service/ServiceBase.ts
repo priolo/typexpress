@@ -97,7 +97,7 @@ export class ServiceBase extends NodeConf {
 
 	/**
 	 * emette un ACTION a tutti i "listeners"
-	 * @param action 
+	 * @override 
 	 */
 	async execute(action: IAction): Promise<any> {
 		const res = await super.execute(action)
@@ -118,7 +118,6 @@ export class ServiceBase extends NodeConf {
 	 * Chiamto quando il NODE viene inizializzato  
 	 * Emette l'evento "INIT"
 	 * @override
-	 * @returns 
 	 */
 	protected async onInit(): Promise<void> {
 		try {
@@ -137,6 +136,7 @@ export class ServiceBase extends NodeConf {
 	/**
 	 * Chiamata DOPO la creazione dei CHILDREN  
 	 * Emette l'evento "INIT_AFTER"
+	 * @override
 	 */
 	protected async onInitAfter(): Promise<void> {
 		await super.onInitAfter()

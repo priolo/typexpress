@@ -3,7 +3,10 @@ import { INode } from "../node/INode.js"
 import { PathFinderList } from "./PathFinderList.js"
 
 
-
+/**
+ * Permette di navigare all'interno di un albero di nodi
+ * tramite una stringa di path
+ */
 export class PathFinder {
 
 	// [facility]: restituisce un NODE

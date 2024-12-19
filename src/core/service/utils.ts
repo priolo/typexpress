@@ -1,6 +1,6 @@
 
 /**
- * le coordibnate di un nodo che si puo' registrare ad un evento
+ * le coordinate di un nodo che si puo' registrare ad un evento
  */
 export interface IListener {
 	/** path del NODE-DESTINATION che si registra all'EVENT */

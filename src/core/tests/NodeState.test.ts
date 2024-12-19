@@ -1,7 +1,8 @@
+import { NodeConf } from "../node/NodeConf.js"
 import { NodeState } from "../node/NodeState.js"
 import { time } from "@priolo/jon-utils"
 import { RootService } from "../RootService.js"
-import { NodeConf } from "../node/NodeConf.js"
+
 
 
 type F = {
@@ -39,8 +40,6 @@ describe("NODE STATE", () => {
 		})
 	})
 
-
-
 	/**
 	Inoltre posso definire un set (`dispatchMap`) di `dispatcher`  
 	Questi `dispatcher` solitamente sono funzioni pure e applicano delle modifiche allo `state`  
@@ -65,13 +64,13 @@ describe("NODE STATE", () => {
 					...super.executablesMap,
 
 					// questa è semplicemente una funzione che setta un valore al NODE
-					[MY_ACTIONS.SET_STATE]: (state, payload: any) => {
+					[MY_ACTIONS.SET_STATE]: (payload: any) => {
 						this.setState(payload)
 						return "ok-1"
 					},
 
 					// i `dispatcher` possono essere anche asincroni
-					[MY_ACTIONS.SET_STATE_ASYNC]: async (state, payload: any) => {
+					[MY_ACTIONS.SET_STATE_ASYNC]: async (payload: any) => {
 						await time.delay(10)
 						this.setState(payload)
 						return "ok-2"
@@ -117,7 +116,7 @@ describe("NODE STATE", () => {
 			get executablesMap() {
 				return {
 					...super.executablesMap,
-					["set-text"]: (state, payload) => this.setState({ text: payload })
+					["set-text"]: (payload) => this.setState({ text: payload })
 				}
 			}
 		}
