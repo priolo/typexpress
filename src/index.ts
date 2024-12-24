@@ -2,11 +2,11 @@ export { RootService } from "./core/RootService.js"
 export { Bus } from "./core/path/Bus.js"
 export { PathFinder } from "./core/path/PathFinder.js"
 export { RepoRestActions, RepoStructActions } from "./core/service/utils.js";
-export { ServiceBase } from "./core/service/index.js"
+export { ServiceBase } from "./core/service/ServiceBase.js"
 export { ConfActions } from "./core/node/utils.js"
 
 export * as utils from "./core/utils.js"
-export * as service from "./core/service/index.js"
+export * as service from "./core/service/ServiceBase.js"
 export * as email from "./services/email/index.js"
 //export * as httpStatic from "./services/http-static.js"
 export * as jwt from "./services/jwt/index.js"

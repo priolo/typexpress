@@ -8,7 +8,7 @@ import { Bus } from "../../core/path/Bus.js"
 
 let root: RootService
 
-describe('ServiceBase Tests', () => {
+describe('ServiceBase', () => {
 	beforeAll(async () => {
 		root = await RootService.Start([
 			{

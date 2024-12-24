@@ -29,7 +29,7 @@ class TestNode extends NodeConf {
 	}
 }
 
-describe('*** Bus ***', () => {
+describe('Bus', () => {
 
     beforeAll(async () => {
         root = await RootService.Start([

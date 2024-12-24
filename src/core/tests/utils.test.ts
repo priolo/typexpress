@@ -8,94 +8,97 @@ import { nodeMap, nodePath, nodeToJson } from "../utils.js";
 
 let root: NodeConf;
 
-beforeAll(async () => {
-	root = new NodeConf()
-	root.addChild(new FarmService())
-	root.buildByJson({
-		// sovrascrivo "root" con "root2"
-		name: "root2",
-		value: 23,
-		children: [
-			{
-				name: "child1",
-				children: [
-					{ name: "child1.1" },
-					{ name: "child1.2" }
-				]
-			},
-			{
-				name: "child2",
-				children: [
-					{ name: "child2.1" }
-				]
-			}
-		]
+describe("CORE UTILS", () => {
+
+	beforeAll(async () => {
+		root = new NodeConf()
+		root.addChild(new FarmService())
+		root.buildByJson({
+			// sovrascrivo "root" con "root2"
+			name: "root2",
+			value: 23,
+			children: [
+				{
+					name: "child1",
+					children: [
+						{ name: "child1.1" },
+						{ name: "child1.2" }
+					]
+				},
+				{
+					name: "child2",
+					children: [
+						{ name: "child2.1" }
+					]
+				}
+			]
+		})
 	})
-})
 
-test("nodeToJson", async () => {
-	const json = nodeToJson(root)
+	test("nodeToJson", async () => {
+		const json = nodeToJson(root)
 
-	expect(json).toEqual({
-		name: "root2",
-		//value: 23,
-		children: [
-			{
-				name: "farm",
-			},
-			{
-				name: "child1",
-				children: [
-					{ name: "child1.1" },
-					{ name: "child1.2" }
-				]
-			},
-			{
-				name: "child2",
-				children: [
-					{ name: "child2.1" }
-				]
-			}
-		]
+		expect(json).toEqual({
+			name: "root2",
+			//value: 23,
+			children: [
+				{
+					name: "farm",
+				},
+				{
+					name: "child1",
+					children: [
+						{ name: "child1.1" },
+						{ name: "child1.2" }
+					]
+				},
+				{
+					name: "child2",
+					children: [
+						{ name: "child2.1" }
+					]
+				}
+			]
+		})
 	})
-})
 
-test("nodeMap", async () => {
+	test("nodeMap", async () => {
 
-	const json = nodeMap(root, (n, children) => ({
-		nome: n.name,
-		figli: children(),
-	}))
+		const json = nodeMap(root, (n, children) => ({
+			nome: n.name,
+			figli: children(),
+		}))
 
-	expect(json).toEqual({
-		nome: "root2",
-		//value: 23,
-		figli: [
-			{
-				nome: "farm",
-				figli: [],
-			},
-			{
-				nome: "child1",
-				figli: [
-					{ nome: "child1.1", figli: [] },
-					{ nome: "child1.2", figli: [] }
-				]
-			},
-			{
-				nome: "child2",
-				figli: [
-					{ nome: "child2.1", figli: [] }
-				]
-			}
-		]
+		expect(json).toEqual({
+			nome: "root2",
+			//value: 23,
+			figli: [
+				{
+					nome: "farm",
+					figli: [],
+				},
+				{
+					nome: "child1",
+					figli: [
+						{ nome: "child1.1", figli: [] },
+						{ nome: "child1.2", figli: [] }
+					]
+				},
+				{
+					nome: "child2",
+					figli: [
+						{ nome: "child2.1", figli: [] }
+					]
+				}
+			]
+		})
 	})
-})
 
-test("nodePath", async () => {
-	const pathFind = "/child1/child1.2"
-	const node = new PathFinder(root).getNode<INode>(pathFind)
-	const path = nodePath(node)
-	expect(path).toBe(pathFind)
-})
+	test("nodePath", async () => {
+		const pathFind = "/child1/child1.2"
+		const node = new PathFinder(root).getNode<INode>(pathFind)
+		const path = nodePath(node)
+		expect(path).toBe(pathFind)
+	})
 
+})

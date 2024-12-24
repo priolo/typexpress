@@ -7,16 +7,17 @@ import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
  * DA COMPLETARE
  * Espone delle API
  * adatte alle operazioni su File System
- * 
  */
 export class HttpFsService extends HttpRouterServiceBase {
 
     get stateDefault(): any {
         return {
             ...super.stateDefault,
-            name: "route-fs",   // string
-            fs: "",             // path-fs:request
-            baseDir: "/",        // directory base
+            name: "route-fs",
+            /** path-fs:request */
+            fs: "", 
+            /** directory base */
+            baseDir: "/", 
         }
     }
 
