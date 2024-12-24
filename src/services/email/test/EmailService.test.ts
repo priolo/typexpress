@@ -1,6 +1,6 @@
 import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"
-import { ServiceBaseEvents } from "../../../core/service/index.js"
+import { ServiceBaseEvents } from "../../../core/service/utils.js"
 
 //import EmailService, { Actions, IAccount, IEmail } from "../index.js"
 import * as emailNs from "../index.js"

@@ -1,4 +1,5 @@
-import { ServiceBase, ServiceBaseActions, IEvent, ServiceBaseEvents } from "../service/index.js"
+import { ServiceBaseActions, IEvent, ServiceBaseEvents } from "../service/utils.js"
+import { ServiceBase } from "../service/ServiceBase.js"
 import { PathFinder } from "../../core/path/PathFinder.js"
 import { RootService } from "../../core/RootService.js"
 import { Bus } from "../../core/path/Bus.js"

@@ -1,5 +1,4 @@
 import axios from "axios";
-import httpAdapter from 'axios/lib/adapters/http';
 import path from "path";
 import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
@@ -8,7 +7,6 @@ import { getFreePort } from "../../ws/index.js";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-axios.defaults.adapter = httpAdapter;
 
 let root: RootService
 let res: any

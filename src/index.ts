@@ -1,7 +1,7 @@
 export { RootService } from "./core/RootService.js"
 export { Bus } from "./core/path/Bus.js"
 export { PathFinder } from "./core/path/PathFinder.js"
-export { RepoRestActions, RepoStructActions } from "./core/repo/utils.js";
+export { RepoRestActions, RepoStructActions } from "./core/service/utils.js";
 export { ServiceBase } from "./core/service/index.js"
 export { ConfActions } from "./core/node/utils.js"
 

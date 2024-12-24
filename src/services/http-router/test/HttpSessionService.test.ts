@@ -7,13 +7,11 @@ import { getFreePort } from "../../ws/index.js"
 import { HttpSessionService } from "../session/HttpSessionService.js"
 import { SessionEntity } from "../session/SessionEntity.js"
 import { fileURLToPath } from 'url';
-import httpAdapter from 'axios/lib/adapters/http';
 
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-axios.defaults.adapter = httpAdapter
 let PORT: number
 let axiosIstance: AxiosInstance
 const dbPath = path.join(__dirname, "/database.sqlite")
@@ -116,7 +114,7 @@ test("write and read in mem", async () => {
 		"/mem/read",
 		{
 			headers: {
-				Cookie: res.headers["set-cookie"][0]
+				Cookie: res.headers["set-cookie"]?.[0]
 			}
 		}
 	)
@@ -129,7 +127,7 @@ test("write and read in typeorm", async () => {
 		"/type/read",
 		{
 			headers: {
-				Cookie: res.headers["set-cookie"][0]
+				Cookie: res.headers["set-cookie"]?.[0]
 			}
 		}
 	)

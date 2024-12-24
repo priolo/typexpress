@@ -1,5 +1,4 @@
 import { PathFinder, RootService, log as logNs } from "../../index.js"
-import { ConsoleConf } from "./ConsoleService.js"
 import LogService, { LogConf } from "./LogService.js"
 import { Actions, LogLevel } from "./utils.js"
 

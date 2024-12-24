@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios"
-import httpAdapter from 'axios/lib/adapters/http'
 import FormData from "form-data"
 import fs from "fs"
 import path from "path"
@@ -12,7 +11,6 @@ import { HttpUploadService } from "../upload/HttpUploadService.js"
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-axios.defaults.adapter = httpAdapter;
 
 let PORT: number
 let axiosIstance: AxiosInstance

@@ -1,5 +1,5 @@
 import { Bus } from "../path/Bus.js";
-import { IAction } from "./IAction.js";
+import { IAction } from "./utils.js";
 import { INode } from "./INode.js";
 import { Node } from "./Node.js";
 

@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import { IAction } from "../node/IAction.js"
+import { IAction } from "../node/utils.js"
 import { NodeConf } from "../node/NodeConf.js"
 import { Bus } from "../path/Bus.js"
 import { nodePath } from "../utils.js"

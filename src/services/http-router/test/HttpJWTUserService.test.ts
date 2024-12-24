@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
 import { PathFinder } from "../../../core/path/PathFinder.js";
-import { RepoRestActions } from "../../../core/repo/utils.js";
+import { RepoRestActions } from "../../../core/service/utils.js";
 import { getFreePort } from "../../ws/index.js";
 import * as jwt from "../jwt/index.js";
 

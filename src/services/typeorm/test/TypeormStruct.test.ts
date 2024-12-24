@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { RootService } from "../../../core/RootService.js";
 import { Bus } from "../../../core/path/Bus.js";
 import { PathFinder } from "../../../core/path/PathFinder.js";
-import { RepoRestActions, RepoStructActions } from "../../../core/repo/utils.js";
+import { RepoRestActions, RepoStructActions } from "../../../core/service/utils.js";
 import { deleteIfExist } from "../../fs/index.js";
 import * as orm from "../index.js";
 

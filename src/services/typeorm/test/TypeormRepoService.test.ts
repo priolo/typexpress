@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { PathFinder } from "../../../core/path/PathFinder.js";
-import { RepoRestActions } from "../../../core/repo/utils.js";
+import { RepoRestActions } from "../../../core/service/utils.js";
 import { RootService } from "../../../core/RootService.js";
 import * as typeormNs from "../index.js";
 import { fileURLToPath } from 'url';
