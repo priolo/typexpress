@@ -50,7 +50,7 @@ export class RootService extends ServiceBase {
 
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {
-			console.debug('SIGTERM signal received: closing HTTP server')
+			console.debug('SIGTERM signal received: closing all services')
 			await this.execute({ type: ConfActions.DESTROY })
 		})
 	}

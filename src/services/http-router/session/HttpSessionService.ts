@@ -2,7 +2,6 @@ import { TypeormStore } from "connect-typeorm"
 import { Router } from "express"
 import session from 'express-session'
 import { PathFinder } from "../../../core/path/PathFinder.js"
-import { IEvent, ServiceBaseEvents } from "../../../core/service/utils.js"
 import { TypeormService } from "../../typeorm/TypeormService.js"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
 import { SessionEntity } from "./SessionEntity.js"
@@ -52,14 +51,6 @@ export class HttpSessionService extends HttpRouterServiceBase {
         //     payload: ServiceBaseEvents.INIT_AFTER,
         //     wait: 2000,
         // } )
-    }
-
-    protected onEvent(event: IEvent): void { 
-        const { typeorm } = this.state 
-
-        if ( typeorm && event.source==typeorm && event.name==ServiceBaseEvents.INIT_AFTER ) {
-            console.log( "connection ok!!" )
-        }
     }
 
     protected onBuildRouter(): Router {

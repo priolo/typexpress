@@ -31,10 +31,9 @@ export class PathFinder {
 	 * Restituisce un "PathFinder" che punta ad un "node" 
 	 * ricavato seguendo la path del parametro
 	 * Se non lo trova restituisce null
-	 * @param path 
 	 */
 	path(path: string): PathFinder | null {
-		if (path.length == 0) return this
+		if (!path || path.length == 0) return this
 
 		let nextPathFinder: PathFinder | null
 		let nextPath: string

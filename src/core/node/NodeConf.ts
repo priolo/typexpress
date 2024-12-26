@@ -75,10 +75,11 @@ export class NodeConf extends NodeState {
 		const config = { ...json }
 		delete config.children
 		delete config.class
+		delete config.name
 		// setto il config come stato iniziale
 		this.setState(config)
 		// se il config ha pure un "name" lo setto come identificativo del NODE
-		if (config.name) this.name = config.name
+		if (json.name) this.name = json.name
 
 		// prendo tutti i children presenti nel json e li creo
 		const confChildren: any[] = (json.children ?? []).filter((child: any) => child != null)

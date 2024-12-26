@@ -2,6 +2,7 @@ import { Bus } from "../path/Bus.js";
 import { IAction } from "./utils.js";
 import { INode } from "./INode.js";
 import { Node } from "./Node.js";
+import { IChildLog } from "../service/utils.js";
 
 
 
@@ -14,12 +15,12 @@ export type NodeStateConf = Partial<NodeState['stateDefault']>
  */
 export abstract class NodeState extends Node {
 
-	constructor(name?: string, state?: any) {
+	constructor(name?: string, state = {}) {
 		super(name)
-		this.setState({
+		this._state = {
 			...this.stateDefault,
 			...state
-		})
+		}
 		if (!name && this.state.name?.length > 0) {
 			this.name = this.state.name
 		}
@@ -33,8 +34,8 @@ export abstract class NodeState extends Node {
 	 */
 	get stateDefault() {
 		return {
-			name: <string>null,
-			children: <any[]>null,
+			// name: <string>null,
+			// children: <any[]>null,
 		}
 	}
 
@@ -64,7 +65,13 @@ export abstract class NodeState extends Node {
 
 	//#endregion
 
-
+	/**
+	 * trasmette al parent un log
+	 */
+	childLog(log: IChildLog) {
+		if (!log ) return
+		(<NodeState>this.parent)?.childLog?.(log)
+	}
 
 	//#region EXECUTE
 
