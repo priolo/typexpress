@@ -3,6 +3,7 @@ import { IAction } from "./utils.js";
 import { INode } from "./INode.js";
 import { Node } from "./Node.js";
 import { IChildLog } from "../service/utils.js";
+import { nodePath } from "../utils.js";
 
 
 
@@ -66,11 +67,18 @@ export abstract class NodeState extends Node {
 	//#endregion
 
 	/**
+	 * [facility] crea e trasmette un nuovo LOG
+	 */
+	protected log(name: string, payload?: any) {
+		this.emitLog({ source: nodePath(this), target: this, name, payload })
+	}
+
+	/**
 	 * trasmette al parent un log
 	 */
-	childLog(log: IChildLog) {
+	emitLog(log: IChildLog) {
 		if (!log ) return
-		(<NodeState>this.parent)?.childLog?.(log)
+		(<NodeState>this.parent)?.emitLog?.(log)
 	}
 
 	//#region EXECUTE

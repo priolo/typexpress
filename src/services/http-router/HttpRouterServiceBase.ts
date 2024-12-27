@@ -1,19 +1,9 @@
 import cors from "cors";
 import express, { Router } from "express";
-import { PathFinder, ServiceBase } from "../../index.js";
+import { ServiceBase } from "../../index.js";
 import { IHttpRouter } from "../http/utils.js";
-import { NodeStateConf } from "../../core/node/NodeState.js";
 
 
-
-// export interface HttpRouterServiceBaseConf extends NodeStateConf {
-// 	/** OUTING relativo a questo NODE */
-// 	path: string
-// 	/** https://expressjs.com/en/4x/api.html#req.accepts */
-// 	headers: {[key:string]:string}
-// 	/** http://expressjs.com/en/resources/middleware/cors.html#configuration-options */
-// 	cors: any	
-// }
 
 export type HttpRouterServiceBaseConf = Partial<HttpRouterServiceBase['stateDefault']>
 
@@ -27,17 +17,18 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 	get stateDefault() {
 		return {
 			...super.stateDefault,
-			headers: <{[key:string]:string}>null,
-			cors: <any>null,		
+			headers: <{ [key: string]: string }>null,
+			cors: <any>null,
 			path: "/",
 		}
 	}
 
 	protected async onInit(): Promise<void> {
 		await super.onInit()
-		const parent = new PathFinder(this).getNode<IHttpRouter>("..")
-		this.router = this.onBuildRouter()
-		parent.use(this.router, this.state.path)
+		//const parent = new PathFinder(this).getNode<IHttpRouter>("..")
+		if (!this.parent || !('use' in this.parent)) return
+		this.router = this.onBuildRouter();
+		(this.parent as IHttpRouter).use(this.router, this.state.path);
 	}
 
 	protected async onDestroy(): Promise<void> {
@@ -45,6 +36,9 @@ export abstract class HttpRouterServiceBase extends ServiceBase implements IHttp
 		this.router = null
 	}
 
+	/** 
+	 * costruisco il ROUTE che poi sarà applicato (use) aplicato ROUTE parent su "onInit" 
+	 **/
 	protected onBuildRouter(): Router {
 		const router = express.Router()
 

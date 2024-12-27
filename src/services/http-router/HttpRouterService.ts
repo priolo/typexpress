@@ -2,6 +2,7 @@
 import { LOG_TYPE, log } from "@priolo/jon-utils";
 import { Request, Response, Router } from "express";
 import { HttpRouterServiceBase } from "./HttpRouterServiceBase.js";
+import { IHttpRouter } from "../http/utils.js";
 
 
 
@@ -33,10 +34,10 @@ export class HttpRouterService extends HttpRouterServiceBase {
 		const router = super.onBuildRouter()
 
 		// ciclo tutti i routers a disposizione e li inserisco nell'oggetto Router
-		this.state.routers.forEach((route: IRouteParam) => {
+		for (const route of this.state.routers) {
 
 			// prelevo il metodo da chiamare sulle request
-			let method: IRouteMethod = (typeof route == "function")? route : (typeof route.method === "string") ? this[route.method] : route.method
+			let method: IRouteMethod = (typeof route == "function") ? route : (typeof route.method === "string") ? this[route.method] : route.method
 			if (!method) { log(`impossibile creare il nodo`, LOG_TYPE.ERROR, route.path); return; }
 			// prelevo il "verb"
 			const verb = (route.verb ?? "get").toLocaleLowerCase()
@@ -58,9 +59,25 @@ export class HttpRouterService extends HttpRouterServiceBase {
 
 			// inserisco il router
 			router[verb](route.path ?? "/", methodThis)
-		})
+		}
 
 		return router
+	}
+
+	/** [DA TESTARE] */
+	protected async onDestroy(): Promise<void> {
+		if (this.parent && 'use' in this.parent) {
+
+			const routerDestroy = Router()
+			for (const route of this.state.routers) {
+				routerDestroy[route.verb ?? "get"](route.path ?? "/", (req, res, next) => {
+					res.status(404).send("router not found")
+				})
+			}
+			(this.parent as IHttpRouter).use(routerDestroy, this.state.path);
+			
+		}
+		await super.onDestroy()
 	}
 
 }

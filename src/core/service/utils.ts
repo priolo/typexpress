@@ -1,3 +1,4 @@
+import { NodeState } from "../node/NodeState.js";
 
 /**
  *  Oggetto mandato al LISTENER quando c'e' un EVENT
@@ -5,6 +6,8 @@
 export interface IChildLog {
 	/** NODE-TARGET dove è stato creato l'evento */
 	source: string,
+	/** NODE deove è stato creato l'evento */
+	target?: NodeState,
 	/** EVENT-NAME dell'evento avvenuto*/
 	name: string,
 	/** dati specifici dell'EVENT*/

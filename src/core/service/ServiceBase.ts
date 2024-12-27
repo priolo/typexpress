@@ -3,7 +3,6 @@ import { Actions as ErrorActions } from "../../services/error/utils.js"
 import { NodeConf } from "../node/NodeConf.js"
 import { IAction } from "../node/utils.js"
 import { Bus } from "../path/Bus.js"
-import { nodePath } from "../utils.js"
 import { Errors, IChildLog, ServiceBaseLogs } from "./utils.js"
 
 
@@ -42,9 +41,9 @@ export class ServiceBase extends NodeConf {
 	 * trasmette al parent un log
 	 * @override
 	 */
-	childLog(log: IChildLog) {
+	emitLog(log: IChildLog) {
 		this.emitter.emit(log.name, log)
-		super.childLog(log)
+		super.emitLog(log)
 	}
 
 	/**
@@ -54,7 +53,7 @@ export class ServiceBase extends NodeConf {
 	async execute(action: IAction): Promise<any> {
 		try {
 			const res = await super.execute(action)
-			this.childLog({ source: nodePath(this), name: ServiceBaseLogs.DISPATCH, payload: action })
+			this.log(ServiceBaseLogs.DISPATCH, action)
 			return res
 		} catch (error) {
 			(await import("../../services/error/ErrorService.js")).default?.Send(this, error)
@@ -67,7 +66,7 @@ export class ServiceBase extends NodeConf {
 	 */
 	protected onChangeState(old: any): void {
 		super.onChangeState(old)
-		this.childLog({ source: nodePath(this), name: ServiceBaseLogs.STATE_CHANGE, payload: this._state })
+		this.log(ServiceBaseLogs.STATE_CHANGE, this._state)
 	}
 
 	/**
@@ -85,8 +84,7 @@ export class ServiceBase extends NodeConf {
 			})
 			return
 		}
-		this.childLog({ source: nodePath(this), name: ServiceBaseLogs.INIT })
-		//this.state.onInit?.bind(this)()
+		this.log(ServiceBaseLogs.INIT)
 	}
 
 	/**
@@ -96,13 +94,11 @@ export class ServiceBase extends NodeConf {
 	 */
 	protected async onInitAfter(): Promise<void> {
 		await super.onInitAfter()
-		this.childLog({ source: nodePath(this), name: ServiceBaseLogs.INIT_AFTER })
-		//this.state.onInitAfter?.bind(this)()
+		this.log(ServiceBaseLogs.INIT_AFTER)
 	}
 
 	protected async onDestroy(): Promise<void> {
 		await super.onDestroy()
-		this.childLog({ source: nodePath(this), name: ServiceBaseLogs.DESTROY })
-		//this.state.onDestroy?.bind(this)()
+		this.log(ServiceBaseLogs.DESTROY)
 	}
 }
