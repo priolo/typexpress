@@ -1,36 +1,57 @@
 import { ServiceBase } from "../../core/service/ServiceBase.js"
-import { IClient, SocketRouteActions } from "./utils.js"
+import emailCheck from "email-check"
+import nodemailer, { Transporter } from "nodemailer"
+import { Actions, IAccount, IEmail } from "./utils.js"
+import { SocketCommunicator } from "../ws/SocketCommunicator.js"
+import { IClient } from "../ws/utils.js"
 
 
 
-export type SocketCommunicatorConf = Partial<SocketCommunicator['stateDefault']>
+export type WSReflectionConf = Partial<WSReflectionService['stateDefault']>
 
 /**
- * Nodo astratto che puo' essere messo in gerarchia e riceve gli eventi dai parent
+ * 
  */
-export abstract class SocketCommunicator extends ServiceBase {
+export default class WSReflectionService extends SocketCommunicator {
 
-	get stateDefault() {
+	get stateDefault(): any {
 		return {
 			...super.stateDefault,
-			onConnect: <(this: SocketCommunicator, client: IClient) => void>null,
-			onDisconnect: <(this: SocketCommunicator, client: IClient) => void>null,
-			onMessage: <(this: SocketCommunicator, client: IClient, message: string) => void>null,
+			name: "ws-reflection",
 		}
 	}
 
-	get executablesMap() {
+	get executablesMap(): any {
 		return {
 			...super.executablesMap,
 
-			[SocketRouteActions.SEND]: (payload: { client: IClient, message: any }) => 
-				this.sendToClient(payload.client, payload.message),
-			[SocketRouteActions.BROADCAST]: (message: any) => 
-				this.sendToAll(message),
-			[SocketRouteActions.DISCONNECT]: (client: IClient) => 
-				this.disconnectClient(client),
+			[Actions.CREATE_TEST_ACCOUNT]: async () => {
+				const account = await nodemailer.createTestAccount()
+				this.setState({ account })
+			},
+
+			[Actions.CREATE_ACCOUNT]: (account: IAccount) => {
+				this.setState({ account })
+			},
+			[Actions.SEND]: async (email: IEmail) => {
+				await this.transporter.sendMail(email)
+			},
+			[Actions.CHECK]: async (address: string) => {
+				let res = false
+				try {
+					res = await emailCheck(address)
+				} catch (err: any) {
+					if (err.message === 'refuse') {
+						// The MX server is refusing requests from your IP address.
+					} else {
+						// Decide what to do with other errors.
+					}
+				}
+				return res
+			},
 		}
 	}
+
 
 	/**
 	 * c'e' una NUOVA connessione da un client
@@ -38,9 +59,9 @@ export abstract class SocketCommunicator extends ServiceBase {
 	onConnect(client: IClient): void {
 		if (!client) return
 		this.state.onConnect?.bind(this)(client)
-		for ( const node of this.children ) {
-			(<SocketCommunicator>node)?.onConnect?.(client)
-		}
+		this.children.forEach(node => {
+			if (node instanceof SocketCommunicator) node.onConnect(client)
+		})
 		this.emitter.emit("open", { client })
 	}
 
@@ -108,4 +129,5 @@ export abstract class SocketCommunicator extends ServiceBase {
 		if (!(this.parent instanceof SocketCommunicator)) return []
 		return this.parent.getClients()
 	}
+
 }
