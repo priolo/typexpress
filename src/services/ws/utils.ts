@@ -56,6 +56,21 @@ export enum SocketRouteActions {
 	DISCONNECT = "ws:disconnect",
 }
 
+export enum SocketLog {
+	/**
+	 * un client si è connesso
+	 */
+	OPEN = "ws:open",
+	/**
+	 * un client si è disconnesso
+	 */
+	CLOSE = "ws:close",
+	/**
+	 * un client ha inviato un messaggio
+	 */
+	MESSAGE = "ws:message",
+}
+
 /**
  * Gli errori gestiti da questo servizio
  */

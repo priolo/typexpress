@@ -1,8 +1,8 @@
 import { Bus } from "../path/Bus.js";
-import { IAction } from "./utils.js";
+import { IAction, TypeLog } from "./utils.js";
 import { INode } from "./INode.js";
 import { Node } from "./Node.js";
-import { IChildLog } from "../service/utils.js";
+import { ILog } from "./utils.js";
 import { nodePath } from "../utils.js";
 
 
@@ -69,15 +69,15 @@ export abstract class NodeState extends Node {
 	/**
 	 * [facility] crea e trasmette un nuovo LOG
 	 */
-	protected log(name: string, payload?: any) {
-		this.emitLog({ source: nodePath(this), target: this, name, payload })
+	protected log(name: string, payload?: any, type?: TypeLog) {
+		this.emitLog({ source: nodePath(this), target: this, name, payload, type })
 	}
 
 	/**
 	 * trasmette al parent un log
 	 */
-	emitLog(log: IChildLog) {
-		if (!log ) return
+	emitLog(log: ILog) {
+		if (!log) return
 		(<NodeState>this.parent)?.emitLog?.(log)
 	}
 

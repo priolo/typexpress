@@ -1,9 +1,6 @@
 import { EventEmitter } from "events"
-import { Actions as ErrorActions } from "../../services/error/utils.js"
 import { NodeConf } from "../node/NodeConf.js"
-import { IAction } from "../node/utils.js"
-import { Bus } from "../path/Bus.js"
-import { Errors, IChildLog, ServiceBaseLogs } from "./utils.js"
+import { EventsLogsBase, IAction, ILog, TypeLog } from "../node/utils.js"
 
 
 
@@ -28,6 +25,17 @@ export class ServiceBase extends NodeConf {
 	private _emitter: EventEmitter
 
 
+	/**
+	 * Contiene le ACTIONs eseguibili
+	 */
+	// get executablesMap() {
+	// 	return {
+	// 		...super.executablesMap,
+	// 		[ServiceBaseActions.START]: async () => await this.serviceStart(),
+	// 		[ServiceBaseActions.STOP]: async () => await this.serviceStop(),
+	// 	}
+	// }
+
 	// get stateDefault() {
 	// 	return {
 	// 		...super.stateDefault,
@@ -41,7 +49,7 @@ export class ServiceBase extends NodeConf {
 	 * trasmette al parent un log
 	 * @override
 	 */
-	emitLog(log: IChildLog) {
+	emitLog(log: ILog) {
 		this.emitter.emit(log.name, log)
 		super.emitLog(log)
 	}
@@ -53,10 +61,10 @@ export class ServiceBase extends NodeConf {
 	async execute(action: IAction): Promise<any> {
 		try {
 			const res = await super.execute(action)
-			this.log(ServiceBaseLogs.DISPATCH, action)
+			this.log(EventsLogsBase.NODE_EXECUTE, action)
 			return res
 		} catch (error) {
-			(await import("../../services/error/ErrorService.js")).default?.Send(this, error)
+			this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
 		}
 	}
 
@@ -66,7 +74,7 @@ export class ServiceBase extends NodeConf {
 	 */
 	protected onChangeState(old: any): void {
 		super.onChangeState(old)
-		this.log(ServiceBaseLogs.STATE_CHANGE, this._state)
+		this.log(EventsLogsBase.STATE_CHANGE, this._state)
 	}
 
 	/**
@@ -78,13 +86,10 @@ export class ServiceBase extends NodeConf {
 		try {
 			await super.onInit()
 		} catch (error) {
-			new Bus(this, "/error").dispatch({
-				type: ErrorActions.NOTIFY,
-				payload: { code: Errors.INIT, error }
-			})
+			this.log(EventsLogsBase.ERR_INIT, error, TypeLog.ERROR)
 			return
 		}
-		this.log(ServiceBaseLogs.INIT)
+		this.log(EventsLogsBase.NODE_INIT)
 	}
 
 	/**
@@ -94,11 +99,11 @@ export class ServiceBase extends NodeConf {
 	 */
 	protected async onInitAfter(): Promise<void> {
 		await super.onInitAfter()
-		this.log(ServiceBaseLogs.INIT_AFTER)
+		this.log(EventsLogsBase.NODE_INIT_AFTER)
 	}
 
 	protected async onDestroy(): Promise<void> {
 		await super.onDestroy()
-		this.log(ServiceBaseLogs.DESTROY)
+		this.log(EventsLogsBase.NODE_DESTROY)
 	}
 }

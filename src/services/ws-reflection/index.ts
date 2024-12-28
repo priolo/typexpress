@@ -1,8 +1,8 @@
-import EmailService from "./EmailService.js"
+import WSReflectionService from "./WSReflectionService.js"
 
 
 export { 
-	EmailService as default,
-	EmailService as Service 
+	WSReflectionService as default,
+	WSReflectionService as Service 
 }
 export * from "./utils.js"

@@ -3,7 +3,7 @@ import FarmService from "../../services/farm/index.js";
 import { PathFinder } from "../path/PathFinder.js";
 import { nodeForeach } from "../utils.js";
 import { INode } from "./INode.js";
-import { ConfActions } from "./utils.js";
+import { ConfActions, EventsLogsBase, TypeLog } from "./utils.js";
 
 
 
@@ -90,7 +90,6 @@ export class NodeConf extends NodeState {
 	 * Creo i children e ricorsivamente chiamo "buildByJson"
 	 */
 	private async buildChildrenByJson(jsonChildren: Array<any>): Promise<void> {
-		const errors: Error[] = [];
 		for (const confChild of jsonChildren) {
 			try {
 				const child = await this.buildChildByJson(confChild);
@@ -98,16 +97,14 @@ export class NodeConf extends NodeState {
 				this.addChild(child);
 				await (<NodeConf>child).buildByJson?.(confChild);
 			} catch (error) {
-				errors.push(error);
+				this.log(EventsLogsBase.ERR_BUILD_CHILDREN, error, TypeLog.ERROR);
 			}
-		}
-		if (errors.length > 0) {
-			throw new AggregateError(errors, "Errors occurred while building children");
 		}
 	}
 
 	/**
 	 * Dato un JSON costruisce il nodo corrispondente
+	 * [II] deve prendere la "farm" piu' vicina
 	 */
 	private async buildChildByJson(json: any): Promise<INode | null> {
 		const farm = new PathFinder(this).getNode<FarmService>("/farm")

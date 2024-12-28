@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/service/ServiceBase.js"
-import { IClient, SocketRouteActions } from "./utils.js"
+import { IClient, SocketLog, SocketRouteActions } from "./utils.js"
 
 
 
@@ -10,24 +10,24 @@ export type SocketCommunicatorConf = Partial<SocketCommunicator['stateDefault']>
  */
 export abstract class SocketCommunicator extends ServiceBase {
 
-	get stateDefault() {
-		return {
-			...super.stateDefault,
-			onConnect: <(this: SocketCommunicator, client: IClient) => void>null,
-			onDisconnect: <(this: SocketCommunicator, client: IClient) => void>null,
-			onMessage: <(this: SocketCommunicator, client: IClient, message: string) => void>null,
-		}
-	}
+	// get stateDefault() {
+	// 	return {
+	// 		...super.stateDefault,
+	// 		onConnect: <(this: SocketCommunicator, client: IClient) => void>null,
+	// 		onDisconnect: <(this: SocketCommunicator, client: IClient) => void>null,
+	// 		onMessage: <(this: SocketCommunicator, client: IClient, message: string) => void>null,
+	// 	}
+	// }
 
 	get executablesMap() {
 		return {
 			...super.executablesMap,
 
-			[SocketRouteActions.SEND]: (payload: { client: IClient, message: any }) => 
+			[SocketRouteActions.SEND]: (payload: { client: IClient, message: any }) =>
 				this.sendToClient(payload.client, payload.message),
-			[SocketRouteActions.BROADCAST]: (message: any) => 
+			[SocketRouteActions.BROADCAST]: (message: any) =>
 				this.sendToAll(message),
-			[SocketRouteActions.DISCONNECT]: (client: IClient) => 
+			[SocketRouteActions.DISCONNECT]: (client: IClient) =>
 				this.disconnectClient(client),
 		}
 	}
@@ -37,11 +37,12 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 */
 	onConnect(client: IClient): void {
 		if (!client) return
-		this.state.onConnect?.bind(this)(client)
-		for ( const node of this.children ) {
+		//this.state.onConnect?.bind(this)(client)
+		for (const node of this.children) {
 			(<SocketCommunicator>node)?.onConnect?.(client)
 		}
-		this.emitter.emit("open", { client })
+		//this.emitter.emit("open", { client })
+		this.log( SocketLog.OPEN, { client })
 	}
 
 	/**
@@ -49,11 +50,12 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 */
 	onDisconnect(client: IClient) {
 		if (!client) return
-		this.state.onDisconnect?.bind(this)(client)
-		this.children.forEach(node => {
-			if (node instanceof SocketCommunicator) node.onDisconnect(client)
-		})
-		this.emitter.emit("close", { client })
+		//this.state.onDisconnect?.bind(this)(client)
+		for (const node of this.children) {
+			(<SocketCommunicator>node)?.onDisconnect?.(client)
+		}
+		//this.emitter.emit("close", { client })
+		this.log(SocketLog.CLOSE, { client })
 	}
 
 	/**
@@ -61,11 +63,12 @@ export abstract class SocketCommunicator extends ServiceBase {
 	 */
 	onMessage(client: IClient, message: string) {
 		if (!client || !message) return
-		this.state.onMessage?.bind(this)(client, message)
-		this.children.forEach(node => {
-			if (node instanceof SocketCommunicator) node.onMessage(client, message)
-		})
-		this.emitter.emit("message", { client, message })
+		//this.state.onMessage?.bind(this)(client, message)
+		for (const node of this.children) {
+			(<SocketCommunicator>node)?.onMessage?.(client, message)
+		}
+		//this.emitter.emit("message", { client, message })
+		this.log(SocketLog.MESSAGE, { client, message })
 	}
 
 	/**
