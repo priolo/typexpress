@@ -40,7 +40,7 @@ export class PathFinder {
 
 		// vai alla radice
 		if (path.startsWith("/")) {
-			nextPathFinder = this.getRoot()
+			nextPathFinder = new PathFinder(nodeParents(this.node, n => n.parent != null))
 			nextPath = path.slice(1)
 
 			// vai al parent
@@ -100,14 +100,6 @@ export class PathFinder {
 	 */
 	private getChildren(): PathFinderList {
 		return new PathFinderList(this.node.children);
-	}
-
-	/**
-	 * restituisce la root del nodo corrente (dentro PathFinder)
-	 */
-	private getRoot(): PathFinder {
-		const root = nodeParents(this.node, n => n.parent != null)
-		return new PathFinder(root)
 	}
 
 }

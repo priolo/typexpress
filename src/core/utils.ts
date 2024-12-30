@@ -62,10 +62,10 @@ export function nodeParents(node: INode, callback: (n: INode) => any): INode | n
  * se "callback" return un risultato allora termina con il risultato
  * se "callback" è sempre "null" termina con "null"
  */
-export function nodeParentsFind(node: INode, callback: (n: INode) => INode | null): INode | null {
+export function nodeParentsFind(node: INode, callback?: (n: INode) => INode | null): INode | null {
 	let current = node
 	let find = null
-	while (current != null && (find = callback(current)) == null) {
+	while (current != null && (!callback || (find = callback(current)) == null)) {
 		current = current.parent
 	}
 	return find
