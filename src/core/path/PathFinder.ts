@@ -1,5 +1,5 @@
-import { fnNodePattern, nodeParents, nodeParentsFind } from "../utils.js"
 import { INode } from "../node/INode.js"
+import { fnNodePattern, nodeParents } from "../utils.js"
 import { PathFinderList } from "./PathFinderList.js"
 
 
@@ -40,7 +40,7 @@ export class PathFinder {
 
 		// vai alla radice
 		if (path.startsWith("/")) {
-			nextPathFinder = new PathFinder(nodeParents(this.node, n => n.parent != null))
+			nextPathFinder = new PathFinder(nodeParents(this.node))
 			nextPath = path.slice(1)
 
 			// vai al parent
@@ -60,11 +60,16 @@ export class PathFinder {
 				const nodeParent = nodeParents(this.node, n => !fn(n))
 				nextPathFinder = nodeParent != null ? new PathFinder(nodeParent) : null
 
-				// ricerca su oggetto tra i miei children e ricorsivamente su quelli del parent
+			// NEAR: ricerca su oggetto tra i miei children e ricorsivamente su quelli del parent
 			} else if (pattern.startsWith("^")) {
 				pattern = path.slice(1)
-				const nodeFind = nodeParentsFind(this.node, n => {
-					return new PathFinderList(n.children).getBy(pattern)?.node
+				let nodeFind: INode
+				nodeParents(this.node, n => {
+					const child = new PathFinderList(n.children).getBy(pattern)?.node
+					if ( child != null ) {
+						nodeFind = child
+						return false
+					}
 				})
 				nextPathFinder = nodeFind != null ? new PathFinder(nodeFind) : null
 

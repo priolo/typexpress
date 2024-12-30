@@ -41,34 +41,12 @@ export function nodeFind(nodes: INode | INode[], callback: (n: INode) => boolean
  * @param node nodo sa vui cominciare la ricerca del PARENT
  * @param callback se questo CALLBACK restituisce (e solo se) "false" il ciclo termina e restituisce il corrente PARENT 
  */
-export function nodeParents(node: INode, callback: (n: INode) => any): INode | null {
+export function nodeParents(node: INode, callback: ((n: INode) => any) = n => n.parent != null): INode | null {
 	let current = node
 	while (current != null && callback(current) != false) {
 		current = current.parent
 	}
 	return current
-}
-// export function nodeParents(node: INode, callback?: (n: INode) => any): INode {
-// 	if (!node) return null
-// 	let current = node;
-// 	while (current.parent != null && (callback == null || callback(current) != false)) {
-// 		current = current.parent;
-// 	}
-// 	return current
-// }
-
-/**
- * cicla tutti i parent di "node"
- * se "callback" return un risultato allora termina con il risultato
- * se "callback" è sempre "null" termina con "null"
- */
-export function nodeParentsFind(node: INode, callback?: (n: INode) => INode | null): INode | null {
-	let current = node
-	let find = null
-	while (current != null && (!callback || (find = callback(current)) == null)) {
-		current = current.parent
-	}
-	return find
 }
 
 /**

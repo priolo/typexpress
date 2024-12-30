@@ -2,6 +2,7 @@
 import { LOG_TYPE, log } from "@priolo/jon-utils"
 import cookieParser from 'cookie-parser'
 import express, { Express, Request, Response, Router } from "express"
+import { engine as exphbs } from 'express-handlebars'
 import fs from "fs"
 import http, { Server } from "http"
 import https, { ServerOptions } from "https"
@@ -9,12 +10,13 @@ import { PathFinder } from "../../core/path/PathFinder.js"
 import { ServiceBase } from "../../core/service/ServiceBase.js"
 import ErrorService, { Actions as ActionsError } from "../error/index.js"
 import { HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
+import { SocketServerConf } from "../ws/SocketServerService.js"
 import { Errors, IHttpRouter } from "./utils.js"
-import { engine as exphbs } from 'express-handlebars';
 
 
 
-export type HttpServiceConf = Partial<HttpService['stateDefault']> & { class: "http", children?: HttpRouterServiceConf[] }
+export type HttpServiceConf = Partial<HttpService['stateDefault']>
+	& { class: "http", children?: Array<HttpRouterServiceConf | SocketServerConf> }
 //export type HttpServiceAct = HttpService['dispatchMap']
 
 /**
