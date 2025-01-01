@@ -31,5 +31,10 @@
 	 * Rimuove un NODE figlio di questo NODE
 	 */
 	removeChild(child: INode): void
+
+	/**
+	 * restituisce il NODE collegato a questo tramite la "path"
+	 */
+	nodeByPath<T extends INode>(path: string): T | null
 	
 }

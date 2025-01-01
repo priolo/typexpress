@@ -1,10 +1,10 @@
 import { TypeormStore } from "connect-typeorm"
 import { Router } from "express"
 import session from 'express-session'
-import { PathFinder } from "../../../core/path/PathFinder.js"
 import { TypeormService } from "../../typeorm/TypeormService.js"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
 import { SessionEntity } from "./SessionEntity.js"
+
 
 
 /**
@@ -34,7 +34,7 @@ export class HttpSessionService extends HttpRouterServiceBase {
         const { typeorm, options } = this.state 
 
         if ( typeorm ) {
-            const nodeTypeorm = new PathFinder(this).getNode<TypeormService>(typeorm)
+            const nodeTypeorm = this.nodeByPath<TypeormService>(typeorm)
             const connection = nodeTypeorm.connection
             const repository = connection.getRepository(SessionEntity)
             options.store = new TypeormStore({
@@ -45,12 +45,6 @@ export class HttpSessionService extends HttpRouterServiceBase {
         }
         
         this.store = session(options)
-
-        // new Bus(this, typeorm).dispatch({ 
-        //     type: ServiceBaseActions.REGISTER, 
-        //     payload: ServiceBaseEvents.INIT_AFTER,
-        //     wait: 2000,
-        // } )
     }
 
     protected onBuildRouter(): Router {

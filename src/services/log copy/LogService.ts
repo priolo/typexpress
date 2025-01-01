@@ -1,6 +1,9 @@
-import { Actions, LogLevel, LogNotify } from "./types.js";
+import { INode } from "../../core/node/INode.js";
+import winston from "winston";
+import TransportService from "./transport/TransportService.js";
+import { Actions, LogLevel, LogNotify } from "./utils.js";
 import { ServiceBase } from "../../core/service/ServiceBase.js";
-import { NodeConf } from "../../core/node/NodeConf.js";
+import { Bus } from "../../core/path/Bus.js";
 
 
 
@@ -11,6 +14,30 @@ export type LogConf = Partial<LogService['stateDefault']> & { class: "log" }
  * essenzialmente utilizza winstonjs
  */
 export class LogService extends ServiceBase {
+
+	/**
+	 * [facility] manda un messaggio al logger
+	 * @param node 
+	 * @param message 
+	 * @param level 
+	 */
+	static Send(node: INode, message: string, level?: LogLevel) {
+		new Bus(node, "/log").dispatch({
+			type: Actions.LOG,
+			payload: { message, level }
+		})
+	}
+
+
+
+	//#region SERVICE
+
+	// get stateDefault() {
+	// 	return {
+	// 		...super.stateDefault,
+	// 		onLog: <(notify: LogNotify) => void>null,
+	// 	}
+	// }
 
 	get executablesMap(): any {
 		return {
@@ -24,16 +51,27 @@ export class LogService extends ServiceBase {
 	 */
 	protected async onInitAfter(): Promise<void> {
 		super.onInitAfter()
-		const parent = this.nodeByPath<ServiceBase>("..")
-		parent.emitter.on('newListener', (event, listener) => {
-			console.log(`New listener added for event: ${event}`);
-		});
-	
+		this.buildLog()
 	}
 
 	//#endregion
 
 
+
+	private logger: winston.Logger = null
+
+	private buildLog(): void {
+
+		const transports = (<TransportService[]>this.children).map(c => c.getTransport?.()).filter(c => !!c)
+		if (transports.length == 0) return
+
+		this.logger = winston.createLogger({
+			level: 'info',
+			format: winston.format.json(),
+			defaultMeta: { service: 'user-service' },
+			transports
+		})
+	}
 
 	protected onNotify(notify: LogNotify, sender?: string): void {
 		const senderName = sender ?? "log"

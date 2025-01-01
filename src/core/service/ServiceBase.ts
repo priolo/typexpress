@@ -4,6 +4,9 @@ import { EventsLogsBase, IAction, ILog, TypeLog } from "../node/types.js"
 
 
 
+
+
+
 /**
  * E' la classe base di tutti i Service
  * Gestisce gli eventi
@@ -13,6 +16,12 @@ export class ServiceBase extends NodeConf {
 	constructor(name?: string, state?: any) {
 		super(name, state)
 		this._emitter = new EventEmitter()
+		const originalEmit = this._emitter.emit
+		this._emitter.emit = function (event: string, ...args: any[]) {
+			
+			console.debug(`ServiceBase::emit(${event})`)
+			return originalEmit.call(this, event, ...args)
+		}
 	}
 
 	/**
@@ -23,27 +32,6 @@ export class ServiceBase extends NodeConf {
 		return this._emitter
 	}
 	private _emitter: EventEmitter
-
-
-	/**
-	 * Contiene le ACTIONs eseguibili
-	 */
-	// get executablesMap() {
-	// 	return {
-	// 		...super.executablesMap,
-	// 		[ServiceBaseActions.START]: async () => await this.serviceStart(),
-	// 		[ServiceBaseActions.STOP]: async () => await this.serviceStop(),
-	// 	}
-	// }
-
-	// get stateDefault() {
-	// 	return {
-	// 		...super.stateDefault,
-	// 		onInit: <() => void>null,
-	// 		onInitAfter: <() => void>null,
-	// 		onDestroy: <() => void>null,
-	// 	}
-	// }
 
 	/**
 	 * trasmette al parent un log
@@ -66,44 +54,5 @@ export class ServiceBase extends NodeConf {
 		} catch (error) {
 			this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
 		}
-	}
-
-	/**
-	 * Chiamato quando cambia lo stato del NODE ed emette l'evento "STATE_CHANGE"
-	 * @override
-	 */
-	protected onChangeState(old: any): void {
-		super.onChangeState(old)
-		this.log(EventsLogsBase.STATE_CHANGE, this._state)
-	}
-
-	/**
-	 * Chiamto quando il NODE viene inizializzato  
-	 * Emette l'evento "INIT"
-	 * @override
-	 */
-	protected async onInit(): Promise<void> {
-		try {
-			await super.onInit()
-		} catch (error) {
-			this.log(EventsLogsBase.ERR_INIT, error, TypeLog.ERROR)
-			return
-		}
-		this.log(EventsLogsBase.NODE_INIT)
-	}
-
-	/**
-	 * Chiamata DOPO la creazione dei CHILDREN  
-	 * Emette l'evento "INIT_AFTER"
-	 * @override
-	 */
-	protected async onInitAfter(): Promise<void> {
-		await super.onInitAfter()
-		this.log(EventsLogsBase.NODE_INIT_AFTER)
-	}
-
-	protected async onDestroy(): Promise<void> {
-		await super.onDestroy()
-		this.log(EventsLogsBase.NODE_DESTROY)
 	}
 }

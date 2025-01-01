@@ -1,7 +1,7 @@
 import { PathFinder } from "../../core/path/PathFinder.js"
 import { RootService } from "../../core/RootService.js"
+import { EventsLogsBase, ILog } from "../node/types.js"
 import { ServiceBase } from "../service/ServiceBase.js"
-import { IChildLog, ServiceBaseLogs } from "../service/utils.js"
 
 
 
@@ -48,10 +48,10 @@ describe('ServiceBase', () => {
 		const nodeEmitter = new PathFinder(root).getNode<ServiceBase>("/child2/emitter")
 		const nodeReceiver = new PathFinder(root).getNode<ServiceBase>("/child1/receiver")
 
-		root.emitter.on(ServiceBaseLogs.STATE_CHANGE, (log: IChildLog) => {
-			if (log.source == "/child2/emitter") log.target?.setState(log.payload )
+		root.emitter.on(EventsLogsBase.STATE_CHANGE, (log: ILog) => {
+			if (log.source == "/child2/emitter") nodeReceiver.setState({ value: log.payload.value })
 		})
-	
+
 		nodeEmitter.setState({ value: "pippo" })
 		expect(nodeReceiver.state.value).toBe("pippo")
 	})

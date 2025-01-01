@@ -137,7 +137,7 @@ describe("NODE STATE", () => {
 		root.dispatchTo("/node/node.1", { type: "set-text", payload: "hello" })
 
 		// lo STATE dovrebbe essere cambiato
-		const myNode = root.getChild("/node/node.1") as NodeState
+		const myNode = root.nodeByPath("/node/node.1") as NodeState
 		expect(myNode.state.text).toEqual("hello")
 	})
 

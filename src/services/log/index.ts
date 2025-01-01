@@ -1,12 +1,11 @@
-import LogService from "./LogService.js"
-import FileService from "./transport/FileService.js"
-import ConsoleService from "./transport/ConsoleService.js"
+import { LogService, LogConf } from "./LogService.js"
+
+
 
 export {
 	LogService as default,
 	LogService as Service,
-	FileService as file,
-	ConsoleService as console
+	LogConf as conf,
 }
 
-export * from "./utils.js"
+export * from "./types.js"

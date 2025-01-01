@@ -16,19 +16,38 @@ describe("ROOT SERVICE", () => {
 			]
 		}])
 
-		const rootJson = utils.nodeToJson(root)
-		expect(rootJson).toMatchObject({
+		const struct = utils.nodeToStruct(root)
+		expect(struct).toMatchObject({
 			name: "root",
+			state: { name: "root", onLog: null },
+			commands: ["init", "destroy"],
 			children: [
-				{ name: "farm" },
+				{
+					name: "farm",
+					children: [],
+				},
 				{
 					name: "node.1",
+					state: { value: "1" },
+					commands: ["init", "destroy"],
 					children: [
-						{ name: "node.1.1" },
-						{ name: "node.1.2" },
+						{
+							name: "node.1.1",
+							state: { val_text: "1.1" },
+							commands: ["init", "destroy"],
+							children: [],
+						},
+						{
+							name: "node.1.2",
+							state: { val_number: 1.2 },
+							commands: [
+								"init",
+								"destroy",
+							],
+							children: [],
+						},
 					],
 				},
-				{ name: "error" },
 			],
 		})
 	})

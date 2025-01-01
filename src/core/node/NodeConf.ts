@@ -1,8 +1,7 @@
-import { NodeState } from "./NodeState.js";
 import FarmService from "../../services/farm/index.js";
-import { PathFinder } from "../path/PathFinder.js";
 import { nodeForeach } from "../utils.js";
 import { INode } from "./INode.js";
+import { NodeState } from "./NodeState.js";
 import { ConfActions, EventsLogsBase, TypeLog } from "./types.js";
 
 
@@ -31,13 +30,20 @@ export class NodeConf extends NodeState {
 	 * */
 	private async init(): Promise<void> {
 
-		// inizializzo questo NODE prima di creare i child
-		await this.onInit()
+		// inizializzo questo NODE PRIMA di creare i CHILDREN
+		try {
+			await this.onInit()
+		} catch (error) {
+			this.log(EventsLogsBase.ERR_INIT, error, TypeLog.ERROR)
+			return
+		}
 
+		// creo e inizializzo i CHILDREN
 		for (const child of this.children) {
 			await (<NodeConf>child).execute?.({ type: ConfActions.INIT })
 		}
 
+		// chiamo la procedure DOPO creazione/init CHILDREN
 		await this.onInitAfter()
 
 		// se questo nodo è il nodo "root" allora richiama ricorsivamente tutti i nodi
@@ -50,21 +56,25 @@ export class NodeConf extends NodeState {
 	}
 
 	/**
-	 * Chiamata dopo la creazione dei CHILDREN per inzializzare il nodo
+	 * Chiamata PRIMA della creazione dei CHILDREN 
+	 * [LOG] NODE_INIT
 	 */
-	protected async onInit(): Promise<void> { }
+	protected async onInit(): Promise<void> { 
+		this.log(EventsLogsBase.NODE_INIT)
+	}
 
 	/**
-	 * Chiamata dopo l'inizializzazione di tutti i children
+	 * Chiamata DOPO l'inizializzazione di tutti i CHILDREN
+	 * [LOG] NODE_INIT_AFTER
 	 */
-	protected async onInitAfter(): Promise<void> { }
+	protected async onInitAfter(): Promise<void> { 
+		this.log(EventsLogsBase.NODE_INIT_AFTER)
+	}
 
 	/**
 	 * Chiamata dopo l'inizializzazione di tutto l'albero
 	 */
 	protected async onInitFinish(): Promise<void> { }
-
-
 
 	/**
 	 * Valorizza questo NODE e costruisce tutti i children tramite il parametro JSON
@@ -107,13 +117,14 @@ export class NodeConf extends NodeState {
 	 * [II] deve prendere la "farm" piu' vicina
 	 */
 	private async buildChildByJson(json: any): Promise<INode | null> {
-		const farm = new PathFinder(this).getNode<FarmService>("/farm")
+		const farm = this.nodeByPath<FarmService>("/farm")
 		if (!farm) throw new Error("FarmService not found")
 		return await farm.build(json)
 	}
 
 	/**
 	 * Quando questo NODE deve essere distrutto
+	 * [LOG] NODE_DESTROY
 	 */
 	private async nodeDestroy(): Promise<void> {
 		const children = [...this.children]
@@ -122,6 +133,7 @@ export class NodeConf extends NodeState {
 		}
 		await this.onDestroy()
 		this.parent?.removeChild(this)
+		this.log(EventsLogsBase.NODE_DESTROY)
 	}
 
 	/**

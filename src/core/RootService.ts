@@ -40,31 +40,12 @@ export class RootService extends ServiceBase {
 		const farm = new FarmService()
 		this.addChild(farm)
 
-		// se non c'e' gia' inserisco il gestore di errori di default
-		// if ( !new PathFinder(this).path("/error").exists() ) {
-		// 	const error = new ErrorService()
-		// 	error.dispatch({ type: ConfActions.START })
-		// 	this.addChild(error)
-		// }
-
-		// [II] TO DO logService
-
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {
 			console.debug('SIGTERM signal received: closing all services')
 			await this.execute({ type: ConfActions.DESTROY })
 		})
 	}
-
-	// protected async onInit(): Promise<void> {
-	// 	await super.onInit()
-	// 	// se non è definito creo il gestore degli errori di default
-	// 	if (!this.children.some(child => child instanceof ErrorService)) {
-	// 		const errorSrv = new ErrorService("error")
-	// 		this.addChild(errorSrv)
-	// 		errorSrv.execute({ type: ConfActions.INIT })
-	// 	}
-	// }
 
 	get stateDefault() {
 		return {

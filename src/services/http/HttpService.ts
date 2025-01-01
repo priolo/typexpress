@@ -6,12 +6,10 @@ import { engine as exphbs } from 'express-handlebars'
 import fs from "fs"
 import http, { Server } from "http"
 import https, { ServerOptions } from "https"
-import { PathFinder } from "../../core/path/PathFinder.js"
 import { ServiceBase } from "../../core/service/ServiceBase.js"
-import ErrorService, { Actions as ActionsError } from "../error/index.js"
 import { HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
 import { SocketServerConf } from "../ws/SocketServerService.js"
-import { Errors, IHttpRouter } from "./utils.js"
+import { IHttpRouter } from "./utils.js"
 
 
 
@@ -85,24 +83,8 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		super.onInitAfter()
 		// il gestore degli errori va inserito per ultimo
 		this.app.use((err: Error, req: Request, res: Response, next) => {
-			ErrorService.Send(this, err, Errors.HANDLE)
-
-			// [II] CAPIRE se è utile gestire gli errori come children
-			/*
-			cioe' l'error da utilizzare è nei propri children oppure nei children del parent a ricorsione
-			e non sempre e solo /error
-			a questo punto pensare ai log nella stessa maniera
-			*/
-
 			// se c'e' un gestore di errore come figlio inoltra l'errore pure li
-			const errorSrv = new PathFinder(this).getNode<ErrorService>("error")
-			if (errorSrv) {
-				errorSrv.execute({
-					type: ActionsError.NOTIFY,
-					payload: err
-				})
-			}
-
+			this.log(`HttpService:error`, err, LOG_TYPE.ERROR)
 			// continua il discorso...
 			next(err)
 		})

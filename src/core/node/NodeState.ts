@@ -1,5 +1,5 @@
 import { Bus } from "../path/Bus.js";
-import { IAction, TypeLog } from "./types.js";
+import { EventsLogsBase, IAction, TypeLog } from "./types.js";
 import { INode } from "./INode.js";
 import { Node } from "./Node.js";
 import { ILog } from "./types.js";
@@ -35,7 +35,9 @@ export abstract class NodeState extends Node {
 	 */
 	get stateDefault() {
 		return {
+			/** se c'e' è nome da dare al nodo */
 			name: <string>null,
+			/** se c'e' viene chiamata su quauque log emesso */
 			onLog: <(this: NodeState, log: ILog) => void>null,
 		}
 	}
@@ -52,17 +54,21 @@ export abstract class NodeState extends Node {
 	 * Modifica lo stato
 	 * si tratta sempre di un MERGE con lo stato precedente
 	 */
-	public setState(state: any): void {
+	public setState(state: any, noEmit?: boolean): void {
 		if (this._state == state) return
 		const old = this._state
 		this._state = { ...this._state, ...state }
+		if (noEmit) return
 		this.onChangeState(old)
 	}
 
 	/**
-	 * [abstract] chiamato quando lo stato cambia
+	 * Chiamato quando cambia lo stato del NODE 
+	 * [LOG] STATE_CHANGE
 	 */
-	protected onChangeState(old: any): void { }
+	protected onChangeState(old: any): void {
+		this.log(EventsLogsBase.STATE_CHANGE, this._state)
+	}
 
 	//#endregion
 
@@ -104,13 +110,18 @@ export abstract class NodeState extends Node {
 				try {
 					const ret = await fnc(action.payload, action.sender, this)
 					res(ret)
-				} catch (e) {
-					rej(e)
+				} catch (error) {
+					this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
+					rej(error)
 				}
 			})
 			// altrimenti ritorna il valore
 		} else {
-			return fnc(action.payload, action.sender, this)
+			try {
+				return fnc(action.payload, action.sender, this)
+			} catch (error) {
+				this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
+			}
 		}
 	}
 

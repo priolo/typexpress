@@ -9,13 +9,13 @@ import { INode } from "./INode.js";
  */
 export class Node implements INode {
 
-	constructor ( name:string="node" ) {
+	constructor(name: string = "node") {
 		this.name = name
 	}
 
-	id:string = nodeId()
+	id: string = nodeId()
 
-	name:string
+	name: string
 
 	parent: INode | null = null
 
@@ -31,10 +31,10 @@ export class Node implements INode {
 	}
 
 	removeChild(child: INode | number): void {
-		const index = typeof child!="number" ? this.indexChild(child) : child
+		const index = typeof child != "number" ? this.indexChild(child) : child
 		if (index == -1) return;
 		this._children.splice(index, 1)
-			.forEach(n=>n.parent=null)
+			.forEach(n => n.parent = null)
 	}
 
 	private indexChild(child: INode): number {
@@ -42,11 +42,8 @@ export class Node implements INode {
 		return this._children.indexOf(child)
 	}
 
-	/**
-	 * [facility]: restituisce un NODE-CHILD tramite la PATH
-	 * */
-	getChild(path: string): INode | null {
-		return new PathFinder(this).getNode(path)
+	nodeByPath<T extends INode>(path: string): T | null {
+		return PathFinder.Get<T>(this, path)
 	}
 
 }

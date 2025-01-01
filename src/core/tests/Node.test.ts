@@ -63,7 +63,7 @@ describe("NODE", () => {
 		root.addChild(child1)
 		root.addChild(new Node("child2"))
 		root.addChild(new Node("child3"))
-		const child = root.getChild("child1")
+		const child = root.nodeByPath("child1")
 		expect(child).not.toBeNull()
 	})
 })

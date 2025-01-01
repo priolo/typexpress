@@ -1,9 +1,6 @@
-import { Repository, Raw, Between, DataSource } from "typeorm";
-
-import { ServiceBase } from "../../core/service/ServiceBase.js"
-import { PathFinder } from "../../core/path/PathFinder.js";
+import { Between, DataSource, Raw, Repository } from "typeorm";
+import { ServiceBase } from "../../core/service/ServiceBase.js";
 import { IRepoStructActions, RepoStructActions } from "../../core/service/types.js";
-
 import { TypeormService } from "./TypeormService.js";
 import { Actions } from "./utils.js";
 
@@ -43,7 +40,7 @@ export abstract class TypeormRepoBaseService extends ServiceBase {
 	 * Restituisce la "Connection" nativa typeorm prelevandola dal parent
 	 */
 	protected get connection(): DataSource {
-		const ts = new PathFinder(this).getNode<TypeormService>("..")
+		const ts = this.nodeByPath<TypeormService>("..")
 		return ts.connection
 	}
 

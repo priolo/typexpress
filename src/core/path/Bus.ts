@@ -1,10 +1,9 @@
-import { IAction } from "../node/types.js";
+import { log, LOG_TYPE, time } from "@priolo/jon-utils";
 import { INode } from "../node/INode.js";
 import { NodeState } from "../node/NodeState.js";
+import { IAction } from "../node/types.js";
 import { nodePath } from "../utils.js";
-import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { PathFinder } from "./PathFinder.js";
-import { time } from "@priolo/jon-utils"
+
 
 
 /**
@@ -29,7 +28,7 @@ export class Bus {
 	async dispatch(action: IAction | string): Promise<any> {
 		if (!action) throw "errore parametro action"
 		if (typeof action == "string") action = { type: action } as IAction
-		const dest = PathFinder.Get<NodeState>(this.sender, this.path)
+		const dest:NodeState = this.sender.nodeByPath(this.path)
 		let res = null
 
 		if (!action.sender) action.sender = nodePath(this.sender)

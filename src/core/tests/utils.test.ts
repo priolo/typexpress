@@ -2,7 +2,7 @@ import FarmService from "../../services/farm/FarmService.js";
 import { INode } from "../node/INode.js";
 import { NodeConf } from "../node/NodeConf.js";
 import { PathFinder } from "../path/PathFinder.js";
-import { nodeMap, nodePath, nodeToJson } from "../utils.js";
+import { nodeMap, nodePath, nodeToJson, nodeToStruct } from "../utils.js";
 
 
 
@@ -36,15 +36,13 @@ describe("CORE UTILS", () => {
 	})
 
 	test("nodeToJson", async () => {
-		const json = nodeToJson(root)
+		const json = nodeToStruct(root)
 
-		expect(json).toEqual({
+		expect(json).toMatchObject({
 			name: "root2",
 			//value: 23,
 			children: [
-				{
-					name: "farm",
-				},
+				{ name: "farm" },
 				{
 					name: "child1",
 					children: [

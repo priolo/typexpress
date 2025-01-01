@@ -21,34 +21,34 @@ afterAll(async () => {
 test("import su 'services'", async () => {
 	root = await RootService.Start([
 		// string: internal name
-		{ 
-			class: "http", 
-			name: "poppo", 
-			port: 123 
+		{
+			class: "http",
+			name: "poppo",
+			port: 123
 		},
 	])
 
-	const http: http.Service = PathFinder.Get(root, "/poppo")
-	expect(http.state.port).toBe(123)
+	const http = root.nodeByPath<http.Service>("/poppo")
+	expect(http?.state.port).toBe(123)
 
 })
 
 test("import su class", async () => {
-	const root:RootService = await RootService.Start([
+	const root: RootService = await RootService.Start([
 		// class: class to istantiate
 		{ class: TestService, name: "test" },
 	])
-	const test: TestService = PathFinder.Get(root, "/test")
-	expect(test.prop).toBe(54)
+	const test = root.nodeByPath<TestService>("/test")
+	expect(test?.prop).toBe(54)
 })
 
 test("import su npm", async () => {
-	const root:RootService = await RootService.Start([
-		{ 
-			class: `npm:julian-test-import`, 
-			name: "test3" 
+	const root: RootService = await RootService.Start([
+		{
+			class: `npm:julian-test-import`,
+			name: "test3"
 		}
 	])
-	const test: TestService = PathFinder.Get(root, "/test3")
-	expect(test.state.value1).toBe("pippo")
+	const test = root.nodeByPath<TestService>("/test3")
+	expect(test?.state.value1).toBe("pippo")
 })
