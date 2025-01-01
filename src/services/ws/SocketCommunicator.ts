@@ -1,5 +1,5 @@
 import { ServiceBase } from "../../core/service/ServiceBase.js"
-import { IClient, SocketLog, SocketRouteActions } from "./utils.js"
+import { IClient, SocketLog, SocketRouteActions } from "./types.js"
 
 
 
@@ -38,11 +38,10 @@ export abstract class SocketCommunicator extends ServiceBase {
 	onConnect(client: IClient): void {
 		if (!client) return
 		//this.state.onConnect?.bind(this)(client)
+		this.log( SocketLog.OPEN, { client })
 		for (const node of this.children) {
 			(<SocketCommunicator>node)?.onConnect?.(client)
 		}
-		//this.emitter.emit("open", { client })
-		this.log( SocketLog.OPEN, { client })
 	}
 
 	/**
@@ -51,11 +50,10 @@ export abstract class SocketCommunicator extends ServiceBase {
 	onDisconnect(client: IClient) {
 		if (!client) return
 		//this.state.onDisconnect?.bind(this)(client)
+		this.log(SocketLog.CLOSE, { client })
 		for (const node of this.children) {
 			(<SocketCommunicator>node)?.onDisconnect?.(client)
 		}
-		//this.emitter.emit("close", { client })
-		this.log(SocketLog.CLOSE, { client })
 	}
 
 	/**
@@ -64,11 +62,10 @@ export abstract class SocketCommunicator extends ServiceBase {
 	onMessage(client: IClient, message: string) {
 		if (!client || !message) return
 		//this.state.onMessage?.bind(this)(client, message)
+		this.log(SocketLog.MESSAGE, { client, message })
 		for (const node of this.children) {
 			(<SocketCommunicator>node)?.onMessage?.(client, message)
 		}
-		//this.emitter.emit("message", { client, message })
-		this.log(SocketLog.MESSAGE, { client, message })
 	}
 
 	/**

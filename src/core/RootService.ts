@@ -1,6 +1,6 @@
 import ErrorService from "../services/error/ErrorService.js";
 import FarmService from "../services/farm/index.js";
-import { ConfActions } from "./node/utils.js";
+import { ConfActions } from "./node/types.js";
 import { ServiceBase } from "./service/ServiceBase.js";
 
 
@@ -14,6 +14,7 @@ export class RootService extends ServiceBase {
 
 	// [facility]: crea e avvia un json
 	static async Start(config: any): Promise<RootService> {
+		debugger
 		if (!Array.isArray(config)) config = [config]
 		const root = new RootService()
 		try {
@@ -55,15 +56,15 @@ export class RootService extends ServiceBase {
 		})
 	}
 
-	protected async onInit(): Promise<void> {
-		await super.onInit()
-		// se non è definito creo il gestore degli errori di default
-		if (!this.children.some(child => child instanceof ErrorService)) {
-			const errorSrv = new ErrorService("error")
-			this.addChild(errorSrv)
-			errorSrv.execute({ type: ConfActions.INIT })
-		}
-	}
+	// protected async onInit(): Promise<void> {
+	// 	await super.onInit()
+	// 	// se non è definito creo il gestore degli errori di default
+	// 	if (!this.children.some(child => child instanceof ErrorService)) {
+	// 		const errorSrv = new ErrorService("error")
+	// 		this.addChild(errorSrv)
+	// 		errorSrv.execute({ type: ConfActions.INIT })
+	// 	}
+	// }
 
 	get stateDefault() {
 		return {

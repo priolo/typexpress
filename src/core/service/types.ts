@@ -1,13 +1,6 @@
 
 
 
-export enum ServiceBaseActions {
-	START = "sb:start",
-	STOP = "sb:stop",
-}
-
-
-
 
 //#region REPO-BASE
 

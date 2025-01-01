@@ -1,8 +1,8 @@
 import { Bus } from "../path/Bus.js";
-import { IAction, TypeLog } from "./utils.js";
+import { IAction, TypeLog } from "./types.js";
 import { INode } from "./INode.js";
 import { Node } from "./Node.js";
-import { ILog } from "./utils.js";
+import { ILog } from "./types.js";
 import { nodePath } from "../utils.js";
 
 
@@ -35,8 +35,8 @@ export abstract class NodeState extends Node {
 	 */
 	get stateDefault() {
 		return {
-			// name: <string>null,
-			// children: <any[]>null,
+			name: <string>null,
+			onLog: <(this: NodeState, log: ILog) => void>null,
 		}
 	}
 
@@ -70,13 +70,15 @@ export abstract class NodeState extends Node {
 	 * [facility] crea e trasmette un nuovo LOG
 	 */
 	protected log(name: string, payload?: any, type?: TypeLog) {
-		this.emitLog({ source: nodePath(this), target: this, name, payload, type })
+		const log: ILog = { name, source: nodePath(this), target: this, payload, type }
+		this.state.onLog?.bind(this)(log);
+		this.emitLog(log)
 	}
 
 	/**
 	 * trasmette al parent un log
 	 */
-	emitLog(log: ILog) {
+	protected emitLog(log: ILog) {
 		if (!log) return
 		(<NodeState>this.parent)?.emitLog?.(log)
 	}

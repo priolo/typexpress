@@ -6,6 +6,7 @@ import { PathFinderList } from "./PathFinderList.js"
 /**
  * Permette di navigare all'interno di un albero di nodi
  * tramite una stringa di path
+ * [II] trasformare tutta la classe in un unica funzione statica
  */
 export class PathFinder {
 

@@ -1,18 +1,20 @@
 import { Request } from "express"
 import url from 'url'
 import { WebSocket, WebSocketServer } from "ws"
+import { TypeLog } from "../../core/node/types.js"
 import { Bus } from "../../core/path/Bus.js"
-import * as errorNs from "../error/index.js"
 import * as http from "../http/index.js"
 import * as jwtNs from "../jwt/index.js"
-import LogService from "../log/index.js"
 import { SocketCommunicator } from "./SocketCommunicator.js"
-import { SocketRouteConf } from "./SocketRouteService.js"
-import { Errors, IClient, SocketServerActions, clientIsEqual, getUrlParams } from "./utils.js"
+import { SocketRouteConf, SocketRouteService } from "./SocketRouteService.js"
+import { IClient, SocketServerActions } from "./types.js"
+import { clientIsEqual, getUrlParams } from "./utils.js"
 
 
 
-export type SocketServerConf = Partial<SocketServerService['stateDefault']> & { class: "ws", children?: SocketRouteConf[] }
+export type SocketServerConf = Partial<SocketServerService['stateDefault']>
+	& { class: "ws" | `npm:julian-ws-${string}` | (new (...args: any[]) => SocketRouteService), children?: SocketRouteConf[] }
+
 export type SocketServerAct = SocketServerService['executablesMap']
 
 export class SocketServerService extends SocketCommunicator {
@@ -54,7 +56,6 @@ export class SocketServerService extends SocketCommunicator {
 	}
 
 
-
 	//#region FARM
 
 	/**
@@ -94,7 +95,6 @@ export class SocketServerService extends SocketCommunicator {
 
 		this.server = new WebSocketServer({ noServer: true })
 		parentHttp.on('upgrade', this.onUpgrade)
-		LogService.Send(this, "attached")
 	}
 	private detachToServerHttp() {
 		const parentHttp = this.parent instanceof http.Service ? (<http.Service>this.parent).server : null
@@ -205,17 +205,16 @@ export class SocketServerService extends SocketCommunicator {
 	//#endregion
 
 
-
 	//#region ROOM
 
 	/**
 	 * Restituisce un CLIENT-WEB-SOCKET tramite CLIENT-JSON
 	 */
 	private findCWSByClient(client: IClient) {
-		const iter = this.server.clients as Set<any>
-		for (const cws of iter) {
-			if (clientIsEqual(cws._socket, client)) {
-				return cws
+		const wsClients = this.server.clients as Set<any>
+		for (const wsClient of wsClients) {
+			if (clientIsEqual(wsClient._socket, client)) {
+				return wsClient
 			}
 		}
 		return null
@@ -229,22 +228,6 @@ export class SocketServerService extends SocketCommunicator {
 		const socket = (cws as any)._socket
 		const client = clients.find(client => clientIsEqual(client, socket))
 		return client
-	}
-
-	/**
-	 * Aggiorna la lista dei CLIENT-JSON dalla lista dei CLIENT-WS
-	 * [II] NON VA BENE! perche' ricreo l'oggetto completamente e magari nel client c'ho messo delle informazioni che poi perdo
-	 */
-	private updateClients() {
-		const clients: IClient[] = !this.server ? []
-			: [...this.server.clients].map((cws: WebSocket) => {
-				const socket = (cws as any)._socket
-				return {
-					remoteAddress: socket.remoteAddress,
-					remotePort: socket.remotePort
-				}
-			})
-		this.setState({ clients })
 	}
 
 	/**
@@ -265,7 +248,6 @@ export class SocketServerService extends SocketCommunicator {
 	}
 
 	//#endregion
-
 
 
 	//#region COMMUNICATOR 
@@ -330,10 +312,7 @@ export class SocketServerService extends SocketCommunicator {
 		try {
 			cws.send(message)
 		} catch (error) {
-			new Bus(this, "/error").dispatch({
-				type: errorNs.Actions.NOTIFY,
-				payload: { code: Errors.BROADCAST, error }
-			})
+			this.log("ws:sendToCWS", error, TypeLog.ERROR)
 			return false
 		}
 		return true

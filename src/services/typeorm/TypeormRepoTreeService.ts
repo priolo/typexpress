@@ -1,5 +1,5 @@
 import { TreeRepository } from "typeorm";
-import { RepoTreeActions } from "../../core/service/utils.js";
+import { RepoTreeActions } from "../../core/service/types.js";
 import { TypeormRepoService } from "./TypeormRepoService.js";
 
 

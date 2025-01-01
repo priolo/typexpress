@@ -36,13 +36,12 @@ export default class LogService extends ServiceBase {
 
 	//#region SERVICE
 
-	get stateDefault() {
-		return {
-			...super.stateDefault,
-			name: <string>"log",
-			onLog: <(notify: LogNotify) => void>null,
-		}
-	}
+	// get stateDefault() {
+	// 	return {
+	// 		...super.stateDefault,
+	// 		onLog: <(notify: LogNotify) => void>null,
+	// 	}
+	// }
 
 	get executablesMap(): any {
 		return {

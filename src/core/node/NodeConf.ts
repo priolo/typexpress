@@ -3,7 +3,7 @@ import FarmService from "../../services/farm/index.js";
 import { PathFinder } from "../path/PathFinder.js";
 import { nodeForeach } from "../utils.js";
 import { INode } from "./INode.js";
-import { ConfActions, EventsLogsBase, TypeLog } from "./utils.js";
+import { ConfActions, EventsLogsBase, TypeLog } from "./types.js";
 
 
 
@@ -72,12 +72,12 @@ export class NodeConf extends NodeState {
 	async buildByJson(json: any = {}): Promise<void> {
 
 		// faccio una copia e tolgo "children" e "class"
-		const config = { ...json }
-		delete config.children
-		delete config.class
-		delete config.name
+		const state = { ...json }
+		delete state.children
+		delete state.class
+		delete state.name
 		// setto il config come stato iniziale
-		this.setState(config)
+		this.setState(state)
 		// se il config ha pure un "name" lo setto come identificativo del NODE
 		if (json.name) this.name = json.name
 

@@ -1,4 +1,4 @@
-import { IAction } from "src/core/node/utils.js"
+import { IAction } from "src/core/node/types.js"
 import { ErrorNotify } from "./ErrorNotify.js"
 
 

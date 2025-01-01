@@ -104,8 +104,8 @@ describe("PathFinder", () => {
 		expect(nodeRes).toBe(node)
 
 		// cerco un parent che abbia il nodo cercato tra i children
-		// nodeRes = new PathFinder(node).getNode<any>('^child1.2')
-		// expect(nodeRes).toBe(node)
+		nodeRes = new PathFinder(node).getNode<any>('^child1.2')
+		expect(nodeRes.name).toBe("child1.2")
 
 		// prendo la root
 		nodeRes = new PathFinder(node).getNode<any>('/')

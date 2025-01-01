@@ -64,10 +64,17 @@ export function nodePath(node: INode): string {
 }
 
 /**
- * Trasforma un node in un json 
- * usato per il debug
+ * restituisco la stringa JSON della struttura di un NODE
  */
-export function nodeToJson(node: INode): object {
+export function nodeToJson(node: INode | null): string {
+	const state = nodeToStruct(node)
+	return JSON.stringify(state)
+}
+
+/**
+ * restituisco un ggetto che rappresenta la struttura di un NODE
+ */
+export function nodeToStruct(node: INode | null): object {
 	if (!node) return {}
 	const nodeConf = node as NodeConf
 	const commands = !!nodeConf?.executablesMap ? Object.keys(nodeConf.executablesMap) : undefined
@@ -75,7 +82,7 @@ export function nodeToJson(node: INode): object {
 		name: node.name,
 		state: (<NodeState>node).state ?? undefined,
 		commands,
-		children: node.children.map(c => nodeToJson(c))
+		children: node.children.map(c => nodeToStruct(c))
 	}
 }
 

@@ -3,7 +3,7 @@
  */
 
 import axios from "axios"
-import { ConfActions } from "../../../core/node/utils.js"
+import { ConfActions } from "../../../core/node/types.js"
 import { Request, Response } from "express"
 import { PathFinder } from "../../../core/path/PathFinder.js"
 import { RootService } from "../../../core/RootService.js"

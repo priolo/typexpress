@@ -1,4 +1,4 @@
-import { IAction } from "../node/utils.js";
+import { IAction } from "../node/types.js";
 import { INode } from "../node/INode.js";
 import { NodeState } from "../node/NodeState.js";
 import { nodePath } from "../utils.js";

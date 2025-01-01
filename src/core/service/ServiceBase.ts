@@ -1,6 +1,6 @@
 import { EventEmitter } from "events"
 import { NodeConf } from "../node/NodeConf.js"
-import { EventsLogsBase, IAction, ILog, TypeLog } from "../node/utils.js"
+import { EventsLogsBase, IAction, ILog, TypeLog } from "../node/types.js"
 
 
 
