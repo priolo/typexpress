@@ -86,7 +86,7 @@ export enum EventsLogsBase {
 	NODE_INIT = "node:init",
 	NODE_INIT_AFTER = "node:init-after",
 	NODE_DESTROY = "node:destroy",
-	NODE_EXECUTE = "node:execite",
+	NODE_EXECUTE = "node:execute",
 
 	ERR_EXECUTE = "err:execute",
 	ERR_INIT = "err:init",

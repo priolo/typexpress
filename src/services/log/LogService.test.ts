@@ -1,26 +1,13 @@
-import { PathFinder, RootService, log as logNs } from "../../index.js"
-import LogService, { LogConf } from "./LogService.js"
-import { Actions, LogLevel } from "./utils.js"
+import { TypeLog } from "../../core/node/types.js"
+import { PathFinder, RootService, log as logNs, types } from "../../index.js"
 
 
 
-let root: RootService | null = null
+let root: RootService
 
 beforeEach(async () => {
-
 	root = await RootService.Start([
-		<LogConf>{
-			class: "log",
-			children: [
-				<ConsoleConf>{
-					class: "log/console",
-				}
-			]
-		},
-		<LogConf>{
-			name: "logbase",
-			class: "log",
-		},
+		<logNs.conf>{ class: "log", levels: [TypeLog.FATAL, TypeLog.WARN] },
 	])
 })
 
@@ -45,20 +32,7 @@ test("creazione", async () => {
 })
 
 test("log", async () => {
-	// ottenuto il servizio...
-	const log = new PathFinder(root).getNode<logNs.Service>("/log")
-	// ...quindi posso generare un log
-	log.execute({ type: Actions.LOG, payload: { message: "test log!" } })
+	root.emitter.emit("log-fatal", <types.ILog>{ name: "log-fatal", payload: "oh my god!", type: types.TypeLog.FATAL })
+	root.emitter.emit("log-info", <types.ILog>{ name: "log-info", payload: "info!", type: types.TypeLog.INFO })
 })
 
-test("log base", async () => {
-	// ottenuto il servizio...
-	const log = new PathFinder(root).getNode<logNs.Service>("/logbase")
-	// ...quindi posso generare un log
-	log.execute({ type: Actions.LOG, payload: { level: LogLevel.WARN,  message: "test log!" } })
-})
-
-test("log base without level", async () => {
-	// sent directly a message
-	LogService.Send(root, "another log")
-})

@@ -14,7 +14,7 @@ export class RootService extends ServiceBase {
 
 	// [facility]: crea e avvia un json
 	static async Start(config: any): Promise<RootService> {
-		debugger
+		
 		if (!Array.isArray(config)) config = [config]
 		const root = new RootService()
 		try {

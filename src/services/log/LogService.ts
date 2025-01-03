@@ -1,6 +1,6 @@
-import { Actions, LogLevel, LogNotify } from "./types.js";
+import { log, LOG_TYPE } from "@priolo/jon-utils";
+import { ILog, TypeLog } from "../../core/node/types.js";
 import { ServiceBase } from "../../core/service/ServiceBase.js";
-import { NodeConf } from "../../core/node/NodeConf.js";
 
 
 
@@ -12,10 +12,10 @@ export type LogConf = Partial<LogService['stateDefault']> & { class: "log" }
  */
 export class LogService extends ServiceBase {
 
-	get executablesMap(): any {
+	get stateDefault() {
 		return {
-			...super.executablesMap,
-			[Actions.LOG]: (log: LogNotify, sender: string) => this.onNotify(log, sender),
+			...super.stateDefault,
+			levels: <TypeLog[]>null,
 		}
 	}
 
@@ -25,65 +25,17 @@ export class LogService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		super.onInitAfter()
 		const parent = this.nodeByPath<ServiceBase>("..")
-		parent.emitter.on('newListener', (event, listener) => {
-			console.log(`New listener added for event: ${event}`);
-		});
-	
+		parent.emitter.on('$', msg => {
+			const eventLog = msg.payload as ILog
+			if (this.state.levels && !this.state.levels.includes(eventLog.type)) return
+			const type = {
+				[TypeLog.DEBUG]: LOG_TYPE.DEBUG,
+				[TypeLog.INFO]: LOG_TYPE.INFO,
+				[TypeLog.WARN]: LOG_TYPE.WARNING,
+				[TypeLog.ERROR]: LOG_TYPE.ERROR,
+				[TypeLog.FATAL]: LOG_TYPE.FATAL,
+			}[eventLog.type] ?? LOG_TYPE.INFO
+			log(`${eventLog.source ?? "--"} :: ${msg.event ?? "--"}`, type, eventLog.payload)
+		})
 	}
-
-	//#endregion
-
-
-
-	protected onNotify(notify: LogNotify, sender?: string): void {
-		const senderName = sender ?? "log"
-		const level = notify?.level ?? LogLevel.INFO
-		const message = notify?.message ?? "<null>"
-
-		// use winston
-		if (!this.logger) {
-			const color = {
-				[LogLevel.ERROR]: LOG_CMM.BgRed,
-				[LogLevel.WARN]: LOG_CMM.BgYellow,
-				[LogLevel.INFO]: LOG_CMM.BgBlue,
-			}[level] ?? ""
-			console.log(`${color} ${level} ${LOG_CMM.Reset}::[${senderName}]`, message)
-
-			// use console
-		} else {
-			this.logger.log(level, message)
-		}
-		this.state.onLog?.bind(this)(notify)
-	}
-
-}
-
-
-
-const LOG_CMM = {
-	Reset: "\x1b[0m",
-	Bright: "\x1b[1m",
-	Dim: "\x1b[2m",
-	Underscore: "\x1b[4m",
-	Blink: "\x1b[5m",
-	Reverse: "\x1b[7m",
-	Hidden: "\x1b[8m",
-
-	FgBlack: "\x1b[30m",
-	FgRed: "\x1b[31m",
-	FgGreen: "\x1b[32m",
-	FgYellow: "\x1b[33m",
-	FgBlue: "\x1b[34m",
-	FgMagenta: "\x1b[35m",
-	FgCyan: "\x1b[36m",
-	FgWhite: "\x1b[37m",
-
-	BgBlack: "\x1b[40m",
-	BgRed: "\x1b[41m",
-	BgGreen: "\x1b[42m",
-	BgYellow: "\x1b[43m",
-	BgBlue: "\x1b[44m",
-	BgMagenta: "\x1b[45m",
-	BgCyan: "\x1b[46m",
-	BgWhite: "\x1b[47m",
 }

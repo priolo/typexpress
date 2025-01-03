@@ -115,6 +115,7 @@ export class NodeConf extends NodeState {
 	/**
 	 * Dato un JSON costruisce il nodo corrispondente
 	 * [II] deve prendere la "farm" piu' vicina
+	 * [II] deve fare una build asincrona
 	 */
 	private async buildChildByJson(json: any): Promise<INode | null> {
 		const farm = this.nodeByPath<FarmService>("/farm")

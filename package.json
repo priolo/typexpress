@@ -35,7 +35,7 @@
 	},
 	"dependencies": {
 		"@priolo/jess": "file:C://Users//iorio//Documents//jess",
-		"@priolo/jon-utils": "0.3",
+		"@priolo/jon-utils": "^0.5.3",
 		"connect-typeorm": "^2.0.0",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",

@@ -13,7 +13,7 @@ import { clientIsEqual, getUrlParams } from "./utils.js"
 
 
 export type SocketServerConf = Partial<SocketServerService['stateDefault']>
-	& { class: "ws" | `npm:julian-ws-${string}` | (new (...args: any[]) => SocketRouteService), children?: SocketRouteConf[] }
+	& { class: "ws" | `npm:${string}` | (new (...args: any[]) => SocketRouteService), children?: SocketRouteConf[] }
 
 export type SocketServerAct = SocketServerService['executablesMap']
 

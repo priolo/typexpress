@@ -10,6 +10,7 @@ import { ServiceBase } from "../../core/service/ServiceBase.js"
 import { HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
 import { SocketServerConf } from "../ws/SocketServerService.js"
 import { IHttpRouter } from "./utils.js"
+import { TypeLog } from "../../core/node/types.js"
 
 
 
@@ -84,7 +85,7 @@ export class HttpService extends ServiceBase implements IHttpRouter {
 		// il gestore degli errori va inserito per ultimo
 		this.app.use((err: Error, req: Request, res: Response, next) => {
 			// se c'e' un gestore di errore come figlio inoltra l'errore pure li
-			this.log(`HttpService:error`, err, LOG_TYPE.ERROR)
+			this.log(`HttpService:error`, err, TypeLog.ERROR)
 			// continua il discorso...
 			next(err)
 		})

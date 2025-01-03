@@ -1,6 +1,6 @@
 import fs from 'fs';
-import p from 'path';
-import { fileURLToPath } from 'url';
+import p, { dirname } from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { INode } from "../../core/node/INode.js";
 import { Node } from "../../core/node/Node.js";
 import { NodeConf } from "../../core/node/NodeConf.js";
@@ -25,22 +25,30 @@ export default class FarmService extends Node {
      * `void`: usa la cartella locale "services"
      * `npm`: usa il repository npm
      */
-    private async loadClassFromFile(fullPath: string): Promise<any> {
+    private async loadClassFromPath(fullPath: string): Promise<any> {
         if (fullPath == null) return null
 
         const [repo, pathAndClass] = splitOne(fullPath, ":")
         const [path, className] = splitOne(pathAndClass, "/", true)
         let module = null
 
-        if (repo == "npm") {
-            const rootPath = findProjectRoot(__dirname)
-            module = await import(p.resolve(rootPath, 'node_modules', path));
-        } else {
-            module = await import(p.resolve(__dirname, "..", path));
+        try {
+            if (repo == "npm") {
+                const rootPath = getRuntimeRoot()
+                const modulePath = p.resolve(rootPath, 'node_modules', `${pathAndClass}/dist`)
+                module = await import(pathToFileURL(modulePath).href)
+                return module.default
+            } else {
+                const localPath = p.resolve(__dirname, "..", path)
+                module = await import(pathToFileURL(localPath).href)
+            }
+        } catch (error) {
+            throw new Error(`Failed to load module: ${error.message}`)
         }
-        if (!module) {
-            throw new Error("classe non trovata")
-        }
+
+        // if (!module) {
+        //     throw new Error("classe non trovata")
+        // }
 
         // se è definito un "className" prendo la class con quel "className"
         if (className) {
@@ -72,7 +80,7 @@ export default class FarmService extends Node {
         // è una stringa devo caricare ...
         if (typeof (config.class) == "string") {
             // cerco nelle varie cartelle
-            const clazz = await this.loadClassFromFile(config.class)
+            const clazz = await this.loadClassFromPath(config.class)
             if (clazz != null) return <INode>new clazz()
         }
 
@@ -97,4 +105,18 @@ function findProjectRoot(currentDir:string):string {
         currentDir = p.dirname(currentDir);
     }
     return null;
+}
+
+// Get the runtime root path
+const getRuntimeRoot = () => {
+    return process.cwd();
+}
+
+// Or if you need the entry point directory
+const getEntryPointDir = () => {
+    if (process.mainModule) {
+        return dirname(process.mainModule.filename);
+    }
+    // Fallback for ESM
+    return dirname(fileURLToPath(import.meta.url));
 }

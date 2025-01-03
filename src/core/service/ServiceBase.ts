@@ -1,9 +1,6 @@
-import { EventEmitter } from "events"
 import { NodeConf } from "../node/NodeConf.js"
 import { EventsLogsBase, IAction, ILog, TypeLog } from "../node/types.js"
-
-
-
+import { EventEmitter } from "@priolo/jon-utils"
 
 
 
@@ -16,12 +13,6 @@ export class ServiceBase extends NodeConf {
 	constructor(name?: string, state?: any) {
 		super(name, state)
 		this._emitter = new EventEmitter()
-		const originalEmit = this._emitter.emit
-		this._emitter.emit = function (event: string, ...args: any[]) {
-			
-			console.debug(`ServiceBase::emit(${event})`)
-			return originalEmit.call(this, event, ...args)
-		}
 	}
 
 	/**

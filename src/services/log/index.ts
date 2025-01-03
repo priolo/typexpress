@@ -7,5 +7,3 @@ export {
 	LogService as Service,
 	LogConf as conf,
 }
-
-export * from "./types.js"
