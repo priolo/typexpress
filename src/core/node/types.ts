@@ -93,3 +93,11 @@ export enum EventsLogsBase {
 	ERR_BUILD_CHILDREN = "err:build:children",
 }
 
+export interface NodeStruct {
+	id: string
+	name: string
+	class: string
+	state?: any
+	commands?: string[]
+	children?: NodeStruct[]
+}

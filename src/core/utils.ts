@@ -1,7 +1,6 @@
 import { INode } from "./node/INode.js"
 import { obj } from "@priolo/jon-utils"
-import { NodeState } from "./node/NodeState.js"
-import { NodeConf } from "./node/NodeConf.js"
+import { NodeStruct } from "./node/types.js"
 
 
 
@@ -64,23 +63,16 @@ export function nodePath(node: INode): string {
 }
 
 /**
- * restituisco la stringa JSON della struttura di un NODE
- */
-export function nodeToJson(node: INode | null): string {
-	const state = nodeToStruct(node)
-	return JSON.stringify(state)
-}
-
-/**
  * restituisco un ggetto che rappresenta la struttura di un NODE
  */
-export function nodeToStruct(node: INode | null): object {
-	if (!node) return {}
-	const nodeConf = node as NodeConf
-	const commands = !!nodeConf?.executablesMap ? Object.keys(nodeConf.executablesMap) : undefined
+export function nodeToStruct(node: INode | null): NodeStruct {
+	if (!node) return null
+	const commands = !!(<any>node).executablesMap ? Object.keys((<any>node).executablesMap) : undefined
 	return {
+		id: node.id,
 		name: node.name,
-		state: (<NodeState>node).state ?? undefined,
+		class: node.constructor.name,
+		state: (<any>node).state ?? undefined,
 		commands,
 		children: node.children.map(c => nodeToStruct(c))
 	}
@@ -101,7 +93,7 @@ type CallbackNodeMap = (node: INode, children: () => INode[]) => any
  */
 export function nodeId(): string {
 	const time = Date.now().toString(36)
-	const rnd = Math.random().toString(36).substr(2, 5)
+	const rnd = Math.random().toString(36).substring(2, 7)
 	return `${time}.${rnd}`
 }
 

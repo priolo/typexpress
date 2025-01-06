@@ -1,14 +1,6 @@
 import WebSocket from "ws"
 
 
-/**
- * Attende per un po'
- * @param time in millisecondi
- */
-export async function wait(time:number): Promise<void> {
-	return new Promise<void>((res) => setTimeout(_ => res(), time))
-}
-
 export function distancePoints(p1, p2) {
 	if (!p1.x || !p1.y || !p2.x || !p2.y) throw new Error("invalid parameter")
 	const res = Math.sqrt(Math.pow(p1.x - p2.x, 2) + (Math.pow(p1.y - p2.y, 2)))

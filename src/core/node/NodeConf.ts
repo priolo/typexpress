@@ -79,7 +79,7 @@ export class NodeConf extends NodeState {
 	/**
 	 * Valorizza questo NODE e costruisce tutti i children tramite il parametro JSON
 	 */
-	async buildByJson(json: any = {}): Promise<void> {
+	async setupByJson(json: any = {}): Promise<void> {
 
 		// faccio una copia e tolgo "children" e "class"
 		const state = { ...json }
@@ -105,7 +105,7 @@ export class NodeConf extends NodeState {
 				const child = await this.buildChildByJson(confChild);
 				if (child == null) continue;
 				this.addChild(child);
-				await (<NodeConf>child).buildByJson?.(confChild);
+				await (<NodeConf>child).setupByJson?.(confChild);
 			} catch (error) {
 				this.log(EventsLogsBase.ERR_BUILD_CHILDREN, error, TypeLog.ERROR);
 			}

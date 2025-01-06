@@ -18,7 +18,7 @@ export class RootService extends ServiceBase {
 		if (!Array.isArray(config)) config = [config]
 		const root = new RootService()
 		try {
-			await root.buildByJson({ children: config })
+			await root.setupByJson({ children: config })
 		} catch (e) {
 			ErrorService.Send(root, e, "root-service:start")
 		}
