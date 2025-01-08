@@ -1,5 +1,4 @@
-import { PathFinder } from "../path/PathFinder.js";
-import { nodeId } from "../utils.js";
+import { findNodeByPath, nodeId } from "../utils.js";
 import { INode } from "./INode.js";
 
 
@@ -43,7 +42,7 @@ export class Node implements INode {
 	}
 
 	nodeByPath<T extends INode>(path: string): T | null {
-		return PathFinder.Get<T>(this, path)
+		return findNodeByPath<T>(<any>this, path)
 	}
 
 }

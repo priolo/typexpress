@@ -1,8 +1,6 @@
 import FarmService from "../../services/farm/FarmService.js";
-import { INode } from "../node/INode.js";
 import { NodeConf } from "../node/NodeConf.js";
-import { PathFinder } from "../path/PathFinder.js";
-import { nodeMap, nodePath, nodeToJson, nodeToStruct } from "../utils.js";
+import { nodeMap, nodeToStruct } from "../utils.js";
 
 
 
@@ -13,7 +11,7 @@ describe("CORE UTILS", () => {
 	beforeAll(async () => {
 		root = new NodeConf()
 		root.addChild(new FarmService())
-		root.buildByJson({
+		root.setupByJson({
 			// sovrascrivo "root" con "root2"
 			name: "root2",
 			value: 23,
@@ -35,7 +33,7 @@ describe("CORE UTILS", () => {
 		})
 	})
 
-	test("nodeToJson", async () => {
+	test("nodeToStruct", async () => {
 		const json = nodeToStruct(root)
 
 		expect(json).toMatchObject({
@@ -90,13 +88,6 @@ describe("CORE UTILS", () => {
 				}
 			]
 		})
-	})
-
-	test("nodePath", async () => {
-		const pathFind = "/child1/child1.2"
-		const node = new PathFinder(root).getNode<INode>(pathFind)
-		const path = nodePath(node)
-		expect(path).toBe(pathFind)
 	})
 
 })

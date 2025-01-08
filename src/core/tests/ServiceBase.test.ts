@@ -1,7 +1,8 @@
-import { PathFinder } from "../../core/path/PathFinder.js"
 import { RootService } from "../../core/RootService.js"
+import { NodeState } from "../node/NodeState.js"
 import { EventsLogsBase, ILog } from "../node/types.js"
 import { ServiceBase } from "../service/ServiceBase.js"
+import { findNodeByPath } from "../utils.js"
 
 
 
@@ -14,17 +15,7 @@ describe('ServiceBase', () => {
 				name: "child1",
 				children: [
 					{ name: "child1.1" },
-					{
-						name: "receiver",
-						class: class extends ServiceBase {
-							// protected onInit(): Promise<void> {
-							// 	PathFinder.Get<RootService>(this, "/").emitter.on(ServiceBaseLogs.STATE_CHANGE, (log: IChildLog) => {
-							// 		if (log.source == "/child2/emitter") this.setState(log.payload )
-							// 	})
-							// 	return super.onInit()
-							// }
-						}
-					}
+					{ name: "receiver" },
 				]
 			},
 			{
@@ -45,14 +36,15 @@ describe('ServiceBase', () => {
 	})
 
 	test("register", async () => {
-		const nodeEmitter = new PathFinder(root).getNode<ServiceBase>("/child2/emitter")
-		const nodeReceiver = new PathFinder(root).getNode<ServiceBase>("/child1/receiver")
+		const nodeEmitter = findNodeByPath<NodeState>(root, "/child2/emitter")
+		const nodeReceiver = findNodeByPath<NodeState>(root, "/child1/receiver")
 
-		root.emitter.on(EventsLogsBase.STATE_CHANGE, (log: ILog) => {
-			if (log.source == "/child2/emitter") nodeReceiver.setState({ value: log.payload.value })
+		root.emitter.on(EventsLogsBase.STATE_CHANGE, (msg) => {
+			const log = msg.payload as ILog
+			if (log.source == "/child2/emitter") nodeReceiver?.setState({ value: log.payload.value })
 		})
 
-		nodeEmitter.setState({ value: "pippo" })
-		expect(nodeReceiver.state.value).toBe("pippo")
+		nodeEmitter?.setState({ value: "pippo" })
+		expect(nodeReceiver?.state.value).toBe("pippo")
 	})
 })

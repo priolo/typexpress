@@ -3,9 +3,8 @@
  */
 
 import axios from "axios"
-import { ConfActions } from "../../../core/node/types.js"
 import { Request, Response } from "express"
-import { PathFinder } from "../../../core/path/PathFinder.js"
+import { ConfActions } from "../../../core/node/types.js"
 import { RootService } from "../../../core/RootService.js"
 import { HttpRouterService } from "../HttpRouterService.js"
 
@@ -57,7 +56,7 @@ afterEach(async () => {
 
 
 test("su creazione", async () => {
-	const test = new PathFinder(root).getNode<TestRoute>("/http/test")
+	const test = root.nodeByPath("/http/test")
 	expect(test instanceof TestRoute).toBeTruthy()
 })
 test("request on route", async () => {
@@ -72,15 +71,17 @@ test("request on subroute", async () => {
 test("request on subroute with header", async () => {
 	let res = await axios.get(
 		"http://localhost:5001/sub/route3/test",
-		
+
 	)
 	expect(res.data).toEqual({ response: "with_header" })
 
 	res = await axios.get(
 		"http://localhost:5001/sub/route3/test",
-		{headers: { 
-			"accept":'' 
-		}}
+		{
+			headers: {
+				"accept": ''
+			}
+		}
 	)
 	expect(res.data).toEqual({ response: "without_header" })
 })

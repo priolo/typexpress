@@ -1,12 +1,12 @@
 import { RootService } from "../RootService.js"
 import { NodeConf } from "../node/NodeConf.js"
-import { PathFinder } from "../path/PathFinder.js"
+import { findNodeByPath } from "../utils.js"
 
 
 
 describe("PathFinder", () => {
 
-	let root:RootService
+	let root: RootService
 
 	// creiamo priuma di tutto una struttura su cui "esercitarci"
 	beforeAll(async () => {
@@ -55,61 +55,62 @@ describe("PathFinder", () => {
 	})
 
 	test("regular path", async () => {
-		let path = new PathFinder(root).path("/root2/child2/child2.1")
-		expect(path?.node.name).toBe("child2.1")
-		let path2 = path?.path("..")
-		expect(path2?.node.name).toBe("child2")
-		let node = path2?.getNode<any>("/root2/child1")
-		expect(node?.name).toBe("child1")
+		const node = findNodeByPath(root, "/root2/child2/child2.1")!
+		expect(node).toBeDefined()
+		expect(node.name).toBe("child2.1")
+		const node2 = findNodeByPath(node, "..")!
+		expect(node2?.name).toBe("child2")
+		const node3 = findNodeByPath(node2, "/root2/child1")
+		expect(node3?.name).toBe("child1")
 	})
 
 	test("find by id", async () => {
-		let node1 = new PathFinder(root).path("/root2/child2/child2.1")?.node
-		let node2 = new PathFinder(root).path(`/root2/child2/*${node1?.id}`)?.node
+		const node1 = findNodeByPath(root, "/root2/child2/child2.1")
+		const node2 = findNodeByPath(root, `/root2/child2/*${node1?.id}`)
 		expect(node1).toBe(node2)
 	})
 
 	test("find deep", async () => {
-		let node = new PathFinder(root).getNode<any>("/>child2.1")
+		const node = findNodeByPath(root, "/>child2.1")!
 		expect(node).toBeDefined()
-		node = new PathFinder(root).getNode<any>(`/>*${node.id}`)
-		expect(node).toBeDefined()
+		const node2 = findNodeByPath(root, `/>*${node.id}`)
+		expect(node2).toBeDefined()
 	})
 
 	test("find by state", async () => {
-		let node = new PathFinder(root).getNode<any>('/>{"value":"pippo"}')
+		const node = findNodeByPath(root, '/>{"value":"pippo"}')!
 		expect(node.name).toBe("child1.3")
-		node = new PathFinder(root).getNode<any>('/root2/{"value":55}/child1.2')
-		expect(node.name).toBe("child1.2")
+		const node2 = findNodeByPath(root, '/root2/{"value":55}/child1.2')!
+		expect(node2.name).toBe("child1.2")
 	})
 
 	test("find by class", async () => {
-		const node = new PathFinder(root).getNode<any>('/>~Test')
-		expect(node.state.value).toBe("custom")
+		const node = findNodeByPath(root, '/>~Test')!
+		expect((<any>node).state.value).toBe("custom")
 	})
 
 	test("find parent", async () => {
 
-		const node = new PathFinder(root).getNode<any>("/>child1.3.1")
+		const node = findNodeByPath(root, "/>child1.3.1")!
 		expect(node.name).toBe("child1.3.1")
 
 		// trova il parent in base ad un pattern di ricerca
-		let nodeRes = new PathFinder(node).getNode<any>('<{"value":55}')
-		expect(nodeRes.name).toBe("child1")
+		const node2 = findNodeByPath(node, '<{"value":55}')!
+		expect(node2.name).toBe("child1")
 		// se non lo trova restituisce udefined
-		nodeRes = new PathFinder(node).getNode<any>('<{"value":123}')
-		expect(nodeRes).toBeUndefined()
+		const node3 = findNodeByPath(node, '<{"value":123}')
+		expect(node3).toBeNull()
 		// puo' essere anche il nodo stesso 
-		nodeRes = new PathFinder(node).getNode<any>('<{"value":"sigma"}')
-		expect(nodeRes).toBe(node)
+		const node4 = findNodeByPath(node, '<{"value":"sigma"}')
+		expect(node4).toBe(node)
 
 		// cerco un parent che abbia il nodo cercato tra i children
-		nodeRes = new PathFinder(node).getNode<any>('^child1.2')
-		expect(nodeRes.name).toBe("child1.2")
+		const node5 = findNodeByPath(node, '^child1.2')!
+		expect(node5.name).toBe("child1.2")
 
 		// prendo la root
-		nodeRes = new PathFinder(node).getNode<any>('/')
-		expect(nodeRes).toBe(root)
+		const node6 = findNodeByPath(node, '/')
+		expect(node6).toBe(root)
 	})
 
 })

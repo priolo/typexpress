@@ -1,6 +1,10 @@
 
 
 
+export enum Actions {
+	RELOAD = "service-base:reload",
+}
+
 
 //#region REPO-BASE
 

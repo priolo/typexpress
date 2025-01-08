@@ -102,7 +102,20 @@ export abstract class NodeState extends Node {
 	 * permette di eseguire una ACTION di questo NODE
 	 */
 	execute(action: IAction): Promise<any> {
-		const fnc = this.executablesMap[action.type]
+		let fnc = this.executablesMap[action.type]
+		if (!fnc) {
+			this.log(EventsLogsBase.ERR_EXECUTE, `Action "${action.type}" not found`, TypeLog.ERROR)
+			return
+		}
+
+		// se è una stringa allora è un nome di un metodo
+		if (typeof fnc === "string") {
+			fnc = this[fnc]
+			if (!fnc) {
+				this.log(EventsLogsBase.ERR_EXECUTE, `Method "${fnc}" not found`, TypeLog.ERROR)
+				return
+			}
+		}
 
 		// se è ASYNC ritorna una PROMISE
 		if (fnc.constructor.name === "AsyncFunction") {
@@ -115,13 +128,13 @@ export abstract class NodeState extends Node {
 					rej(error)
 				}
 			})
-			// altrimenti ritorna il valore
-		} else {
-			try {
-				return fnc(action.payload, action.sender, this)
-			} catch (error) {
-				this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
-			}
+		}
+
+		// altrimenti ritorna il valore
+		try {
+			return fnc(action.payload, action.sender, this)
+		} catch (error) {
+			this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
 		}
 	}
 

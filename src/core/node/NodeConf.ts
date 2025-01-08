@@ -88,6 +88,10 @@ export class NodeConf extends NodeState {
 		delete state.name
 		// setto il config come stato iniziale
 		this.setState(state)
+
+		// [II] inserire i COMMANDS in MAP
+		//this.setCommands(json.commands)
+
 		// se il config ha pure un "name" lo setto come identificativo del NODE
 		if (json.name) this.name = json.name
 

@@ -3,7 +3,7 @@ import { Request, Response, Router } from "express"
 import fs from "fs"
 import multer from 'multer'
 import path from "path"
-import { getDirInfo } from "../../fs/index.js"
+import { filesystem } from "@priolo/jon-utils"
 import { HttpRouterServiceBase } from "../HttpRouterServiceBase.js"
 
 
@@ -167,7 +167,7 @@ export class HttpUploadService extends HttpRouterServiceBase {
     if (isNaN(maxBaseDirSize) || maxBaseDirSize == Number.POSITIVE_INFINITY) return
 
     // controllo che la directory non sia troppo piena    
-    const { size, fileOld } = await getDirInfo(baseDir)
+    const { size, fileOld } = await filesystem.getDirInfo(baseDir)
     if (size <= maxBaseDirSize) return
 
     // elimino il file piu' vecchio e ricontrollo

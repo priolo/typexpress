@@ -1,6 +1,5 @@
 import { INode } from "./node/INode.js"
 import { obj } from "@priolo/jon-utils"
-import { NodeStruct } from "./node/types.js"
 
 
 
@@ -20,11 +19,11 @@ export async function nodeForeach(nodes: INode | INode[], callback: (n: INode) =
  * cicla ricorsivamente tutti i nodi e chiama per ognuno il "callback"
  * se il callback restituisce true il ciclo si conclude e restituisce quel nodo
  */
-export function nodeFind(nodes: INode | INode[], callback: (n: INode) => boolean): INode | null {
+export function nodeFind<T extends INode>(nodes: INode | INode[], callback: (n: T) => boolean): T | null {
 	if (nodes == null) return
 	if (!Array.isArray(nodes)) nodes = [nodes]
 	for (const node of nodes) {
-		if (callback(node)) return node
+		if (callback(node as T)) return node as T
 		let n = nodeFind(node.children, callback)
 		if (n != null) return n
 	}
@@ -76,6 +75,14 @@ export function nodeToStruct(node: INode | null): NodeStruct {
 		commands,
 		children: node.children.map(c => nodeToStruct(c))
 	}
+}
+export interface NodeStruct {
+	id: string
+	name: string
+	class: string
+	state?: any
+	commands?: string[]
+	children?: NodeStruct[]
 }
 
 /**
@@ -129,3 +136,65 @@ export function fnNodePattern(pattern: string): CallbackFnPattern {
 	}
 }
 type CallbackFnPattern = (n: INode) => boolean
+
+function findNodeInChildren<T extends INode>(nodes: INode[], pattern: string): T | null {
+    // se è un NUMBER prendo il CHILDREN tramite il suo INDEX
+    const index = parseInt(pattern);
+    if (!isNaN(index)) {
+        return nodes[index] as T
+    }
+
+    // se inizia con ">" allora fai una ricerca ricorsiva
+    const deep = pattern.startsWith(">");
+    if (deep) pattern = pattern.slice(1);
+    const fn = fnNodePattern(pattern);
+    
+    return deep 
+        ? nodeFind<T>(nodes, n => fn(n))
+        : <T>(nodes.find(n => fn(n)) ?? null);
+}
+
+export function findNodeByPath<T extends INode>(node: T, path: string): T | null {
+    if (!path || path.length === 0) return node;
+
+    // vai alla radice
+    if (path.startsWith("/")) {
+        return findNodeByPath<T>(nodeParents(node) as T, path.slice(1));
+    }
+
+    // vai al parent
+    if (path.startsWith("..")) {
+        return findNodeByPath<T>(<T>(node.parent ?? node), path.slice(2));
+    }
+
+    // pattern extraction
+    const index = path.indexOf("/");
+    const pattern = index !== -1 ? path.slice(0, index) : path;
+    const remainingPath = index !== -1 ? path.slice(index + 1) : "";
+
+    let nextNode: T | null = null;
+
+    // ricerca sul parent
+    if (pattern.startsWith("<")) {
+		const searchPattern = pattern.slice(1);
+		const fn = fnNodePattern(searchPattern);
+		nextNode = nodeParents(node, n => !fn(n)) as T;
+    }
+    // NEAR: ricerca su oggetto tra children e parent
+    else if (pattern.startsWith("^")) {
+        const searchPattern = pattern.slice(1);
+        nodeParents(node, n => {
+			const child = findNodeInChildren(n.children, searchPattern);
+			if (child != null) {
+				nextNode = child as T;
+				return false;
+			}
+        });
+    }
+    // ricerca sui children
+	else {
+		nextNode = findNodeInChildren(node.children, pattern) as T;
+	}
+
+    return nextNode ? findNodeByPath(nextNode, remainingPath) : null;
+}

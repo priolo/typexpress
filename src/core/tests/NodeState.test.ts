@@ -134,7 +134,7 @@ describe("NODE STATE", () => {
 
 
 		// chiamo la ACTION
-		root.dispatchTo("/node/node.1", { type: "set-text", payload: "hello" })
+		root.nodeByPath<NodeState>("/node/node.1")?.execute({ type: "set-text", payload: "hello" })
 
 		// lo STATE dovrebbe essere cambiato
 		const myNode = root.nodeByPath("/node/node.1") as NodeState

@@ -1,6 +1,7 @@
 import { NodeConf } from "../node/NodeConf.js"
 import { EventsLogsBase, IAction, ILog, TypeLog } from "../node/types.js"
 import { EventEmitter } from "@priolo/jon-utils"
+import { Actions } from "./types.js"
 
 
 
@@ -24,6 +25,13 @@ export class ServiceBase extends NodeConf {
 	}
 	private _emitter: EventEmitter
 
+	get executablesMap() {
+		return {
+			...super.executablesMap,
+			[Actions.RELOAD]: async () => await this.reload(),
+		}
+	}
+
 	/**
 	 * trasmette al parent un log
 	 * @override
@@ -45,5 +53,10 @@ export class ServiceBase extends NodeConf {
 		} catch (error) {
 			this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
 		}
+	}
+
+
+	async reload() {
+		console.log("reload")
 	}
 }
