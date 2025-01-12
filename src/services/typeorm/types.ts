@@ -1,13 +1,6 @@
 
 
 
-export enum Actions {
-	RELOAD = "service-base:reload",
-}
-
-
-//#region REPO-BASE
-
 /**
  * ACTION per oggetti REPO-BASE
  */

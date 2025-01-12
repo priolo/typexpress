@@ -1,6 +1,6 @@
 import { log, LOG_TYPE } from "@priolo/jon-utils";
-import { ILog, TypeLog } from "../../core/node/types.js";
-import { ServiceBase } from "../../core/service/ServiceBase.js";
+import { ILog, TypeLog } from "../../core/types.js";
+import { ServiceBase } from "../../core/ServiceBase.js";
 
 
 

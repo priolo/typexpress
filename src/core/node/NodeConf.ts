@@ -2,7 +2,7 @@ import FarmService from "../../services/farm/index.js";
 import { nodeForeach } from "../utils.js";
 import { INode } from "./INode.js";
 import { NodeState } from "./NodeState.js";
-import { ConfActions, EventsLogsBase, TypeLog } from "./types.js";
+import { NamesAction, NamesLog, TypeLog } from "../types.js";
 
 
 
@@ -20,8 +20,8 @@ export class NodeConf extends NodeState {
 	get executablesMap() {
 		return {
 			...super.executablesMap,
-			[ConfActions.INIT]: async () => await this.init(),
-			[ConfActions.DESTROY]: async () => await this.nodeDestroy(),
+			[NamesAction.INIT]: async () => await this.init(),
+			[NamesAction.DESTROY]: async () => await this.nodeDestroy(),
 		}
 	}
 
@@ -34,13 +34,13 @@ export class NodeConf extends NodeState {
 		try {
 			await this.onInit()
 		} catch (error) {
-			this.log(EventsLogsBase.ERR_INIT, error, TypeLog.ERROR)
+			this.log(NamesLog.ERR_INIT, error, TypeLog.ERROR)
 			return
 		}
 
 		// creo e inizializzo i CHILDREN
 		for (const child of this.children) {
-			await (<NodeConf>child).execute?.({ type: ConfActions.INIT })
+			await (<NodeConf>child).execute?.({ type: NamesAction.INIT })
 		}
 
 		// chiamo la procedure DOPO creazione/init CHILDREN
@@ -60,7 +60,7 @@ export class NodeConf extends NodeState {
 	 * [LOG] NODE_INIT
 	 */
 	protected async onInit(): Promise<void> { 
-		this.log(EventsLogsBase.NODE_INIT)
+		this.log(NamesLog.NODE_INIT)
 	}
 
 	/**
@@ -68,7 +68,7 @@ export class NodeConf extends NodeState {
 	 * [LOG] NODE_INIT_AFTER
 	 */
 	protected async onInitAfter(): Promise<void> { 
-		this.log(EventsLogsBase.NODE_INIT_AFTER)
+		this.log(NamesLog.NODE_INIT_AFTER)
 	}
 
 	/**
@@ -111,7 +111,7 @@ export class NodeConf extends NodeState {
 				this.addChild(child);
 				await (<NodeConf>child).setupByJson?.(confChild);
 			} catch (error) {
-				this.log(EventsLogsBase.ERR_BUILD_CHILDREN, error, TypeLog.ERROR);
+				this.log(NamesLog.ERR_BUILD_CHILDREN, error, TypeLog.ERROR);
 			}
 		}
 	}
@@ -129,21 +129,22 @@ export class NodeConf extends NodeState {
 
 	/**
 	 * Quando questo NODE deve essere distrutto
-	 * [LOG] NODE_DESTROY
 	 */
 	private async nodeDestroy(): Promise<void> {
 		const children = [...this.children]
 		for (const child of children) {
-			await (<NodeConf>child).execute?.({ type: ConfActions.DESTROY })
+			await (<NodeConf>child).execute?.({ type: NamesAction.DESTROY })
 		}
 		await this.onDestroy()
 		this.parent?.removeChild(this)
-		this.log(EventsLogsBase.NODE_DESTROY)
 	}
 
 	/**
 	 * chiamato DOPO aver distrutto i CHILDREN
+	 * [LOG] NODE_DELETED
 	 */
-	protected async onDestroy(): Promise<void> { }
+	protected async onDestroy(): Promise<void> { 
+		this.log(NamesLog.NODE_DELETED)
+	}
 
 }

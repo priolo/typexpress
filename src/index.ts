@@ -6,10 +6,10 @@ export { NodeState } from "./core/node/NodeState.js"
 
 export { Bus } from "./core/path/Bus.js"
 
-export { ServiceBase } from "./core/service/ServiceBase.js"
+export { ServiceBase } from "./core/ServiceBase.js"
 export { RootService } from "./core/RootService.js"
 
-export * as types from "./core/node/types.js"
+export * as types from "./core/types.js"
 export * as utils from "./core/utils.js"
 //#endregion CORE
 

@@ -1,13 +1,12 @@
 import path from "path";
 import { DataSource, DataSourceOptions, EntitySchema } from "typeorm";
 import { EntitySchemaOptions } from "typeorm/browser";
-import { Bus } from "../../core/path/Bus.js";
-import { ServiceBase } from "../../core/service/ServiceBase.js";
-import * as errorNs from "../error/index.js";
+import { ServiceBase } from "../../core/ServiceBase.js";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService.js";
 // import { TypeormRestService } from "./TypeormRestService.js";
 // import { ConfActions } from "../../core/node/NodeConf.js";
 import { fileURLToPath } from 'url';
+import { TypeLog } from "../../core/types.js";
 
 export type TypeormServiceConf = Partial<TypeormService['stateDefault']> & { class: "typeorm" }
 
@@ -64,10 +63,7 @@ export class TypeormService extends ServiceBase {
 	protected async onInitAfter(): Promise<void> {
 		let { options, schemas } = this.state
 
-		if (!options) new Bus(this, "/error").dispatch({
-			type: errorNs.Actions.NOTIFY,
-			payload: "typeorm:options:obbligatory"
-		})
+		if (!options) return this.log( "typeorm:options:obbligatory", null, TypeLog.ERROR)
 
 		// // raccolgo tutti i children che derivano da typeorm-repo e che hanno un "model" cioe' una schema definition
 		// const childRepo = this.children
@@ -98,11 +94,8 @@ export class TypeormService extends ServiceBase {
 		try {
 			const ds = new DataSource(options)
 			this._connection = await ds.initialize()
-		} catch (e) {
-			new Bus(this, "/error").dispatch({
-				type: errorNs.Actions.NOTIFY,
-				payload: e
-			})
+		} catch (error) {
+			this.log( "typeorm:initialize", error, TypeLog.ERROR)
 		}
 
 		await super.onInitAfter()

@@ -1,7 +1,6 @@
-import ErrorService from "../services/error/ErrorService.js";
 import FarmService from "../services/farm/index.js";
-import { ConfActions } from "./node/types.js";
-import { ServiceBase } from "./service/ServiceBase.js";
+import { NamesAction, TypeLog } from "./types.js";
+import { ServiceBase } from "./ServiceBase.js";
 
 
 /**
@@ -20,9 +19,9 @@ export class RootService extends ServiceBase {
 		try {
 			await root.setupByJson({ children: config })
 		} catch (e) {
-			ErrorService.Send(root, e, "root-service:start")
+			root.log( "root-service:start", e, TypeLog.ERROR)
 		}
-		await root.execute({ type: ConfActions.INIT })
+		await root.execute({ type: NamesAction.INIT })
 		return root
 	}
 
@@ -30,7 +29,7 @@ export class RootService extends ServiceBase {
 	 * [facility] ferma un servizio
 	 */
 	static async Stop(service: ServiceBase) {
-		if (service) await service.execute({ type: ConfActions.DESTROY })
+		if (service) await service.execute({ type: NamesAction.DESTROY })
 	}
 
 	constructor(name: string = "root") {
@@ -43,7 +42,7 @@ export class RootService extends ServiceBase {
 		// nel caso in cui l'app venga chiusa
 		process.on('SIGTERM', async () => {
 			console.debug('SIGTERM signal received: closing all services')
-			await this.execute({ type: ConfActions.DESTROY })
+			await this.execute({ type: NamesAction.DESTROY })
 		})
 	}
 

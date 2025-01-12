@@ -1,4 +1,4 @@
-import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { ServiceBase } from "../../core/ServiceBase.js"
 import { IClient, SocketLog, SocketRouteActions } from "./types.js"
 
 

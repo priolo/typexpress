@@ -1,16 +1,26 @@
-import { NodeState } from "./NodeState.js"
+import { NodeState } from "./node/NodeState.js"
+
+//#region ACTIONS
 
 /**
  * ./NodeConf ACTIONS
  */
-export enum ConfActions {
-	/** genera tutta la struttura dei NODES da una `payload` di configurazione */
-	INIT = "init",
-	/** Distrugge il NODE chiamando anche gli opportuni metodi */
-	DESTROY = "destroy",
+export enum NamesAction {
+
+	/** [NODE STATE] setta lo stato parziale con il payload dell'ACTION */
+	SET_STATE = "ns:set-state",
+
+	/** [NODE CONF] genera tutta la struttura dei NODES da una `payload` di configurazione */
+	INIT = "nc:init",
+	/** [NODE CONF] Distrugge il NODE chiamando anche gli opportuni metodi */
+	DESTROY = "nc:destroy",
+
+	/** [SERVICE BASE] ricarica il nodo */
+	RELOAD = "sb:reload",
 }
+
 /**
- * Definisce una ACTION da spedire ad un NODE
+ * Una ACTION da spedire ad un NODE
  */
 export interface IAction {
 	/**
@@ -49,6 +59,15 @@ export interface IAction {
 	}
 }
 
+//#endregion ACTION
+
+
+//#region LOG
+
+/**
+ * tipologia/categoria di LOG
+ * usato per filtrare i LOG
+ */
 export enum TypeLog {
 	/** log di debug */
 	DEBUG = "debug",
@@ -61,10 +80,10 @@ export enum TypeLog {
 	/** log di errore grave */
 	FATAL = "fatal",
 }
-/**
- *  Oggetto mandato al LISTENER quando c'e' un EVENT
- * */
 
+/**
+ *  Oggetto mandato dall' EMITTER ai LISTENER quando c'e' un LOG
+ * */
 export interface ILog {
 	/** NODE-TARGET dove è stato creato l'evento */
 	source: string;
@@ -76,19 +95,25 @@ export interface ILog {
 	payload?: any;
 	/** tipo di log */
 	type?: TypeLog;
-}/**
- * EVENT-NAME che si possono ascoltare di un oggetto "ServiceBase"
+}
+
+/**
+ * Identifica lo specifico LOG che è stato creato
  */
-export enum EventsLogsBase {
+export enum NamesLog {
 	/** quando lo STATE del NODE cambia */
-	STATE_CHANGE = "state:change",
+	STATE_CHANGED = "state:change",
+
 	/** quando il NODE è inizializzato */
 	NODE_INIT = "node:init",
 	NODE_INIT_AFTER = "node:init-after",
-	NODE_DESTROY = "node:destroy",
+	NODE_DELETED = "node:destroy",
 	NODE_EXECUTE = "node:execute",
 
+	/** [ERR] errore esecuzione di un ACTION */
 	ERR_EXECUTE = "err:execute",
 	ERR_INIT = "err:init",
-	ERR_BUILD_CHILDREN = "err:build:children",
+	ERR_BUILD_CHILDREN = "err:build-children",
 }
+
+//#endregion LOG

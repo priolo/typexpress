@@ -6,11 +6,11 @@ import { engine as exphbs } from 'express-handlebars'
 import fs from "fs"
 import http, { Server } from "http"
 import https, { ServerOptions } from "https"
-import { ServiceBase } from "../../core/service/ServiceBase.js"
+import { ServiceBase } from "../../core/ServiceBase.js"
 import { HttpRouterServiceConf } from "../http-router/HttpRouterService.js"
 import { SocketServerConf } from "../ws/SocketServerService.js"
 import { IHttpRouter } from "./utils.js"
-import { TypeLog } from "../../core/node/types.js"
+import { TypeLog } from "../../core/types.js"
 
 
 

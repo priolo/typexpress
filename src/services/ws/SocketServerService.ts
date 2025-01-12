@@ -1,7 +1,7 @@
 import { Request } from "express"
 import url from 'url'
 import { WebSocket, WebSocketServer } from "ws"
-import { TypeLog } from "../../core/node/types.js"
+import { TypeLog } from "../../core/types.js"
 import { Bus } from "../../core/path/Bus.js"
 import * as http from "../http/index.js"
 import * as jwtNs from "../jwt/index.js"

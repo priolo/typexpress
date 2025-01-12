@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ServiceBase } from "../../core/service/ServiceBase.js";
+import { ServiceBase } from "../../core/ServiceBase.js";
 import { Actions } from "./utils.js";
 
 

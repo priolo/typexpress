@@ -1,9 +1,7 @@
-import { Bus } from "../path/Bus.js";
-import { EventsLogsBase, IAction, TypeLog } from "./types.js";
+import { nodePath } from "../utils.js";
 import { INode } from "./INode.js";
 import { Node } from "./Node.js";
-import { ILog } from "./types.js";
-import { nodePath } from "../utils.js";
+import { NamesLog, IAction, ILog, TypeLog, NamesAction } from "../types.js";
 
 
 
@@ -54,20 +52,15 @@ export abstract class NodeState extends Node {
 	 * Modifica lo stato
 	 * si tratta sempre di un MERGE con lo stato precedente
 	 */
-	public setState(state: any, noEmit?: boolean): void {
-		if (this._state == state) return
+	public setState(partialState: any, noEmit?: boolean): void {
+		if (this._state == partialState) return
 		const old = this._state
-		this._state = { ...this._state, ...state }
+		this._state = { ...this._state, ...partialState }
 		if (noEmit) return
-		this.onChangeState(old)
-	}
-
-	/**
-	 * Chiamato quando cambia lo stato del NODE 
-	 * [LOG] STATE_CHANGE
-	 */
-	protected onChangeState(old: any): void {
-		this.log(EventsLogsBase.STATE_CHANGE, this._state)
+		this.log(
+			NamesLog.STATE_CHANGED,
+			{ old, current: this._state, partial: partialState }
+		)
 	}
 
 	//#endregion
@@ -95,7 +88,9 @@ export abstract class NodeState extends Node {
 	 * una mappa di ESECUTORI di ACTIONS per questo NODE
 	 */
 	protected get executablesMap(): ExecutablesMap {
-		return {}
+		return {
+			[NamesAction.SET_STATE]: async (newState: any) => this.setState(newState),
+		}
 	}
 
 	/**
@@ -104,7 +99,7 @@ export abstract class NodeState extends Node {
 	execute(action: IAction): Promise<any> {
 		let fnc = this.executablesMap[action.type]
 		if (!fnc) {
-			this.log(EventsLogsBase.ERR_EXECUTE, `Action "${action.type}" not found`, TypeLog.ERROR)
+			this.log(NamesLog.ERR_EXECUTE, `Action "${action.type}" not found`, TypeLog.ERROR)
 			return
 		}
 
@@ -112,7 +107,7 @@ export abstract class NodeState extends Node {
 		if (typeof fnc === "string") {
 			fnc = this[fnc]
 			if (!fnc) {
-				this.log(EventsLogsBase.ERR_EXECUTE, `Method "${fnc}" not found`, TypeLog.ERROR)
+				this.log(NamesLog.ERR_EXECUTE, `Method "${fnc}" not found`, TypeLog.ERROR)
 				return
 			}
 		}
@@ -124,7 +119,7 @@ export abstract class NodeState extends Node {
 					const ret = await fnc(action.payload, action.sender, this)
 					res(ret)
 				} catch (error) {
-					this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
+					this.log(NamesLog.ERR_EXECUTE, error, TypeLog.ERROR)
 					rej(error)
 				}
 			})
@@ -134,16 +129,16 @@ export abstract class NodeState extends Node {
 		try {
 			return fnc(action.payload, action.sender, this)
 		} catch (error) {
-			this.log(EventsLogsBase.ERR_EXECUTE, error, TypeLog.ERROR)
+			this.log(NamesLog.ERR_EXECUTE, error, TypeLog.ERROR)
 		}
 	}
 
 	/**
 	 * [facility] permette di eseguire un DISPATCH ad un CHILD
 	 */
-	dispatchTo(path: string, action: IAction): any {
-		return new Bus(this, path).dispatch(action)
-	}
+	// dispatchTo(path: string, action: IAction): any {
+	// 	return new Bus(this, path).dispatch(action)
+	// }
 
 	//#endregion
 }

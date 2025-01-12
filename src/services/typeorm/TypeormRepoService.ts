@@ -1,4 +1,4 @@
-import { IRepoRestDispatch, RepoRestActions } from "../../core/service/types.js";
+import { IRepoRestDispatch, RepoRestActions } from "./types.js";
 import { TypeormRepoBaseService } from "./TypeormRepoBaseService.js";
 
 

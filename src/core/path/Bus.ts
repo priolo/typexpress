@@ -1,7 +1,7 @@
 import { log, LOG_TYPE, time } from "@priolo/jon-utils";
 import { INode } from "../node/INode.js";
 import { NodeState } from "../node/NodeState.js";
-import { IAction } from "../node/types.js";
+import { IAction } from "../types.js";
 import { nodePath } from "../utils.js";
 
 

@@ -4,7 +4,7 @@
 
 import axios from "axios"
 import { Request, Response } from "express"
-import { ConfActions } from "../../../core/node/types.js"
+import { NamesAction } from "../../../core/types.js"
 import { RootService } from "../../../core/RootService.js"
 import { HttpRouterService } from "../HttpRouterService.js"
 
@@ -31,7 +31,7 @@ let root = null
 beforeEach(async () => {
 	root = new RootService()
 	await root.dispatch({
-		type: ConfActions.INIT,
+		type: NamesAction.INIT,
 		payload: {
 			children: [
 				{
@@ -51,7 +51,7 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-	await root.dispatch({ type: ConfActions.DESTROY })
+	await root.dispatch({ type: NamesAction.DESTROY })
 })
 
 

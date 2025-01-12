@@ -1,6 +1,6 @@
 import { Between, DataSource, Raw, Repository } from "typeorm";
-import { ServiceBase } from "../../core/service/ServiceBase.js";
-import { IRepoStructActions, RepoStructActions } from "../../core/service/types.js";
+import { ServiceBase } from "../../core/ServiceBase.js";
+import { IRepoStructActions, RepoStructActions } from "./types.js";
 import { TypeormService } from "./TypeormService.js";
 import { Actions } from "./utils.js";
 
